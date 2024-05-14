@@ -13,7 +13,8 @@ git clone <URL do repositório>
 ### Iniciar bibliotecas
 
 Usando npm:
-<npm i>
+
+npm install
 
 
 
