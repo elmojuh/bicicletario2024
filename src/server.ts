@@ -3,7 +3,6 @@ import db from './config/db'; // Importe o arquivo de configuração do banco de
 import routes from "./routes/routes";
 
 const app = express();
-const port = 3000;
 
 app.use(express.json());
 app.use('/api',routes)

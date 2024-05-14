@@ -4,7 +4,12 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/bicicletario';
+let MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/bicicletario';
+
+// Se a aplicação está rodando em um contêiner Docker, use 'host.docker.internal'
+if (process.env.DOCKER_ENV) {
+    MONGODB_URI = 'mongodb://host.docker.internal:27017/bicicletario';
+}
 
 mongoose.connection.on('connecting', () => {
     console.log('Connecting to MongoDB...');

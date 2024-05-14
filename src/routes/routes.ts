@@ -12,7 +12,7 @@ router.use((req, res, next) => {
 });
 
 router.use('/bicicleta', bicicletaRoutes);
-router.use('/toten', totemRoutes);
+router.use('/totem', totemRoutes);
 router.use('/tranca', trancaRoutes);
 
 export default router;
