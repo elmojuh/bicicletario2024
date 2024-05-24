@@ -1,6 +1,6 @@
 pipeline {
     agent {
-        dockerContainer {
+        docker {
             image 'node:latest'
         }
     }
