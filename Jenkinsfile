@@ -1,8 +1,7 @@
 pipeline {
     agent {
-        dockerfile {
-            filename 'Dockerfile'
-            dir '.'
+        docker {
+            image 'node:latest'
             args '-p 3000:3000'
         }
     }
