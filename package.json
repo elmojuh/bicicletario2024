@@ -4,6 +4,7 @@
   "description": "Aplicação da matéria de Processo de Software 2 - Microsserviço da aplicação BICICLETARIO\r É um aplicativo de aluguel de bicicletas que envolve 3 microsserviços: Aluguel, Equipamento e Externo.",
   "main": "server.ts",
   "scripts": {
+    "build": "tsc",
     "start": "ts-node src/start.ts",
     "test": "jest --config jest.config.js"
   },
