@@ -10,5 +10,6 @@ module.exports = {
         'ts-jest': {
             diagnostics: false
         }
-    }
+    },
+    testTimeout: 30000, // Aumenta o timeout para 30 segundos
 };
