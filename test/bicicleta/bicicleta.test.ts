@@ -1,16 +1,21 @@
 // test/Bicicleta.bicicleta.test.ts
+import { MongoMemoryServer } from 'mongodb-memory-server';
+import mongoose from 'mongoose';
 import request from 'supertest';
 import app from '../../src/server';
-import mongoose from 'mongoose';
 
+let mongoServer: MongoMemoryServer;
 let bicicletaId: string;
 
 beforeAll(async () => {
-    await mongoose.connect('mongodb://localhost:27017/mydb');
+    mongoServer = await MongoMemoryServer.create();
+    const uri = mongoServer.getUri();
+    await mongoose.connect(uri);
 });
 
 afterAll(async () => {
     await mongoose.connection.close();
+    await mongoServer.stop();
 });
 
 describe('Rotas de Bicicleta', () => {
