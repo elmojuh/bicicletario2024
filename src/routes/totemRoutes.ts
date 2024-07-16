@@ -1,13 +1,14 @@
 // src/routes/totemRoutes.ts
 import { Router } from 'express';
-import TotemController from '../controllers/TotemController';
+import {TotemController} from '../controllers/TotemController';
 
-const router = Router();
+export class TotemRouter {
+  public readonly router: Router;
 
-router.post('/', TotemController.create);
-router.get('/', TotemController.getAll);
-router.get('/:id', TotemController.getById);
-router.put('/:id', TotemController.update);
-router.delete('/:id', TotemController.delete);
+  constructor() {
+    const controller = new TotemController();
+    this.router = Router();
 
-export default router;
+    this.router.route('/').post(controller.cadastrarTotem);
+  }
+}

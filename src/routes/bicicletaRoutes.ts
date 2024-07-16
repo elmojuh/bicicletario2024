@@ -1,13 +1,15 @@
 // src/routes/bicicletaRoutes.ts
 import { Router } from 'express';
-import BicicletaController from '../controllers/BicicletaController';
+import {BicicletaController} from '../controllers/BicicletaController';
 
-const router = Router();
+export class BicicletaRouter {
+  public readonly router: Router;
 
-router.post('/', BicicletaController.create);
-router.get('/', BicicletaController.getAll);
-router.get('/:id', BicicletaController.getById);
-router.put('/:id', BicicletaController.update);
-router.delete('/:id', BicicletaController.delete);
+  constructor() {
+    const controller = new BicicletaController();
+    this.router = Router();
 
-export default router;
+    this.router.route('/').post(controller.create);
+    this.router.route('/').get(controller.listar);
+  }
+}

@@ -1,29 +1,36 @@
 // src/repositories/BicicletaRepository.ts
-import Bicicleta from '../entities/Bicicleta';
-import { Bicicleta as BicicletaInterface } from '../entities/BicicletaInterface';
+import BicicletaModel from '../db/mongoDB/BicicletaModel';
+import {Bicicleta} from "../entities/Bicicleta";
 
-class BicicletaRepository {
-    async create(bicicletaData: BicicletaInterface) {
-        const bicicleta = new Bicicleta(bicicletaData);
-        await bicicleta.save();
-        return bicicleta;
+export class BicicletaRepository {
+    static async create(bicicletaData: Bicicleta) {
+        try {
+            // Adicione validação para campos obrigatórios aqui
+            if (!bicicletaData.marca || !bicicletaData.modelo || !bicicletaData.ano || bicicletaData.numero === undefined || !bicicletaData.statusBicicleta || !bicicletaData.dataInsercaoTranca) {
+                throw new Error("Todos os campos obrigatórios devem ser fornecidos");
+            }
+            const bicicleta = new BicicletaModel(bicicletaData);
+            await bicicleta.save();
+            return bicicleta;
+        } catch (error) {
+            console.error("Erro ao criar bicicleta no banco:", error);
+            throw error;
+        }
     }
 
-
-    async getAll() {
-        return Bicicleta.find();
+    static getAll() {
+        return BicicletaModel.find().exec();
     }
 
-    async getById(id: string) {
-        return Bicicleta.findById(id);
+    static async getById(id: string){
+        return BicicletaModel.findById(id).exec();
     }
 
-    async update(id: string, bicicletaData: BicicletaInterface) {
-        return Bicicleta.findByIdAndUpdate(id, bicicletaData, { new: true });
+    static async update(id: string, bicicletaData: any) {
+        return BicicletaModel.findByIdAndUpdate(id, bicicletaData, { new: true }).exec();
     }
 
-    async delete(id: string) {
-        return Bicicleta.findByIdAndDelete(id);
+    static async delete(id: string) {
+        return BicicletaModel.findByIdAndDelete(id).exec();
     }
 }
-export default new BicicletaRepository();

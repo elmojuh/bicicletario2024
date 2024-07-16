@@ -1,27 +1,19 @@
 // src/services/TotemService.ts
-import { Totem as TotemInterface } from '../entities/TotemInterface';
-import totemRepository from "../repositories/TotemRepository";
 
-class TotemService {
-    create(totem: TotemInterface) {
-        return totemRepository.create(totem);
+import {NovoTotemDTO} from "../entities/dto/NovoTotemDTO";
+import {TotemMapper} from "../mapper/TotemMapper";
+import {TotemRepository} from "../repositories/TotemRepository";
+
+export class TotemService {
+
+    async listarTotens() {
+        return TotemRepository.getAll();
     }
 
-    getAll() {
-        return totemRepository.getAll();
+    async cadastrarTotem(totemData: NovoTotemDTO) {
+        const totem = TotemMapper.DTOtoEntity(totemData);
+        await TotemRepository.create(totem);
+        return TotemMapper.EntityToDTO(totem);
     }
 
-    getById(id: string) {
-        return totemRepository.getById(id);
-    }
-
-    update(id: string, totem: TotemInterface) {
-        return totemRepository.update(id, totem);
-    }
-
-    delete(id: string) {
-        return totemRepository.delete(id);
-    }
 }
-
-export default new TotemService();

@@ -1,4 +1,4 @@
-// test/Bicicleta.bicicleta.test.ts
+// test/BicicletaDTO.bicicleta.test.ts
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
 import request from 'supertest';
@@ -18,8 +18,8 @@ afterAll(async () => {
     await mongoServer.stop();
 });
 
-describe('Rotas de Bicicleta', () => {
-    it('deve criar uma nova Bicicleta', async () => {
+describe('Rotas de BicicletaDTO', () => {
+    it('deve criar uma nova BicicletaDTO', async () => {
         const res = await request(app)
             .post('/api/bicicleta')
             .send({
@@ -41,14 +41,14 @@ describe('Rotas de Bicicleta', () => {
         expect(Array.isArray(res.body)).toBeTruthy();
     });
 
-    it('deve buscar uma Bicicleta por id', async () => {
+    it('deve buscar uma BicicletaDTO por id', async () => {
         const res = await request(app)
             .get(`/api/bicicleta/${bicicletaId}`);
         expect(res.statusCode).toEqual(200);
         expect(res.body).toHaveProperty('_id', bicicletaId);
     });
 
-    it('deve atualizar uma Bicicleta', async () => {
+    it('deve atualizar uma BicicletaDTO', async () => {
         const res = await request(app)
             .put(`/api/bicicleta/${bicicletaId}`)
             .send({
@@ -62,7 +62,7 @@ describe('Rotas de Bicicleta', () => {
         expect(res.body).toHaveProperty('marca', 'Marca Atualizada');
     });
 
-    it('deve deletar uma Bicicleta', async () => {
+    it('deve deletar uma BicicletaDTO', async () => {
         const res = await request(app)
             .delete(`/api/bicicleta/${bicicletaId}`);
         expect(res.statusCode).toEqual(200);

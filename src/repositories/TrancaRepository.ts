@@ -1,29 +1,21 @@
 // src/repositories/TrancaRepository.ts
-import Tranca from '../entities/Tranca';
-import { Tranca as TrancaInterface } from '../entities/TrancaInterface';
+import TrancaModel from '../db/mongoDB/TrancaModel';
+import {NovaTrancaDTO} from "../entities/dto/NovaTrancaDTO";
+import {Tranca} from "../entities/Tranca";
 
-class TrancaRepository {
-    async create(trancaData: TrancaInterface) {
-        const tranca = new Tranca(trancaData);
+export class TrancaRepository {
+    static async create(trancaData: Tranca) {
+        const tranca = new TrancaModel(trancaData);
         await tranca.save();
         return tranca;
     }
 
-    async getAll() {
-        return Tranca.find();
+    static async getAll() {
+        return TrancaModel.find().exec();
     }
 
-    async getById(id: string) {
-        return Tranca.findById(id);
+    static async getById(id: string){
+        return TrancaModel.findById(id).exec();
     }
 
-    async update(id: string, trancaData: TrancaInterface) {
-        return Tranca.findByIdAndUpdate(id, trancaData, { new: true });
-    }
-
-    async delete(id: string) {
-        return Tranca.findByIdAndDelete(id);
-    }
 }
-
-export default new TrancaRepository();

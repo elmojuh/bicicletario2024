@@ -1,27 +1,27 @@
 // src/services/BicicletaService.ts
-import BicicletaRepository from '../repositories/BicicletaRepository';
-import { Bicicleta } from '../entities/BicicletaInterface';
+import BicicletaModel from "../db/mongoDB/BicicletaModel";
+import {NovaBicicletaDTO} from "../entities/dto/NovaBicicletaDTO";
+import {BicicletaRepository} from "../repositories/BicicletaRepository";
+import {BicicletaMapper} from "../mapper/BicicletaMapper";
 
-class BicicletaService {
-    create(bicicleta: Bicicleta) {
-        return BicicletaRepository.create(bicicleta);
+export class BicicletaService {
+
+    async create(bicicletaData: NovaBicicletaDTO) {
+        const bicicleta = BicicletaMapper.DTOtoEntity(bicicletaData);
+        const savedBicicleta = await BicicletaRepository.create(bicicleta);
+        return savedBicicleta;
     }
 
-    getAll() {
+    async listarBicicletas() {
         return BicicletaRepository.getAll();
     }
 
-    getById(id: string) {
-        return BicicletaRepository.getById(id);
+    async integrarNaRede(data: any) {
+        return;
     }
 
-    update(id: string, bicicleta: Bicicleta) {
-        return BicicletaRepository.update(id, bicicleta);
+    async retirarDaRede(id: number) {
+        return;
     }
 
-    delete(id: string) {
-        return BicicletaRepository.delete(id);
-    }
 }
-
-export default new BicicletaService();

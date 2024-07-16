@@ -1,7 +1,7 @@
 import db from '../src/config/db'; // Importe o arquivo de configuração do banco de dados
-import Bicicleta from '../src/entities/Bicicleta';
+import BicicletaDTO from '../src/entities/dto/./BicicletaDTO';
 
-const bicicletaTeste = new Bicicleta({
+const bicicletaTeste = new BicicletaDTO({
     marca: 'Teste',
     modelo: 'Teste',
     ano: '2022',
@@ -12,6 +12,6 @@ const bicicletaTeste = new Bicicleta({
 // Aguarde a conexão com o banco de dados ser estabelecida antes de tentar salvar a bicicleta de teste
 db.then(() => {
     bicicletaTeste.save()
-        .then(() => console.log('Bicicleta de teste criada com sucesso'))
+        .then(() => console.log('BicicletaDTO de teste criada com sucesso'))
         .catch((error) => console.error('Erro ao criar bicicleta de teste:', error));
 }).catch((error) => console.error('Erro ao conectar-se ao MongoDB:', error));

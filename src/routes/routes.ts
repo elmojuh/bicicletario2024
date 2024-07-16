@@ -1,18 +1,31 @@
-// src/routes.ts
 import { Router } from 'express';
-import bicicletaRoutes from './bicicletaRoutes';
-import totemRoutes from './totemRoutes';
-import trancaRoutes from './trancaRoutes';
+import { BicicletaRouter } from './bicicletaRoutes';
+import { TotemRouter } from './totemRoutes';
+import { TrancaRouter } from './trancaRoutes';
 
-const router = Router();
+export default class AppRoutes {
+    public router: Router;
 
-router.use((req, res, next) => {
-    console.log(`Received request for ${req.path}`);
-    next();
-});
+    constructor() {
+        this.router = Router();
+        this.initializeMiddlewares();
+        this.initializeRoutes();
+    }
 
-router.use('/bicicleta', bicicletaRoutes);
-router.use('/totem', totemRoutes);
-router.use('/tranca', trancaRoutes);
+    private initializeMiddlewares(): void {
+        this.router.use((req, res, next) => {
+            console.log(`Received request for ${req.path}`);
+            next();
+        });
+    }
 
-export default router;
+    private initializeRoutes(): void {
+        const bicicletaRouter = new BicicletaRouter().router;
+        const totemRouter = new TotemRouter().router;
+        const trancaRouter = new TrancaRouter().router;
+
+        this.router.use('/bicicleta', bicicletaRouter);
+        this.router.use('/totem', totemRouter);
+        this.router.use('/tranca', trancaRouter);
+    }
+}

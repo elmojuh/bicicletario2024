@@ -1,13 +1,14 @@
 // src/routes/trancaRoutes.ts
 import { Router } from 'express';
-import TrancaController from '../controllers/TrancaController';
+import {TrancaController} from '../controllers/TrancaController';
 
-const router = Router();
+export class TrancaRouter {
+  public readonly router: Router;
 
-router.post('/', TrancaController.create);
-router.get('/', TrancaController.getAll);
-router.get('/:id', TrancaController.getById);
-router.put('/:id', TrancaController.update);
-router.delete('/:id', TrancaController.delete);
+  constructor() {
+    const controller = new TrancaController();
+    this.router = Router();
 
-export default router;
+    this.router.route('/').post(controller.cadastrarTranca);
+  }
+}

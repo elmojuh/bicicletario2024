@@ -1,29 +1,28 @@
 // src/repositories/TotemRepository.ts
-import Totem from '../entities/Totem';
-import { Totem as TotemInterface } from '../entities/TotemInterface';
+import {NovoTotemDTO} from "../entities/dto/NovoTotemDTO";
+import TotemModel from "../db/mongoDB/TotemModel";
 
-class TotemRepository {
-    async create(totemData: TotemInterface) {
-        const totem = new Totem(totemData);
+export class TotemRepository {
+    static async create(totemData: NovoTotemDTO) {
+        const totem = new TotemModel(totemData);
         await totem.save();
         return totem;
     }
 
-    async getAll() {
-        return Totem.find();
+    static async getAll() {
+        return TotemModel.find().exec();
     }
 
-    async getById(id: string) {
-        return Totem.findById(id);
+    static async getById(id: string){
+        return TotemModel.findById(id).exec();
     }
 
-    async update(id: string, totemData: TotemInterface) {
-        return Totem.findByIdAndUpdate(id, totemData, { new: true });
+    static async getTrancas(id: string){
+        return TotemModel.findById(id).populate('trancas').exec();
     }
 
-    async delete(id: string) {
-        return Totem.findByIdAndDelete(id);
+    static async getBicicletas(id: string){
+        return TotemModel.findById(id).populate('bicicletas').exec();
     }
+
 }
-
-export default new TotemRepository();
