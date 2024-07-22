@@ -1,2 +1,7 @@
-export type StatusTranca =
-    'LIVRE' | 'OCUPADA' |'NOVA' | 'APOSENTADA' | 'EM_REPARO';
+export enum StatusTrancaEnum {
+    LIVRE = 'LIVRE',
+    OCUPADA = 'OCUPADA',
+    NOVA = 'NOVA',
+    APOSENTADA = 'APOSENTADA',
+    EM_REPARO = 'EM_REPARO',
+}

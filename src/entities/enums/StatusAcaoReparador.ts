@@ -1,1 +1,4 @@
-export type StatusAcaoReparador = 'APOSENTADA' | 'EM_REPARO';
+export enum StatusAcaoReparadorEnum {
+    APOSENTADA = 'APOSENTADA',
+    EM_REPARO = 'EM_REPARO',
+}

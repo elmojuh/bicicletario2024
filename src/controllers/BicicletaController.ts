@@ -6,6 +6,16 @@ import {RetirarBicicletaDaRedeDTO} from "../entities/dto/RetirarBicicletaDaRedeD
 
 export class BicicletaController {
 
+    async getById(req: Request, res: Response) {
+        try{
+            const id = req.params.id;
+            const bicicleta = await new BicicletaService().getById(id);
+            res.json(bicicleta);
+        }catch (error){
+            res.status(500).json({ message: 'Bicicleta not found' });
+        }
+    }
+
     async create(req: Request, res: Response) {
         try{
             const bicicleta = req.body;

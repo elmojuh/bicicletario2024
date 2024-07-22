@@ -12,6 +12,10 @@ export class BicicletaService {
         return savedBicicleta;
     }
 
+    async getById(id: string) {
+        return BicicletaRepository.getById(id);
+    }
+
     async listarBicicletas() {
         return BicicletaRepository.getAll();
     }

@@ -1,2 +1,8 @@
-export type StatusBicicleta =
-    'DISPONIVEL' | 'EM_USO' | 'NOVA' | 'APOSENTADA' | 'REPARO_SOLICITADO' | 'EM_REPARO';
+export enum StatusBicicleta {
+    DISPONIVEL = 'DISPONIVEL',
+    EM_USO = 'EM_USO',
+    NOVA = 'NOVA',
+    APOSENTADA = 'APOSENTADA',
+    REPARO_SOLICITADO = 'REPARO_SOLICITADO',
+    EM_REPARO = 'EM_REPARO',
+}
