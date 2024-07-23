@@ -6,8 +6,7 @@ export class TotemMapper {
     static DTOtoEntity(totemData: NovoTotemDTO): Totem {
         return new Totem(
             totemData.localizacao,
-            totemData.descricao,
-            undefined);
+            totemData.descricao);
     }
     static EntityToDTO(totem: Totem): TotemDTO {
         return new TotemDTO(

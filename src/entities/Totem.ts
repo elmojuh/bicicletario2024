@@ -1,9 +1,8 @@
 export class Totem {
-    private _id? : number;
+    private _id : number | undefined;
     private _localizacao : string;
     private _descricao : string;
-    constructor(localizacao: string, descricao: string, id?: number | undefined,) {
-        this._id = id;
+    constructor(localizacao: string, descricao: string) {
         this._localizacao = localizacao;
         this._descricao = descricao;
     }

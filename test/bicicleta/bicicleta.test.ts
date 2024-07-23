@@ -19,6 +19,28 @@ afterAll(async () => {
 });
 
 describe('Rotas de BicicletaDTO', () => {
+    jest.mock('../../src/services/FuncionarioService', () => ({
+        isFuncionarioValido: jest.fn().mockResolvedValue(true)
+    }));
+    jest.mock('../../src/services/EmailService', () => ({
+        enviarEmailParaReparador: jest.fn().mockResolvedValue(true)
+    }));
+    jest.mock('../../src/repositories/BicicletaRepository', () => ({
+        getById: jest.fn().mockImplementation(id => Promise.resolve({
+            id,
+            statusBicicleta: 'DISPONIVEL',
+            // Adicione mais propriedades conforme necessário para o teste
+        })),
+        update: jest.fn().mockResolvedValue(true)
+    }));
+    jest.mock('../../src/services/TrancaService', () => ({
+        getById: jest.fn().mockResolvedValue({
+            statusTranca: 'LIVRE',
+            // Adicione mais propriedades conforme necessário para o teste
+        }),
+        update: jest.fn().mockResolvedValue(true)
+    }));
+    jest.mock('../../src/services/TrancaService');
     it('deve criar uma nova BicicletaDTO', async () => {
         const res = await request(app)
             .post('/api/bicicleta')
@@ -31,7 +53,7 @@ describe('Rotas de BicicletaDTO', () => {
             });
         expect(res.statusCode).toEqual(201);
         expect(res.body).toHaveProperty('marca', 'Marca de Teste');
-        bicicletaId = res.body._id;
+        bicicletaId = res.body.id;
     });
 
     it('deve buscar todas as Bicicletas', async () => {
@@ -45,9 +67,20 @@ describe('Rotas de BicicletaDTO', () => {
         const res = await request(app)
             .get(`/api/bicicleta/${bicicletaId}`);
         expect(res.statusCode).toEqual(200);
-        expect(res.body).toHaveProperty('_id', bicicletaId);
+        expect(res.body).toHaveProperty('id', bicicletaId); // Certifique-se de que esta linha está correta e corresponde à propriedade esperada
     });
 
+    // it('deve integrar uma bicicleta a rede', async () => {
+    //     const res = await request(app)
+    //         .post('/api/bicicleta/integrarNaRede')
+    //         .send({
+    //             idBicicleta: 'algumIdValido', // Garanta que este ID seja reconhecido pelos mocks
+    //             idTranca: 'algumIdValido', // Garanta que este ID seja reconhecido pelos mocks
+    //             idFuncionario: 1
+    //         });
+    //     expect(res.statusCode).toEqual(200);
+    //     expect(res.body).toHaveProperty('status', 'DISPONIVEL');
+    // });
     // it('deve atualizar uma BicicletaDTO', async () => {
     //     const res = await request(app)
     //         .put(`/api/bicicleta/${bicicletaId}`)

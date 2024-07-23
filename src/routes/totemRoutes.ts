@@ -10,5 +10,6 @@ export class TotemRouter {
     this.router = Router();
 
     this.router.route('/').post(controller.cadastrarTotem);
+    this.router.route('/').get(controller.listarTotens);
   }
 }

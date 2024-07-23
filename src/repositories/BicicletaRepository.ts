@@ -1,9 +1,10 @@
 // src/repositories/BicicletaRepository.ts
 import BicicletaModel from '../db/mongoDB/BicicletaModel';
 import {Bicicleta} from "../entities/Bicicleta";
+import {BicicletaMapper} from "../mapper/BicicletaMapper";
 
 export class BicicletaRepository {
-    static async create(bicicletaData: Bicicleta) {
+    static async create(bicicletaData: Bicicleta): Promise<Bicicleta>{
         try {
             const bicicletaToSave = new BicicletaModel({
                 marca: bicicletaData.marca,
@@ -14,7 +15,8 @@ export class BicicletaRepository {
                 dataInsercaoTranca: bicicletaData.dataInsercaoTranca
             });
             await bicicletaToSave.save();
-            return bicicletaToSave;
+            const bicicletaResponse = BicicletaMapper.ModelToEntitie(bicicletaToSave)
+            return bicicletaResponse;
         } catch (error) {
             console.error("Erro ao criar bicicleta no banco:", error);
             throw error;
@@ -25,8 +27,10 @@ export class BicicletaRepository {
         return BicicletaModel.find().exec();
     }
 
-    static async getById(id: string){
-        return BicicletaModel.findById(id).exec();
+    static async getById(id: string) : Promise<Bicicleta> {
+        const bicicleta = await BicicletaModel.findById(id).exec();
+        const bicicletaEntitie = BicicletaMapper.ModelToEntitie(bicicleta);
+        return bicicletaEntitie;
     }
 
     static async update(id: string, bicicletaData: any) {

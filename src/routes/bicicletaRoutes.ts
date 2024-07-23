@@ -12,5 +12,7 @@ export class BicicletaRouter {
     this.router.route('/').post(controller.create);
     this.router.route('/:id').get(controller.buscarPorId);
     this.router.route('/').get(controller.listar);
+    this.router.route('/integrarNaRede').post(controller.integrarNaRede);
+    this.router.route('/retirarDaRede').post(controller.retirarDaRede);
   }
 }

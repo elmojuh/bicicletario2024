@@ -16,6 +16,15 @@ export class TrancaController {
         }
     }
 
+    async listarTrancas(req: Request, res: Response) {
+        try{
+            const trancas = await new TrancaService().listarTrancas();
+            res.json(trancas);
+        }catch (error){
+            res.status(500).json({ message: 'Trancas not listed' });
+        }
+    }
+
     // async integrarNaRede(req: Request, res: Response) {
     //     try {
     //         await new TrancaService().integrarNaRede(req.body as IntegrarBicicletaNaRedeDTO);
@@ -34,14 +43,6 @@ export class TrancaController {
     //     }
     // }
     //
-    // async listarTrancas(req: Request, res: Response) {
-    //     try{
-    //         const trancas = await new TrancaService().listarTrancas();
-    //         res.json(trancas);
-    //     }catch (error){
-    //         res.status(500).json({ message: 'Trancas not listed' });
-    //     }
-    // }
     //
     // async obterTranca(req: Request, res: Response) {
     //     try{

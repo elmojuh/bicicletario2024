@@ -2,7 +2,6 @@ import mongoose, { Schema, Document } from "mongoose";
 import {StatusBicicleta} from "../../entities/enums/StatusBicicleta";
 
 interface BicicletaModel extends Document {
-  id?: number;
   marca: string;
   modelo: string;
   ano: string;
@@ -13,7 +12,6 @@ interface BicicletaModel extends Document {
 }
 
 const bicicletaSchema = new Schema<BicicletaModel>({
-  id: { type: Number, required: false },
   marca: { type: String, required: true },
   modelo: { type: String, required: true },
   ano: { type: String, required: true},

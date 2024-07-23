@@ -2,7 +2,7 @@ import { StatusBicicleta } from './enums/StatusBicicleta';
 import { Tranca } from './Tranca';
 
 export class Bicicleta{
-  private _id: number | undefined;
+  private _id?: number;
   private _marca: string;
   private _modelo: string;
   private _ano: string;
@@ -66,6 +66,18 @@ export class Bicicleta{
     }
     set tranca(value: Tranca ) {
         this._tranca = value;
+    }
+    toJSON() {
+        return {
+            id: (this.id),
+            marca: this.marca,
+            modelo: this.modelo,
+            ano: this.ano,
+            numero: this.numero,
+            statusBicicleta: this.statusBicicleta,
+            dataInsercaoTranca: this.dataInsercaoTranca,
+            tranca: this.tranca
+        };
     }
 
 }

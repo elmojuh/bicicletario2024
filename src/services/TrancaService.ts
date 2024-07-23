@@ -5,9 +5,22 @@ import {TrancaMapper} from "../mapper/TrancaMapper";
 
 export class TrancaService {
     async cadastrarTranca(trancaData: NovaTrancaDTO) {
-        const tranca = TrancaMapper.DTOtoEntity(trancaData);
-        await TrancaRepository.create(tranca);
-        return TrancaMapper.EntityToDTO(tranca);
+        const tranca = TrancaMapper.NovoDTOtoEntity(trancaData);
+        const trancaSaved = await TrancaRepository.create(tranca);
+        const trancaResponse = TrancaMapper.ModelToResponse(trancaSaved);
+        return trancaResponse;
+    }
+
+    async listarTrancas() {
+        return TrancaRepository.getAll();
+    }
+
+    async getById(id: string): Promise<any> {
+        return TrancaRepository.getById(id);
+    }
+
+    async update(id: string, trancaData: any) {
+        return TrancaRepository.update(id, trancaData);
     }
 
     // async integrarNaRede(tranca: Tranca) {
@@ -18,9 +31,6 @@ export class TrancaService {
     //     return TrancaRepository.delete(tranca.id);
     // }
     //
-    // async listarTrancas() {
-    //     return TrancaRepository.getAll();
-    // }
     //
     // async obterTranca(id: string) {
     //     return TrancaRepository.getById(id);
@@ -49,6 +59,4 @@ export class TrancaService {
     // async alterarStatusTranca(id: string, status: string) {
     //     return TrancaRepository.getById(id);
     // }
-
-
 }

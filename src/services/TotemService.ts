@@ -11,9 +11,9 @@ export class TotemService {
     }
 
     async cadastrarTotem(totemData: NovoTotemDTO) {
-        const totem = TotemMapper.DTOtoEntity(totemData);
-        await TotemRepository.create(totem);
-        return TotemMapper.EntityToDTO(totem);
+        const totemEntity = TotemMapper.DTOtoEntity(totemData);
+        const savedTotem = await TotemRepository.create(totemEntity);
+        return savedTotem;
     }
 
 }

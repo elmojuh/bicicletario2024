@@ -3,6 +3,7 @@ import { NovaBicicletaDTO } from "../entities/dto/NovaBicicletaDTO";
 import {BicicletaDTO} from "../entities/dto/BicicletaDTO";
 import {Bicicleta} from "../entities/Bicicleta";
 import {StatusBicicleta} from "../entities/enums/StatusBicicleta";
+import {Types} from "mongoose";
 
 export class BicicletaMapper {
     static DTOtoEntity(bicicletaDTO: NovaBicicletaDTO): Bicicleta {
@@ -22,5 +23,16 @@ export class BicicletaMapper {
             bicicleta.numero,
             bicicleta.statusBicicleta
         );
+    }
+    static ModelToEntitie(bicicletaModel: any): Bicicleta {
+        const bicicleta = new Bicicleta(
+            bicicletaModel.marca,
+            bicicletaModel.modelo,
+            bicicletaModel.ano,
+            bicicletaModel.numero,
+            StatusBicicleta[bicicletaModel.status as keyof typeof StatusBicicleta]
+        );
+        bicicleta.id = bicicletaModel.id;
+        return bicicleta;
     }
 }

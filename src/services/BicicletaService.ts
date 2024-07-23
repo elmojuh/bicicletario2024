@@ -1,31 +1,76 @@
 // src/services/BicicletaService.ts
-import BicicletaModel from "../db/mongoDB/BicicletaModel";
 import {NovaBicicletaDTO} from "../entities/dto/NovaBicicletaDTO";
 import {BicicletaRepository} from "../repositories/BicicletaRepository";
 import {BicicletaMapper} from "../mapper/BicicletaMapper";
+import {IntegrarBicicletaNaRedeDTO} from "../entities/dto/IntegrarBicicletaNaRedeDTO";
+import {TrancaService} from "./TrancaService";
+import {StatusBicicleta} from "../entities/enums/StatusBicicleta";
+import {FuncionarioService} from "./FuncionarioService";
+import {StatusTranca} from "../entities/enums/StatusTranca";
+import {EmailService} from "./EmailService";
+import {Constantes} from "../entities/constants/Constantes";
 
 export class BicicletaService {
 
-    async create(bicicletaData: NovaBicicletaDTO) {
-        const bicicleta = BicicletaMapper.DTOtoEntity(bicicletaData);
+    async create(dto: NovaBicicletaDTO) : Promise<any> {
+        const bicicleta = BicicletaMapper.DTOtoEntity(dto);
         const savedBicicleta = await BicicletaRepository.create(bicicleta);
-        return savedBicicleta;
+        return savedBicicleta.toJSON();
     }
 
-    async getById(id: string) {
-        return BicicletaRepository.getById(id);
+    async getById(id: string) : Promise<any>{
+        const bicicleta = await BicicletaRepository.getById(id);
+        return bicicleta.toJSON();
     }
 
     async listarBicicletas() {
         return BicicletaRepository.getAll();
     }
 
-    async integrarNaRede(data: any) {
-        return;
+
+    async integrarNaRede(dto: IntegrarBicicletaNaRedeDTO) : Promise<any>{
+        const idBicicleta = dto.idBicicleta.toString();
+        const bicicleta = await BicicletaRepository.getById(idBicicleta);
+        if(!bicicleta){
+            throw new Error('Bicicleta não encontrada');
+        }
+        if (bicicleta.statusBicicleta !== StatusBicicleta.NOVA || StatusBicicleta.EM_REPARO ) {
+            throw new Error('Bicicleta não pode ser integrada na rede');
+        }
+
+        const idTranca = dto.idTranca.toString();
+        const trancaService = new TrancaService();
+        const tranca = await trancaService.getById(idTranca);
+        if(!tranca){
+            throw new Error('Tranca não encontrada');
+        }
+        if (tranca.statusTranca() !== StatusBicicleta.DISPONIVEL) {
+            throw new Error('Tranca não disponível');
+        }
+
+        const idFuncionario = dto.idFuncionario;
+        const funcionarioDisponivel = await FuncionarioService.isFuncionarioValido(idFuncionario);
+        if (!funcionarioDisponivel) {
+            throw new Error('Bicicleta não pode ser integrada na rede');
+        }
+
+        bicicleta.statusBicicleta = StatusBicicleta.DISPONIVEL;
+        bicicleta.dataInsercaoTranca = new Date().toISOString();
+        await BicicletaRepository.update(idBicicleta, bicicleta);
+
+        tranca.statusTranca = StatusTranca.OCUPADA;
+        trancaService.update(idTranca, tranca);
+
+        const emailService = new EmailService();
+        try {
+            emailService.enviarEmailParaReparador(dto.idFuncionario);
+        } catch (e) {
+            throw new Error(Constantes.ERROR_ENVIAR_EMAIL);
+        }
     }
 
-    async retirarDaRede(id: number) {
-        return;
+    async retirarDaRede(id: number) : Promise<any>{
+        return null;
     }
 
 }

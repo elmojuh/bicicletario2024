@@ -10,5 +10,6 @@ export class TrancaRouter {
     this.router = Router();
 
     this.router.route('/').post(controller.cadastrarTranca);
+    this.router.route('/').get(controller.listarTrancas);
   }
 }
