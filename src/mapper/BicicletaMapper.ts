@@ -2,19 +2,16 @@
 import { NovaBicicletaDTO } from "../entities/dto/NovaBicicletaDTO";
 import {BicicletaDTO} from "../entities/dto/BicicletaDTO";
 import {Bicicleta} from "../entities/Bicicleta";
+import {StatusBicicleta} from "../entities/enums/StatusBicicleta";
 
 export class BicicletaMapper {
     static DTOtoEntity(bicicletaDTO: NovaBicicletaDTO): Bicicleta {
-        // Cria uma nova instância de Bicicleta usando os dados do DTO
         return new Bicicleta(
             bicicletaDTO.marca,
             bicicletaDTO.modelo,
             bicicletaDTO.ano,
             bicicletaDTO.numero,
-            bicicletaDTO.status,
-            new Date().toISOString(),
-            undefined,
-            undefined
+            StatusBicicleta[bicicletaDTO.status as keyof typeof StatusBicicleta]
         );
     }
     static EntityToDTO(bicicleta: Bicicleta): BicicletaDTO {

@@ -5,13 +5,16 @@ import {Bicicleta} from "../entities/Bicicleta";
 export class BicicletaRepository {
     static async create(bicicletaData: Bicicleta) {
         try {
-            // Adicione validação para campos obrigatórios aqui
-            if (!bicicletaData.marca || !bicicletaData.modelo || !bicicletaData.ano || bicicletaData.numero === undefined || !bicicletaData.statusBicicleta || !bicicletaData.dataInsercaoTranca) {
-                throw new Error("Todos os campos obrigatórios devem ser fornecidos");
-            }
-            const bicicleta = new BicicletaModel(bicicletaData);
-            await bicicleta.save();
-            return bicicleta;
+            const bicicletaToSave = new BicicletaModel({
+                marca: bicicletaData.marca,
+                modelo: bicicletaData.modelo,
+                ano: bicicletaData.ano,
+                numero: bicicletaData.numero,
+                status: bicicletaData.statusBicicleta,
+                dataInsercaoTranca: bicicletaData.dataInsercaoTranca
+            });
+            await bicicletaToSave.save();
+            return bicicletaToSave;
         } catch (error) {
             console.error("Erro ao criar bicicleta no banco:", error);
             throw error;

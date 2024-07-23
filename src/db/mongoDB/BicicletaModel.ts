@@ -1,6 +1,8 @@
 import mongoose, { Schema, Document } from "mongoose";
+import {StatusBicicleta} from "../../entities/enums/StatusBicicleta";
 
 interface BicicletaModel extends Document {
+  id?: number;
   marca: string;
   modelo: string;
   ano: string;
@@ -11,12 +13,13 @@ interface BicicletaModel extends Document {
 }
 
 const bicicletaSchema = new Schema<BicicletaModel>({
+  id: { type: Number, required: false },
   marca: { type: String, required: true },
   modelo: { type: String, required: true },
   ano: { type: String, required: true},
   numero: { type: Number, required: true },
-  status: { type: String, required: true, enum: ['DISPONÍVEL', 'EM_USO', 'NOVA', 'APOSENTADA', 'REPARO_SOLICITADO', 'EM_REPARO'] },
-  dataInsercaoTranca: { type: String, required: true },
+  status: { type: String, required: true, enum: StatusBicicleta },
+  dataInsercaoTranca: { type: String, required: false },
   trancaId: { type: Schema.Types.ObjectId, ref: 'Tranca' }
 });
 

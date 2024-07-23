@@ -2,27 +2,24 @@ import { StatusBicicleta } from './enums/StatusBicicleta';
 import { Tranca } from './Tranca';
 
 export class Bicicleta{
-  private _id?: number;
+  private _id: number | undefined;
   private _marca: string;
   private _modelo: string;
   private _ano: string;
   private _numero: number;
   private _statusBicicleta: StatusBicicleta;
-  private _dataInsercaoTranca: string;
-  private _tranca?: Tranca | undefined;
+  private _dataInsercaoTranca?: string;
+  private _tranca?: Tranca | null;
 
-  constructor(marca: string, modelo: string, ano: string, numero: number, statusBicicleta: StatusBicicleta, dataInsercaoTranca: string, tranca?: Tranca | undefined, id?: number) {
-    this._id = id;
+  constructor(marca: string, modelo: string, ano: string, numero: number, statusBicicleta: StatusBicicleta) {
     this._marca = marca;
     this._modelo = modelo;
     this._ano = ano;
     this._numero = numero;
     this._statusBicicleta = statusBicicleta;
-    this._dataInsercaoTranca = dataInsercaoTranca;
-    this._tranca = tranca;
   }
 
-    get id(): number | undefined{
+    get id(): number | undefined {
       return this._id;
     }
     set id(value: number) {
@@ -53,18 +50,18 @@ export class Bicicleta{
         this._numero = value;
     }
     get statusBicicleta(): StatusBicicleta {
-        return this._statusBicicleta;
+        return <StatusBicicleta>this._statusBicicleta;
     }
     set statusBicicleta(value: StatusBicicleta) {
         this._statusBicicleta = value;
     }
     get dataInsercaoTranca(): string {
-        return this._dataInsercaoTranca;
+        return <string>this._dataInsercaoTranca;
     }
     set dataInsercaoTranca(value: string) {
         this._dataInsercaoTranca = value;
     }
-    get tranca(): Tranca | undefined{
+    get tranca(): Tranca | null | undefined {
         return this._tranca;
     }
     set tranca(value: Tranca ) {

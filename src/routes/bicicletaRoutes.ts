@@ -10,6 +10,7 @@ export class BicicletaRouter {
     this.router = Router();
 
     this.router.route('/').post(controller.create);
+    this.router.route('/:id').get(controller.buscarPorId);
     this.router.route('/').get(controller.listar);
   }
 }

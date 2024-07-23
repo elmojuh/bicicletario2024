@@ -1,7 +1,7 @@
 import {NovaTrancaDTO} from "../entities/dto/NovaTrancaDTO";
 import {Tranca} from "../entities/Tranca";
-import {StatusTranca} from "../entities/enums/StatusTranca";
 import {TrancaDTO} from "../entities/dto/TrancaDTO";
+import {StatusTranca} from "../entities/enums/StatusTranca";
 
 export class TrancaMapper{
     static DTOtoEntity(totemData: NovaTrancaDTO): Tranca {
