@@ -14,4 +14,12 @@ export class TotemMapper {
             totem.descricao
         );
     }
+    static ModelToEntitie(totemModel: any): Totem {
+        const totem = new Totem(
+            totemModel.localizacao,
+            totemModel.descricao
+        );
+        totem.id = totemModel.id;
+        return totem;
+    }
 }

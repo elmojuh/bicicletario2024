@@ -6,7 +6,6 @@ import {TrancaMapper} from "../mapper/TrancaMapper";
 export class TrancaRepository {
     static async create(trancaData: Tranca) {
         try{
-            console.log("trancaData em TrancaRepository:", trancaData);
             if(!trancaData.numero || !trancaData.localizacao || !trancaData.anoDeFabricacao || !trancaData.modelo || !trancaData.statusTranca){
                 throw new Error("Campos obrigatórios não preenchidos");
             }
@@ -17,7 +16,6 @@ export class TrancaRepository {
                 modelo: trancaData.modelo,
                 status: trancaData.statusTranca,
             });
-            console.log("trancaToSave em TrancaRepository:", trancaToSave);
             await trancaToSave.save();
             return trancaToSave;
         }catch (error) {

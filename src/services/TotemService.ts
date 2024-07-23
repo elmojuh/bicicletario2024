@@ -10,10 +10,14 @@ export class TotemService {
         return TotemRepository.getAll();
     }
 
-    async cadastrarTotem(totemData: NovoTotemDTO) {
+    async cadastrarTotem(totemData: NovoTotemDTO): Promise<any> {
         const totemEntity = TotemMapper.DTOtoEntity(totemData);
         const savedTotem = await TotemRepository.create(totemEntity);
-        return savedTotem;
+        return savedTotem.toJSON();
+    }
+    async getById(id: string) : Promise<any>{
+        const totem = await TotemRepository.getById(id);
+        return totem.toJSON();
     }
 
 }

@@ -10,7 +10,7 @@ export class TrancaController {
     async cadastrarTranca(req: Request, res: Response) {
         try {
             const trancaCadastrada = await new TrancaService().cadastrarTranca(req.body as NovaTrancaDTO);
-            res.status(200).json(trancaCadastrada);
+            res.status(201).json(trancaCadastrada);
         }catch (error){
             res.status(500).json({ message: 'Tranca not created' });
         }

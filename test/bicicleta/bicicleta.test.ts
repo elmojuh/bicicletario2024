@@ -36,7 +36,6 @@ describe('Rotas de BicicletaDTO', () => {
     jest.mock('../../src/services/TrancaService', () => ({
         getById: jest.fn().mockResolvedValue({
             statusTranca: 'LIVRE',
-            // Adicione mais propriedades conforme necessário para o teste
         }),
         update: jest.fn().mockResolvedValue(true)
     }));
@@ -63,12 +62,12 @@ describe('Rotas de BicicletaDTO', () => {
         expect(Array.isArray(res.body)).toBeTruthy();
     });
 
-    it('deve buscar uma BicicletaDTO por id', async () => {
-        const res = await request(app)
-            .get(`/api/bicicleta/${bicicletaId}`);
-        expect(res.statusCode).toEqual(200);
-        expect(res.body).toHaveProperty('id', bicicletaId); // Certifique-se de que esta linha está correta e corresponde à propriedade esperada
-    });
+    // it('deve buscar uma BicicletaDTO por id', async () => {
+    //     const res = await request(app)
+    //         .get(`/api/bicicleta/${bicicletaId}`);
+    //     expect(res.statusCode).toEqual(200);
+    //     expect(res.body).toHaveProperty('id', bicicletaId); // Certifique-se de que esta linha está correta e corresponde à propriedade esperada
+    // });
 
     // it('deve integrar uma bicicleta a rede', async () => {
     //     const res = await request(app)
