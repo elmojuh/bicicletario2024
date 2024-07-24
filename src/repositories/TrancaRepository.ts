@@ -6,7 +6,7 @@ export class TrancaRepository {
     private static trancas: Tranca[] = [];
     private static nextId = 1;
 
-    static async create(trancaDTO: NovaTrancaDTO): Promise<Tranca> {
+    static create(trancaDTO: NovaTrancaDTO): Tranca {
         const trancaData = TrancaMapper.DTOtoEntity(trancaDTO);
         const newTranca = new Tranca(
             this.nextId++,

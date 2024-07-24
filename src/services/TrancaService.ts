@@ -5,7 +5,7 @@ import {TrancaMapper} from "../mapper/TrancaMapper";
 
 export class TrancaService {
     async cadastrarTranca(dto: NovaTrancaDTO) {
-        const savedTranca = await TrancaRepository.create(dto);
+        const savedTranca = TrancaRepository.create(dto);
         return savedTranca.toJSON();
     }
 
@@ -15,7 +15,7 @@ export class TrancaService {
 
     async getById(id: string ): Promise<any> {
         const idNumber = parseInt(id, 10);
-        const tranca = await TrancaRepository.getById(idNumber);
+        const tranca = TrancaRepository.getById(idNumber);
         if(!tranca){
             throw new Error('Tranca não encontrada');
         }

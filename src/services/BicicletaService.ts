@@ -13,13 +13,13 @@ import {Constantes} from "../entities/constants/Constantes";
 export class BicicletaService {
 
     async create(dto: NovaBicicletaDTO): Promise<any> {
-        const savedBicicleta = await BicicletaRepository.create(dto);
+        const savedBicicleta = BicicletaRepository.create(dto);
         return savedBicicleta.toJSON();
     }
 
     async getById(id: string): Promise<any> {
         const idNumber = parseInt(id, 10);
-        const bicicleta = await BicicletaRepository.getById(idNumber);
+        const bicicleta = BicicletaRepository.getById(idNumber);
         if (!bicicleta) {
             throw new Error('Bicicleta não encontrada');
         }
@@ -33,7 +33,7 @@ export class BicicletaService {
 
     async integrarNaRede(dto: IntegrarBicicletaNaRedeDTO) : Promise<any>{
         const idBicicleta = dto.idBicicleta;
-        const bicicleta = await BicicletaRepository.getById(idBicicleta);
+        const bicicleta = BicicletaRepository.getById(idBicicleta);
         if(!bicicleta){
             throw new Error('Bicicleta não encontrada');
         }
@@ -60,14 +60,14 @@ export class BicicletaService {
 
         bicicleta.statusBicicleta = StatusBicicleta.DISPONIVEL;
         bicicleta.dataInsercaoTranca = new Date().toISOString();
-        await BicicletaRepository.update(idBicicleta, bicicleta);
+        BicicletaRepository.update(idBicicleta, bicicleta);
 
         tranca.statusTranca = StatusTranca.OCUPADA;
-        trancaService.update(idTranca, tranca);
+        await trancaService.update(idTranca, tranca);
 
         const emailService = new EmailService();
         try {
-            emailService.enviarEmailParaReparador(dto.idFuncionario);
+            await emailService.enviarEmailParaReparador(dto.idFuncionario);
         } catch (e) {
             throw new Error(Constantes.ERROR_ENVIAR_EMAIL);
         }
