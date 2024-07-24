@@ -1,9 +1,6 @@
 import { Request, Response } from 'express';
 import { TrancaService } from '../services/TrancaService';
-import { IntegrarBicicletaNaRedeDTO } from "../entities/dto/IntegrarBicicletaNaRedeDTO";
-import { RetirarTrancaDaRedeDTO } from "../entities/dto/RetirarTrancaDaRedeDTO";
 import { NovaTrancaDTO } from "../entities/dto/NovaTrancaDTO";
-import { Tranca } from "../entities/Tranca";
 
 export class TrancaController {
 

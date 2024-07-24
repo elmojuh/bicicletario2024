@@ -1,4 +1,3 @@
-// src/controllers/BicicletaController.ts
 import { Request, Response } from 'express';
 import { BicicletaService } from '../services/BicicletaService';
 import {IntegrarBicicletaNaRedeDTO} from "../entities/dto/IntegrarBicicletaNaRedeDTO";

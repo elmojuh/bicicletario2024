@@ -1,4 +1,3 @@
-import {Bicicleta} from "../Bicicleta";
 import {StatusBicicleta} from "../enums/StatusBicicleta";
 
 export class BicicletaDTO {
