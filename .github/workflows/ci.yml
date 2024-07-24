@@ -61,6 +61,6 @@ jobs:
         with:
           args: >
             -Dsonar.projectKey=elmojuh_bicicletario2024
-            -Dsonar.organization=elmojuh-github
+            -Dsonar.organization=elmojuh
             -Dsonar.sources=.
             -Dsonar.host.url=https://sonarcloud.io
