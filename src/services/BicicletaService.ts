@@ -12,14 +12,17 @@ import {Constantes} from "../entities/constants/Constantes";
 
 export class BicicletaService {
 
-    async create(dto: NovaBicicletaDTO) : Promise<any> {
-        const bicicleta = BicicletaMapper.DTOtoEntity(dto);
-        const savedBicicleta = await BicicletaRepository.create(bicicleta);
+    async create(dto: NovaBicicletaDTO): Promise<any> {
+        const savedBicicleta = await BicicletaRepository.create(dto);
         return savedBicicleta.toJSON();
     }
 
-    async getById(id: string) : Promise<any>{
-        const bicicleta = await BicicletaRepository.getById(id);
+    async getById(id: string): Promise<any> {
+        const idNumber = parseInt(id, 10);
+        const bicicleta = await BicicletaRepository.getById(idNumber);
+        if (!bicicleta) {
+            throw new Error('Bicicleta não encontrada');
+        }
         return bicicleta.toJSON();
     }
 
@@ -29,7 +32,7 @@ export class BicicletaService {
 
 
     async integrarNaRede(dto: IntegrarBicicletaNaRedeDTO) : Promise<any>{
-        const idBicicleta = dto.idBicicleta.toString();
+        const idBicicleta = dto.idBicicleta;
         const bicicleta = await BicicletaRepository.getById(idBicicleta);
         if(!bicicleta){
             throw new Error('Bicicleta não encontrada');
@@ -38,9 +41,10 @@ export class BicicletaService {
             throw new Error('Bicicleta não pode ser integrada na rede');
         }
 
-        const idTranca = dto.idTranca.toString();
+        const idTranca = dto.idTranca;
         const trancaService = new TrancaService();
-        const tranca = await trancaService.getById(idTranca);
+        const idString = idTranca.toString();
+        const tranca = await trancaService.getById(idString);
         if(!tranca){
             throw new Error('Tranca não encontrada');
         }

@@ -17,14 +17,4 @@ export class BicicletaDTO {
         this.numero = numero;
         this.status = status;
     }
-
-    static toEntity(dto: BicicletaDTO): Bicicleta {
-        return new Bicicleta(
-            dto.marca,
-            dto.modelo,
-            dto.ano,
-            dto.numero,
-            StatusBicicleta[dto.status as keyof typeof StatusBicicleta]
-        );
-    }
 }

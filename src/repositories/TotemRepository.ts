@@ -1,41 +1,40 @@
-// src/repositories/TotemRepository.ts
-import {NovoTotemDTO} from "../entities/dto/NovoTotemDTO";
-import TotemModel from "../db/mongoDB/TotemModel";
-import {Totem} from "../entities/Totem";
-import {TotemMapper} from "../mapper/TotemMapper";
+import { Totem } from "../entities/Totem";
+import { TotemMapper } from "../mapper/TotemMapper";
+import { NovoTotemDTO } from "../entities/dto/NovoTotemDTO";
 
 export class TotemRepository {
-    static async create(totemData: Totem): Promise<Totem> {
-        try {
-            const totemToSave = new TotemModel({
-                localizacao: totemData.localizacao,
-                descricao: totemData.descricao
-            });
-            await totemToSave.save();
-            const totemResponse = TotemMapper.ModelToEntitie(totemToSave);
-            return totemResponse;
-        }catch (error) {
-            console.error("Erro ao criar totem no banco:", error);
-            throw error;
-        }
+    private static totens: Totem[] = [];
+    private static nextId = 1;
+
+    static create(totemDTO: NovoTotemDTO): Totem {
+        const totemData = TotemMapper.DTOtoEntity(totemDTO);
+        const newTotem = new Totem(
+            this.nextId++,
+            totemData.localizacao,
+            totemData.descricao
+        );
+        this.totens.push(newTotem);
+        return newTotem;
     }
 
-    static async getAll() {
-        return TotemModel.find().exec();
+    static getAll(): Totem[] {
+        return this.totens;
     }
 
-    static async getById(id: string): Promise<Totem>{
-        const totem = await TotemModel.findById(id).exec();
-        const totemEntitie = TotemMapper.ModelToEntitie(totem);
-        return totemEntitie;
+    static getById(id: number): Totem | undefined {
+        return this.totens.find(totem => totem.id === id);
     }
 
-    static async getTrancas(id: string){
-        return TotemModel.findById(id).populate('trancas').exec();
+    static update(id: number, totemData: Partial<Totem>): Totem | undefined {
+        const totem = this.totens.find(t => t.id === id);
+        if (!totem) return undefined;
+        totem.atualizar(totemData);
+        return totem;
     }
 
-    static async getBicicletas(id: string){
-        return TotemModel.findById(id).populate('bicicletas').exec();
+    static delete(id: number): boolean {
+        const lengthBefore = this.totens.length;
+        this.totens = this.totens.filter(totem => totem.id !== id);
+        return this.totens.length < lengthBefore;
     }
-
 }

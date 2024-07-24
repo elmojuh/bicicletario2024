@@ -4,22 +4,25 @@ import {NovaTrancaDTO} from "../entities/dto/NovaTrancaDTO";
 import {TrancaMapper} from "../mapper/TrancaMapper";
 
 export class TrancaService {
-    async cadastrarTranca(trancaData: NovaTrancaDTO) {
-        const tranca = TrancaMapper.NovoDTOtoEntity(trancaData);
-        const trancaSaved = await TrancaRepository.create(tranca);
-        const trancaResponse = TrancaMapper.ModelToResponse(trancaSaved);
-        return trancaResponse;
+    async cadastrarTranca(dto: NovaTrancaDTO) {
+        const savedTranca = await TrancaRepository.create(dto);
+        return savedTranca.toJSON();
     }
 
     async listarTrancas() {
         return TrancaRepository.getAll();
     }
 
-    async getById(id: string): Promise<any> {
-        return TrancaRepository.getById(id);
+    async getById(id: string ): Promise<any> {
+        const idNumber = parseInt(id, 10);
+        const tranca = await TrancaRepository.getById(idNumber);
+        if(!tranca){
+            throw new Error('Tranca não encontrada');
+        }
+        return tranca;
     }
 
-    async update(id: string, trancaData: any) {
+    async update(id: number, trancaData: any) {
         return TrancaRepository.update(id, trancaData);
     }
 

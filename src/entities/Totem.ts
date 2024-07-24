@@ -2,7 +2,8 @@ export class Totem {
     private _id : number | undefined;
     private _localizacao : string;
     private _descricao : string;
-    constructor(localizacao: string, descricao: string) {
+    constructor(id: number, localizacao: string, descricao: string) {
+        this._id = id;
         this._localizacao = localizacao;
         this._descricao = descricao;
     }
@@ -29,6 +30,14 @@ export class Totem {
             id: this._id,
             localizacao: this._localizacao,
             descricao: this._descricao
+        }
+    }
+    atualizar(dados: Partial<Totem>): void{
+        if (dados.localizacao) {
+            this.localizacao = dados.localizacao;
+        }
+        if (dados.descricao) {
+            this.descricao = dados.descricao;
         }
     }
 }

@@ -1,41 +1,43 @@
-// src/repositories/TrancaRepository.ts
-import TrancaModel from '../db/mongoDB/TrancaModel';
-import {Tranca} from "../entities/Tranca";
-import {TrancaMapper} from "../mapper/TrancaMapper";
+import { Tranca } from "../entities/Tranca";
+import { TrancaMapper } from "../mapper/TrancaMapper";
+import {NovaTrancaDTO} from "../entities/dto/NovaTrancaDTO";
 
 export class TrancaRepository {
-    static async create(trancaData: Tranca) {
-        try{
-            if(!trancaData.numero || !trancaData.localizacao || !trancaData.anoDeFabricacao || !trancaData.modelo || !trancaData.statusTranca){
-                throw new Error("Campos obrigatórios não preenchidos");
-            }
-            const trancaToSave = new TrancaModel({
-                numero: trancaData.numero,
-                localizacao: trancaData.localizacao,
-                anoDeFabricacao: trancaData.anoDeFabricacao,
-                modelo: trancaData.modelo,
-                status: trancaData.statusTranca,
-            });
-            await trancaToSave.save();
-            return trancaToSave;
-        }catch (error) {
-            console.error("Erro ao criar tranca no banco:", error);
-            throw error;
-        }
+    private static trancas: Tranca[] = [];
+    private static nextId = 1;
+
+    static async create(trancaDTO: NovaTrancaDTO): Promise<Tranca> {
+        const trancaData = TrancaMapper.DTOtoEntity(trancaDTO);
+        const newTranca = new Tranca(
+            this.nextId++,
+            trancaData.numero,
+            trancaData.localizacao,
+            trancaData.anoDeFabricacao,
+            trancaData.modelo,
+            trancaData.statusTranca
+        );
+        this.trancas.push(newTranca);
+        return newTranca;
     }
 
-    static async getAll() {
-        return TrancaModel.find().exec();
+    static getAll(): Tranca[] {
+        return this.trancas;
     }
 
-    static async getById(id: string){
-        const tranca = TrancaModel.findById(id).exec();
-        const trancaEntitie = TrancaMapper.ModelToEntitie(tranca);
-        return trancaEntitie;
+    static getById(id: number): Tranca | undefined {
+        return this.trancas.find(tranca => tranca.id === id);
     }
 
-    static async update(id: string, trancaData: any) {
-        return TrancaModel.findByIdAndUpdate(id, trancaData, {new: true}).exec();
+    static update(id: number, trancaData: Partial<Tranca>): Tranca | undefined {
+        const tranca = this.trancas.find(t => t.id === id);
+        if (!tranca) return undefined;
+        tranca.atualizar(trancaData);
+        return tranca;
     }
 
+    static delete(id: number): boolean {
+        const lengthBefore = this.trancas.length;
+        this.trancas = this.trancas.filter(tranca => tranca.id !== id);
+        return this.trancas.length < lengthBefore;
+    }
 }

@@ -3,32 +3,36 @@ import {Bicicleta} from "./Bicicleta";
 import {Totem} from "./Totem";
 
 export class Tranca {
-    private _id?: number;
-    private _bicicleta?: Bicicleta;
+    private _id: number;
+    private _bicicleta: Bicicleta | null;
     private _numero: number;
     private _localizacao: string;
     private _anoDeFabricacao: string;
     private _modelo: string;
     private _statusTranca: StatusTranca;
-    private _dataInsercaoTotem?: string;
-    private _totem?: Totem;
-    constructor(numero: number, localizacao: string, anoDeFabricacao: string, modelo: string, statusTranca: StatusTranca) {
+    private _dataInsercaoTotem: string;
+    private _totem: Totem | null;
+    constructor(id: number, numero: number, localizacao: string, anoDeFabricacao: string, modelo: string, statusTranca: StatusTranca) {
+        this._id = id;
+        this._bicicleta = null
         this._numero = numero;
         this._localizacao = localizacao;
         this._anoDeFabricacao = anoDeFabricacao;
         this._modelo = modelo;
         this._statusTranca = statusTranca;
+        this._dataInsercaoTotem = '';
+        this._totem = null;
     }
-    get id(): number | undefined{
+    get id(): number{
         return this._id;
     }
-    set id(value: number | undefined) {
+    set id(value: number) {
         this._id = value;
     }
-    get bicicleta(): Bicicleta | undefined {
+    get bicicleta(): Bicicleta | null {
         return this._bicicleta;
     }
-    set bicicleta(value: Bicicleta | undefined) {
+    set bicicleta(value: Bicicleta) {
         this._bicicleta = value;
     }
     get numero(): number {
@@ -43,16 +47,16 @@ export class Tranca {
     set statusTranca(value: StatusTranca) {
         this._statusTranca = value;
     }
-    get dataInsercaoTotem(): string | undefined {
+    get dataInsercaoTotem(): string {
         return this._dataInsercaoTotem;
     }
-    set dataInsercaoTotem(value: string | undefined) {
+    set dataInsercaoTotem(value: string) {
         this._dataInsercaoTotem = value;
     }
-    get totem(): Totem | undefined {
+    get totem(): Totem | null{
         return this._totem;
     }
-    set totem(value: Totem | undefined) {
+    set totem(value: Totem) {
         this._totem = value;
     }
     get localizacao(): string {
@@ -84,6 +88,23 @@ export class Tranca {
             statusTranca: this._statusTranca,
             dataInsercaoTotem: this._dataInsercaoTotem,
             totem: this._totem
+        }
+    }
+    atualizar(dados: Partial<Tranca>): void{
+        if (dados.numero) {
+            this.numero = dados.numero;
+        }
+        if (dados.localizacao) {
+            this.localizacao = dados.localizacao;
+        }
+        if (dados.anoDeFabricacao) {
+            this.anoDeFabricacao = dados.anoDeFabricacao;
+        }
+        if (dados.modelo) {
+            this.modelo = dados.modelo;
+        }
+        if (dados.statusTranca) {
+            this.statusTranca = dados.statusTranca;
         }
     }
 }

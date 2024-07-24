@@ -1,43 +1,44 @@
-// src/repositories/BicicletaRepository.ts
-import BicicletaModel from '../db/mongoDB/BicicletaModel';
-import {Bicicleta} from "../entities/Bicicleta";
+import { Bicicleta } from "../entities/Bicicleta";
 import {BicicletaMapper} from "../mapper/BicicletaMapper";
+import {NovaBicicletaDTO} from "../entities/dto/NovaBicicletaDTO";
 
 export class BicicletaRepository {
-    static async create(bicicletaData: Bicicleta): Promise<Bicicleta>{
-        try {
-            const bicicletaToSave = new BicicletaModel({
-                marca: bicicletaData.marca,
-                modelo: bicicletaData.modelo,
-                ano: bicicletaData.ano,
-                numero: bicicletaData.numero,
-                status: bicicletaData.statusBicicleta,
-                dataInsercaoTranca: bicicletaData.dataInsercaoTranca
-            });
-            await bicicletaToSave.save();
-            const bicicletaResponse = BicicletaMapper.ModelToEntitie(bicicletaToSave)
-            return bicicletaResponse;
-        } catch (error) {
-            console.error("Erro ao criar bicicleta no banco:", error);
-            throw error;
-        }
+    private static bicicletas: Bicicleta[] = [];
+    private static nextId = 1;
+
+    static create(bicicletaDTO: NovaBicicletaDTO): Bicicleta {
+        const bicicletaData = BicicletaMapper.DTOtoEntity(bicicletaDTO);
+        const newBicicleta = new Bicicleta(
+            this.nextId++,
+            bicicletaData.marca,
+            bicicletaData.modelo,
+            bicicletaData.ano,
+            bicicletaData.numero,
+            bicicletaData.statusBicicleta
+        );
+        this.bicicletas.push(newBicicleta);
+        return newBicicleta;
     }
 
-    static getAll() {
-        return BicicletaModel.find().exec();
+    static getAll(): Bicicleta[] {
+        return this.bicicletas;
     }
 
-    static async getById(id: string) : Promise<Bicicleta> {
-        const bicicleta = await BicicletaModel.findById(id).exec();
-        const bicicletaEntitie = BicicletaMapper.ModelToEntitie(bicicleta);
-        return bicicletaEntitie;
+    static getById(id: number): Bicicleta | undefined {
+        return this.bicicletas.find(bicicleta => bicicleta.id === id);
     }
 
-    static async update(id: string, bicicletaData: any) {
-        return BicicletaModel.findByIdAndUpdate(id, bicicletaData, { new: true }).exec();
+    static update(id: number, bicicletaData: Partial<Bicicleta>): Bicicleta | undefined {
+        const bicicleta = this.bicicletas.find(b => b.id === id);
+        if (!bicicleta) return undefined;
+        bicicleta.atualizar(bicicletaData);
+        return bicicleta;
     }
 
-    static async delete(id: string) {
-        return BicicletaModel.findByIdAndDelete(id).exec();
+    static delete(id: string): boolean {
+        const numericId = parseInt(id, 10);
+        const lengthBefore = this.bicicletas.length;
+        this.bicicletas = this.bicicletas.filter(bicicleta => bicicleta.id !== numericId);
+        return this.bicicletas.length < lengthBefore;
     }
 }

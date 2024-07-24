@@ -16,7 +16,11 @@ export class TotemService {
         return savedTotem.toJSON();
     }
     async getById(id: string) : Promise<any>{
-        const totem = await TotemRepository.getById(id);
+        const idNumber = parseInt(id, 10);
+        const totem = await TotemRepository.getById(idNumber);
+        if (!totem) {
+            throw new Error('Totem não encontrado');
+        }
         return totem.toJSON();
     }
 
