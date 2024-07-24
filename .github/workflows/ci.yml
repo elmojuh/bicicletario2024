@@ -1,4 +1,4 @@
-name: CI
+name: CI/CD to Google Cloud
 
 on:
   push:
@@ -41,7 +41,7 @@ jobs:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
       - name: Deploy to Server
         run: |
-          ssh -o StrictHostKeyChecking=no elmosanchesjr@gmail.com <<EOF
+          ssh -o StrictHostKeyChecking=no elmosanchesjr@34.95.254.151 <<EOF
             cd /var/www/bicicletario2024
             git pull
             npm install
