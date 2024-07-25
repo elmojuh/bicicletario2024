@@ -13,6 +13,7 @@ import {FuncionarioService} from "../../src/services/FuncionarioService";
 import {TrancaService} from "../../src/services/TrancaService";
 import {TotemService} from "../../src/services/TotemService";
 import {EmailService} from "../../src/services/EmailService";
+import {RetirarBicicletaDaRedeDTO} from "../../src/entities/dto/RetirarBicicletaDaRedeDTO";
 
 jest.mock('../../src/services/BicicletaService');
 jest.mock('../../src/services/FuncionarioService');
@@ -248,4 +249,75 @@ describe('Rotas de Bicicleta em Controller', () => {
         expect(res.statusCode).toBe(404);
     });
 
+    it('deve integrar bicicleta na rede', async () => {
+        const dto = new IntegrarBicicletaNaRedeDTO(1, 1, 1);
+        const bicicleta = new Bicicleta(1, 'Marca de Teste', 'Modelo de Teste', '2023', 12344, StatusBicicleta.NOVA);
+        const tranca = new Tranca(1, 12344, 'localizacao', '1998', 'modelo', StatusTranca.LIVRE,);
+
+        bicicletaServiceMock.prototype.getById = jest.fn().mockResolvedValue(bicicleta);
+        bicicletaServiceMock.prototype.alterarStatus = jest.fn().mockResolvedValue(bicicleta);
+        bicicletaServiceMock.prototype.integrarNaRede = jest.fn().mockResolvedValue(bicicleta);
+        funcionarioServiceMock.isFuncionarioValido = jest.fn().mockResolvedValue(true);
+
+        const res = await request(app)
+            .post('/api/bicicleta/integrarNaRede')
+            .send(dto);
+        expect(res.statusCode).toBe(200);
+    });
+
+    it('deve retornar erro ao integrar bicicleta na rede com dados inválidos', async () => {
+        const dto = new IntegrarBicicletaNaRedeDTO(1, 1, 1);
+        bicicletaServiceMock.prototype.integrarNaRede = jest.fn().mockRejectedValue(new Error(Constantes.ERRO_INTEGRAR_BICICLETA));
+
+        const res = await request(app)
+            .post('/api/bicicleta/integrarNaRede')
+            .send(dto);
+        expect(res.statusCode).toBe(422);
+    });
+
+    it ('deve retornar erro ao integrar bicicleta na rede', async () => {
+        const dto = new IntegrarBicicletaNaRedeDTO(1, 1, 1);
+        bicicletaServiceMock.prototype.integrarNaRede = jest.fn().mockRejectedValue(new Error(Constantes.BICICLETA_NAO_ENCONTRADA));
+
+        const res = await request(app)
+            .post('/api/bicicleta/integrarNaRede')
+            .send(dto);
+        expect(res.statusCode).toBe(422);
+    });
+
+    it('deve retirar bicicleta da rede', async () => {
+        const dto = new RetirarBicicletaDaRedeDTO(1, 1, 1, 'EM_REPARO');
+        const bicicleta = new Bicicleta(1, 'Marca de Teste', 'Modelo de Teste', '2023', 12344, StatusBicicleta.NOVA);
+        const tranca = new Tranca(1, 12344, 'localizacao', '1998', 'modelo', StatusTranca.LIVRE,);
+
+        bicicletaServiceMock.prototype.getById = jest.fn().mockResolvedValue(bicicleta);
+        bicicletaServiceMock.prototype.alterarStatus = jest.fn().mockResolvedValue(bicicleta);
+        bicicletaServiceMock.prototype.integrarNaRede = jest.fn().mockResolvedValue(bicicleta);
+        funcionarioServiceMock.isFuncionarioValido = jest.fn().mockResolvedValue(true);
+
+        const res = await request(app)
+            .post('/api/bicicleta/retirarDaRede')
+            .send(dto);
+        expect(res.statusCode).toBe(200);
+    });
+
+    it('deve retornar erro ao retirar bicicleta da rede com dados inválidos', async () => {
+        const dto = new RetirarBicicletaDaRedeDTO(1, 1, 1, 'EM_REPARO');
+        bicicletaServiceMock.prototype.retirarDaRede = jest.fn().mockRejectedValue(new Error(Constantes.ERRO_RETIRAR_BICICLETA));
+
+        const res = await request(app)
+            .post('/api/bicicleta/retirarDaRede')
+            .send(dto);
+        expect(res.statusCode).toBe(422);
+    });
+
+    it('deve retornar erro ao retirar bicicleta da rede', async () => {
+        const dto = new RetirarBicicletaDaRedeDTO(1, 1, 1, 'EM_REPARO');
+        bicicletaServiceMock.prototype.retirarDaRede = jest.fn().mockRejectedValue(new Error(Constantes.BICICLETA_NAO_ENCONTRADA));
+
+        const res = await request(app)
+            .post('/api/bicicleta/retirarDaRede')
+            .send(dto);
+        expect(res.statusCode).toBe(422);
+    });
 });

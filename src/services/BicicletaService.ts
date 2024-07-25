@@ -90,7 +90,7 @@ export class BicicletaService {
         try {
             await emailService.enviarEmailParaReparador(dto.idFuncionario);
         } catch (e) {
-            throw new Error("", Constantes.ERROR_ENVIAR_EMAIL);
+            throw new Error("422", Constantes.ERROR_ENVIAR_EMAIL);
         }
     }
 
