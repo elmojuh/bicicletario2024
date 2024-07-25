@@ -1,4 +1,3 @@
-// test/totem/totemController.test.ts
 import request from 'supertest';
 import app from '../../src/server';
 

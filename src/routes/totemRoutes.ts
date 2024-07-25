@@ -11,5 +11,9 @@ export class TotemRouter {
 
     this.router.route('/').post(controller.cadastrarTotem);
     this.router.route('/').get(controller.listarTotens);
+    this.router.route('/:id').put(controller.editarTotem);
+    this.router.route('/:id').delete(controller.removerTotem);
+    this.router.route('/:id/trancas').get(controller.listarTrancas);
+    this.router.route('/:id/bicicletas').get(controller.listarBicicletas);
   }
 }

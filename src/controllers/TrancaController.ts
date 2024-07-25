@@ -19,16 +19,6 @@ export class TrancaController {
         }
     }
 
-    async buscarPorId(req: Request, res: Response) {
-        try {
-            const id = parseInt(req.params.id);
-            const tranca = await new TrancaService().getById(id);
-            res.json(tranca);
-        } catch (error) {
-            res.status(422).json({ message: 'Tranca not found' });
-        }
-    }
-
     async listarTrancas(req: Request, res: Response) {
         try{
             const trancas = await new TrancaService().listarTrancas();

@@ -1,4 +1,3 @@
-// src/routes/bicicletaRoutes.ts
 import { Router } from 'express';
 import {BicicletaController} from '../controllers/BicicletaController';
 
@@ -16,5 +15,6 @@ export class BicicletaRouter {
     this.router.route('/:id').delete(controller.removerBicicleta);
     this.router.route('/integrarNaRede').post(controller.integrarNaRede);
     this.router.route('/retirarDaRede').post(controller.retirarDaRede);
+    this.router.route('/:idBicicleta/status/:acao').get(controller.alterarStatusDaBicicleta);
   }
 }
