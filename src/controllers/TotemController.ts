@@ -2,16 +2,17 @@ import { Request, Response } from 'express';
 import { TotemService } from '../services/TotemService';
 import { NovoTotemDTO } from '../entities/dto/NovoTotemDTO';
 import {Totem} from "../entities/Totem";
+import {Constantes} from "../entities/constants/Constantes";
 
 export class TotemController {
 
     async listarTotens(req: Request, res: Response) {
         try {
             const totens = await new TotemService().listarTotens();
-            const totensJson = totens.map(totem => totem.toJSON());
+            const totensJson = totens.map(totem => totem.toResponseJSON());
             res.json(totensJson);
         } catch (error) {
-            res.status(500).json({ message: 'Error listing Totems' });
+            res.status(422).json(error);
         }
     }
 
@@ -19,10 +20,10 @@ export class TotemController {
         try {
             const totemDTO: NovoTotemDTO = req.body;
             const totemCadastrado = await new TotemService().cadastrarTotem(totemDTO);
-            const totemJson = totemCadastrado.toJSON();
+            const totemJson = totemCadastrado.toResponseJSON();
             res.status(201).json(totemJson);
         } catch (error) {
-            res.status(422).json({ message: 'Error cadastred Trancas' });
+            res.status(422).json(error);
         }
     }
 
@@ -33,7 +34,7 @@ export class TotemController {
             const totemEditado = await new TotemService().editarTotem(idTotem, totem);
             res.json(totemEditado);
         } catch (error) {
-            res.status(422).json({ message: 'Error edit Totem' });
+            res.status(422).json(error);
         }
     }
 
@@ -41,9 +42,9 @@ export class TotemController {
         try {
             const idTotem = parseInt(req.params.id);
             const totem = await new TotemService().removerTotem(idTotem);
-            res.json({ message: 'Totem removido' });
+            res.json({ message: Constantes.TOTEM_REMOVIDO });
         } catch (error) {
-            res.status(422).json({ message: 'Error removing Totem' });
+            res.status(422).json(error);
         }
     }
 
@@ -53,7 +54,7 @@ export class TotemController {
             const trancas = await new TotemService().listarTrancas(idTotem);
             res.json(trancas);
         } catch (error) {
-            res.status(500).json({ message: 'Error listing Trancas' });
+            res.status(422).json(error);
         }
     }
 
@@ -62,8 +63,9 @@ export class TotemController {
             const idTotem = parseInt(req.params.id);
             const bicicletas = await new TotemService().listarBicicletas(idTotem);
             res.json(bicicletas);
+            res.json(bicicletas);
         } catch (error) {
-            res.status(500).json({ message: 'Error listing Bicicletas' });
+            res.status(422).json(error);
         }
     }
 }

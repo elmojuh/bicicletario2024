@@ -1,4 +1,4 @@
-// test/tranca/tranca.test.ts
+// test/tranca/trancaController.test.ts
 import request from 'supertest';
 import app from '../../src/server';
 

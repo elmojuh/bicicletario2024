@@ -14,7 +14,6 @@ export default class AppRoutes {
 
     private initializeMiddlewares(): void {
         this.router.use((req, res, next) => {
-            console.log(`Received request for ${req.path}`);
             next();
         });
     }

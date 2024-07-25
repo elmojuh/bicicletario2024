@@ -5,16 +5,17 @@ import { Tranca } from "../entities/Tranca";
 import {IntegrarBicicletaNaRedeDTO} from "../entities/dto/IntegrarBicicletaNaRedeDTO";
 import {IntegrarTrancaNaRedeDTO} from "../entities/dto/IntegrarTrancaNaRedeDTO";
 import {RetirarTrancaDaRedeDTO} from "../entities/dto/RetirarTrancaDaRedeDTO";
+import {Constantes} from "../entities/constants/Constantes";
 
 export class TrancaController {
 
     async cadastrarTranca(req: Request, res: Response) {
         try {
             const trancaCadastrada = await new TrancaService().cadastrarTranca(req.body as NovaTrancaDTO);
-            const trancaJson = trancaCadastrada.toJSON();
+            const trancaJson = trancaCadastrada.toResponseJSON();
             res.status(201).json(trancaJson);
         }catch (error){
-            res.status(500).json({ message: 'Tranca not created' });
+            res.status(422).json({ message: 'Tranca not created' });
         }
     }
 
@@ -24,7 +25,7 @@ export class TrancaController {
             const tranca = await new TrancaService().getById(id);
             res.json(tranca);
         } catch (error) {
-            res.status(500).json({ message: 'Tranca not found' });
+            res.status(422).json({ message: 'Tranca not found' });
         }
     }
 
@@ -33,14 +34,14 @@ export class TrancaController {
             const trancas = await new TrancaService().listarTrancas();
             res.json(trancas);
         }catch (error){
-            res.status(500).json({ message: 'Trancas not listed' });
+            res.status(422).json({ message: 'Trancas not listed' });
         }
     }
 
     async integrarNaRede(req: Request, res: Response) {
         try {
             await new TrancaService().integrarNaRede(req.body as IntegrarTrancaNaRedeDTO);
-            res.status(200).json("Dados cadastrados");
+            res.status(200).json(Constantes.DADOS_CADASTRADOS);
         } catch (error) {
             res.status(422).json((error as Error).message);
         }
@@ -50,47 +51,52 @@ export class TrancaController {
     async retirarDaRede(req: Request, res: Response) {
         try {
             await new TrancaService().retirarDaRede(req.body as RetirarTrancaDaRedeDTO);
-            res.status(200).json("Tranca foi retirada com sucesso!");
+            res.status(200).json(Constantes.DADOS_CADASTRADOS);
         } catch (error) {
             res.status(422).json((error as Error).message);
         }
     }
-    //
-    //
-    // async obterTranca(req: Request, res: Response) {
-    //     try{
-    //         const tranca = await new TrancaService().obterTranca(req.params.idTranca);
-    //         res.json(tranca);
-    //     }catch (error){
-    //         res.status(500).json({ message: 'Tranca not found' });
-    //     }
-    // }
-    //
-    // async editarTranca(req: Request, res: Response) {
-    //     try{
-    //         const trancaEditada = await new TrancaService().editarTranca(req.params.idTranca, req.body as NovaTrancaDTO);
-    //         res.json(trancaEditada);
-    //     }catch (error){
-    //         res.status(500).json({ message: 'Tranca not edited' });
-    //     }
-    // }
-    //
-    // async removerTranca(req: Request, res: Response) {
-    //     try {
-    //         const tranca = await new TrancaService().obterTranca(req.params.idTranca);
-    //         res.json(tranca);
-    //     } catch (error) {
-    //         res.status(500).json({ message: 'Tranca not found' });
-    //     }
-    // }
-    //
+
+
+    async obterTranca(req: Request, res: Response) {
+        try{
+            const id = parseInt(req.params.idTranca);
+            const tranca = await new TrancaService().getById(id);
+            res.json(tranca).json(Constantes.TRANCA_ENCONTRADA);
+        }catch (error){
+            res.status(422).json({ message: 'Tranca not found' });
+        }
+    }
+
+    async editarTranca(req: Request, res: Response) {
+        try{
+            const id = parseInt(req.params.id);
+            const data = req.body;
+            const tranca = await new TrancaService().update(id, data);
+            const trancaJson = tranca.toResponseJSON();
+            res.json(trancaJson);
+        }catch (error){
+            res.status(422).json(error);
+        }
+    }
+
+    async removerTranca(req: Request, res: Response) {
+        try {
+            const id = parseInt(req.params.idTranca);
+            const tranca = await new TrancaService().removerTranca(id);
+            res.json(tranca).json(Constantes.TRANCA_REMOVIDA);
+        } catch (error) {
+            res.status(422).json(error);
+        }
+    }
+
     async obterBicicletaNaTranca(req: Request, res: Response) {
         try {
             const id = parseInt(req.params.idTranca);
             const bicicleta = await new TrancaService().obterBicicletaNaTranca(id);
-            res.json(bicicleta);
+            res.json(bicicleta).json(Constantes.BICICLETA_ENCONTRADA);
         }catch (error){
-            res.status(500).json({ message: 'Bicicleta not found' });
+            res.status(422).json(error);
         }
     }
 
@@ -99,9 +105,9 @@ export class TrancaController {
             const id = parseInt(req.params.id);
             const idBicicleta = parseInt(req.body.bicicleta);
             await new TrancaService().trancarTranca(id, idBicicleta);
-            res.status(200).json({ message: 'Tranca trancada com sucesso' });
+            res.status(200).json(Constantes.ACAO_BEM_SUCEDIDA);
         } catch (error) {
-            res.status(500).json({ message: 'Tranca fail' });
+            res.status(422).json(error);
         }
     }
 
@@ -110,9 +116,9 @@ export class TrancaController {
             const id = parseInt(req.params.id);
             const idBicicleta = parseInt(req.body.bicicleta);
             await new TrancaService().destrancarTranca(id, idBicicleta);
-            res.status(200).json("Ação bem sucedida");
+            res.status(200).json(Constantes.ACAO_BEM_SUCEDIDA);
         }catch (error){
-            res.status(500).json({ message: 'Error destrancando' });
+            res.status(422).json(error);
         }
     }
 
@@ -121,9 +127,9 @@ export class TrancaController {
             const idTranca = parseInt(req.params.idTranca);
             const acao = req.params.acao
             const tranca = await new TrancaService().alterarStatus(idTranca, acao);
-            res.status(200).json(tranca);
+            res.status(200).json(tranca).json(Constantes.ACAO_BEM_SUCEDIDA);
         }catch (error){
-            res.status(500).json({ message: 'Error changing status' });
+            res.status(422).json(error);
         }
     }
 }

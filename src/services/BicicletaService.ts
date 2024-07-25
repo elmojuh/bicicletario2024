@@ -22,7 +22,7 @@ export class BicicletaService {
     async getById(id: number): Promise<Bicicleta> {
         const bicicleta = BicicletaRepository.getById(id);
         if (!bicicleta) {
-            throw new Error('Bicicleta não encontrada', Constantes.BICICLETA_NAO_ENCONTRADA);
+            throw new Error('404', Constantes.BICICLETA_NAO_ENCONTRADA);
         }
         return bicicleta;
     }
@@ -34,11 +34,11 @@ export class BicicletaService {
     async editarBicicleta(id: number, dto: NovaBicicletaDTO) : Promise<Bicicleta>{
         const bicicleta = BicicletaRepository.getById(id);
         if (!bicicleta) {
-            throw new Error('Bicicleta não encontrada', Constantes.BICICLETA_NAO_ENCONTRADA);
+            throw new Error('422', Constantes.BICICLETA_NAO_ENCONTRADA);
         }
         const updatedBicicleta = BicicletaRepository.update(id, dto);
         if (!updatedBicicleta) {
-            throw new Error('Erro ao atualizar bicicleta', Constantes.ERRO_EDITAR_BICICLETA);
+            throw new Error('404', Constantes.ERRO_EDITAR_BICICLETA);
         }
         return updatedBicicleta;
     }
@@ -46,7 +46,7 @@ export class BicicletaService {
     async removerBicicleta(id: number): Promise<void>{
         const bicicleta = BicicletaRepository.getById(id);
         if (!bicicleta) {
-            throw new Error('Bicicleta não encontrada', Constantes.BICICLETA_NAO_ENCONTRADA);
+            throw new Error('404', Constantes.BICICLETA_NAO_ENCONTRADA);
         }
         const deleted = BicicletaRepository.delete(id);
     }
@@ -55,7 +55,7 @@ export class BicicletaService {
         const idBicicleta = dto.idBicicleta;
         const bicicleta = BicicletaRepository.getById(idBicicleta);
         if(!bicicleta){
-            throw new Error('Bicicleta não encontrada', Constantes.BICICLETA_NAO_ENCONTRADA);
+            throw new Error('404', Constantes.BICICLETA_NAO_ENCONTRADA);
         }
         if (bicicleta.statusBicicleta !== StatusBicicleta.NOVA || StatusBicicleta.EM_REPARO ) {
             throw new Error('Bicicleta não pode ser integrada na rede', Constantes.ERRO_INTEGRAR_BICICLETA);
@@ -64,13 +64,13 @@ export class BicicletaService {
         const idTranca = dto.idTranca;
         const tranca = await TrancaRepository.getById(idTranca);
         if(!tranca){
-            throw new Error('Tranca não encontrada', Constantes.TRANCA_NAO_ENCONTRADA);
+            throw new Error('404', Constantes.TRANCA_NAO_ENCONTRADA);
         }
 
         const idFuncionario = dto.idFuncionario;
         const funcionarioDisponivel = await FuncionarioService.isFuncionarioValido(idFuncionario);
         if (!funcionarioDisponivel) {
-            throw new Error('Funcionario não Válido', Constantes.FUNCIONARIO_INVALIDO);
+            throw new Error('422', Constantes.FUNCIONARIO_INVALIDO);
         }
         this.alterarStatus(idBicicleta, 'disponibilizar');
         bicicleta.dataInsercaoTranca = new Date().toISOString();
@@ -91,10 +91,10 @@ export class BicicletaService {
         const idBicicleta = dto.idBicicleta;
         const bicicleta = BicicletaRepository.getById(idBicicleta);
         if(!bicicleta){
-            throw new Error('Bicicleta não encontrada', Constantes.BICICLETA_NAO_ENCONTRADA);
+            throw new Error('404', Constantes.BICICLETA_NAO_ENCONTRADA);
         }
         if (bicicleta.statusBicicleta !== StatusBicicleta.DISPONIVEL) {
-            throw new Error('Bicicleta não pode ser retirada da rede', Constantes.ERRO_RETIRAR_BICICLETA);
+            throw new Error('422', Constantes.ERRO_RETIRAR_BICICLETA);
         }
 
         const acao =  dto.statusAcaoReparador.toString();
@@ -107,16 +107,16 @@ export class BicicletaService {
                 bicicleta.statusBicicleta = StatusBicicleta.APOSENTADA;
                 break;
             default:
-                throw new Error ('Status inválido', Constantes.STATUS_DA_BICICLETA_INVALIDO);
+                throw new Error ('422', Constantes.STATUS_DA_BICICLETA_INVALIDO);
         }
 
         const idTranca = bicicleta.tranca?.id;
         if(!idTranca){
-            throw new Error('Bicicleta não encontrada', Constantes.BICICLETA_NAO_ENCONTRADA);
+            throw new Error('404', Constantes.BICICLETA_NAO_ENCONTRADA);
         }
         const tranca = await TrancaRepository.getById(idTranca);
         if(!tranca){
-            throw new Error('Tranca não encontrada', Constantes.TRANCA_NAO_ENCONTRADA);
+            throw new Error('404', Constantes.TRANCA_NAO_ENCONTRADA);
         }
 
         this.alterarStatus(idBicicleta, 'reparar');
@@ -135,7 +135,7 @@ export class BicicletaService {
     async alterarStatus(id: number, acao: string) : Promise<Bicicleta>{
         const bicicleta = BicicletaRepository.getById(id);
         if (!bicicleta) {
-            throw new Error('Bicicleta não encontrada', Constantes.BICICLETA_NAO_ENCONTRADA);
+            throw new Error('404', Constantes.BICICLETA_NAO_ENCONTRADA);
         }
         switch (acao) {
             case 'DISPONIVEL':
@@ -154,11 +154,11 @@ export class BicicletaService {
                 bicicleta.statusBicicleta = StatusBicicleta.APOSENTADA;
                 break;
             default:
-                throw new Error('Status inválido', Constantes.STATUS_DA_BICICLETA_INVALIDO);
+                throw new Error('422', Constantes.STATUS_DA_BICICLETA_INVALIDO);
         }
         const updatedBicicleta = BicicletaRepository.update(id, bicicleta);
         if (!updatedBicicleta) {
-            throw new Error('Erro ao atualizar bicicleta', Constantes.ERRO_EDITAR_BICICLETA);
+            throw new Error('422', Constantes.ERRO_EDITAR_BICICLETA);
         }
         return updatedBicicleta;
     }

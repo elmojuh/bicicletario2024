@@ -32,6 +32,13 @@ export class Totem {
             descricao: this._descricao
         }
     }
+    toResponseJSON() {
+        return {
+            id: this._id,
+            localizacao: this._localizacao,
+            descricao: this._descricao
+        }
+    }
     atualizar(dados: Partial<Totem>): void{
         if (dados.localizacao) {
             this.localizacao = dados.localizacao;

@@ -80,7 +80,7 @@ export class Tranca {
     toJSON() {
         return {
             id: this._id,
-            bicicleta: this._bicicleta,
+            bicicleta: this._bicicleta?.id,
             numero: this._numero,
             localizacao: this._localizacao,
             anoDeFabricacao: this._anoDeFabricacao,
@@ -89,6 +89,18 @@ export class Tranca {
             dataInsercaoTotem: this._dataInsercaoTotem,
             totem: this._totem
         }
+    }
+    toResponseJSON(){
+        return {
+            id: this._id,
+            bicicleta: this._bicicleta?.id,
+            numero: this._numero,
+            localizacao: this._localizacao,
+            anoDeFabricacao: this._anoDeFabricacao,
+            modelo: this._modelo,
+            statusTranca: this._statusTranca
+        }
+
     }
     atualizar(dados: Partial<Tranca>): void{
         if (dados.numero) {
