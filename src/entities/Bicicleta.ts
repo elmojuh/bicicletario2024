@@ -8,7 +8,7 @@ export class Bicicleta{
   private _ano: string;
   private _numero: number;
   private _statusBicicleta: StatusBicicleta;
-  private _dataInsercaoTranca: string;
+  private _dataInsercaoTranca: string | null;
   private _tranca: Tranca | null;
 
   constructor(id: number, marca: string, modelo: string, ano: string, numero: number, statusBicicleta: StatusBicicleta) {
@@ -58,16 +58,16 @@ export class Bicicleta{
     set statusBicicleta(value: StatusBicicleta) {
         this._statusBicicleta = value;
     }
-    get dataInsercaoTranca(): string {
-        return <string>this._dataInsercaoTranca;
+    get dataInsercaoTranca(): string | null{
+        return this._dataInsercaoTranca;
     }
     set dataInsercaoTranca(value: string) {
         this._dataInsercaoTranca = value;
     }
-    get tranca(): Tranca | null | undefined {
+    get tranca(): Tranca | null {
         return this._tranca;
     }
-    set tranca(value: Tranca ) {
+    set tranca(value: Tranca | null ) {
         this._tranca = value;
     }
     toJSON() {

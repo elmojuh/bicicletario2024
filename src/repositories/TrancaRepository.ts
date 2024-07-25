@@ -24,20 +24,29 @@ export class TrancaRepository {
         return this.trancas;
     }
 
-    static getById(id: number): Tranca | undefined {
-        return this.trancas.find(tranca => tranca.id === id);
+    static getById(id: number): Tranca | null{
+        return this.trancas.find(tranca => tranca.id === id) || null;
     }
 
-    static update(id: number, trancaData: Partial<Tranca>): Tranca | undefined {
+    static update(id: number, trancaData: Partial<Tranca>): Tranca | null{
         const tranca = this.trancas.find(t => t.id === id);
-        if (!tranca) return undefined;
+        if (!tranca) {
+            return null
+        }
         tranca.atualizar(trancaData);
         return tranca;
     }
 
-    static delete(id: number): boolean {
+    static delete(id: number): void {
         const lengthBefore = this.trancas.length;
         this.trancas = this.trancas.filter(tranca => tranca.id !== id);
-        return this.trancas.length < lengthBefore;
+        if (this.trancas.length === lengthBefore) {
+            throw new Error(`Tranca with id ${id} not found`);
+        }
+    }
+
+    static findByTotemId(idTotem: number): Tranca[] {
+        const trancas = this.trancas.filter(tranca => tranca.totem?.id === idTotem);
+        return trancas;
     }
 }

@@ -21,13 +21,15 @@ export class TotemRepository {
         return this.totens;
     }
 
-    static getById(id: number): Totem | undefined {
-        return this.totens.find(totem => totem.id === id);
+    static getById(id: number): Totem | null {
+        return this.totens.find(totem => totem.id === id) || null;
     }
 
-    static update(id: number, totemData: Partial<Totem>): Totem | undefined {
+    static update(id: number, totemData: Partial<Totem>): Totem | null{
         const totem = this.totens.find(t => t.id === id);
-        if (!totem) return undefined;
+        if (!totem){
+            return null
+        }
         totem.atualizar(totemData);
         return totem;
     }
@@ -35,6 +37,6 @@ export class TotemRepository {
     static delete(id: number): boolean {
         const lengthBefore = this.totens.length;
         this.totens = this.totens.filter(totem => totem.id !== id);
-        return this.totens.length < lengthBefore;
+        return this.totens.length !== lengthBefore;
     }
 }

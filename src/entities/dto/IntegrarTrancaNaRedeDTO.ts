@@ -1,9 +1,9 @@
 export class IntegrarTrancaNaRedeDTO {
-    public idToten: number;
+    public idTotem: number;
     public idTranca: number;
     public idFuncionario: number;
-    constructor(idToten: number, idTranca: number, idFuncionario: number) {
-        this.idToten = idToten;
+    constructor(idTotem: number, idTranca: number, idFuncionario: number) {
+        this.idTotem = idTotem;
         this.idTranca = idTranca;
         this.idFuncionario = idFuncionario;
     }

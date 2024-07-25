@@ -24,21 +24,32 @@ export class BicicletaRepository {
         return this.bicicletas;
     }
 
-    static getById(id: number): Bicicleta | undefined {
-        return this.bicicletas.find(bicicleta => bicicleta.id === id);
+    static getById(id: number): Bicicleta | null{
+        return this.bicicletas.find(bicicleta => bicicleta.id === id) || null;
     }
 
-    static update(id: number, bicicletaData: Partial<Bicicleta>): Bicicleta | undefined {
+    static update(id: number, bicicletaData: Partial<Bicicleta>): Bicicleta | null {
         const bicicleta = this.bicicletas.find(b => b.id === id);
-        if (!bicicleta) return undefined;
+        if (!bicicleta) {
+            return null;
+        }
         bicicleta.atualizar(bicicletaData);
         return bicicleta;
     }
 
-    static delete(id: string): boolean {
-        const numericId = parseInt(id, 10);
+    static delete(id: number): boolean {
         const lengthBefore = this.bicicletas.length;
-        this.bicicletas = this.bicicletas.filter(bicicleta => bicicleta.id !== numericId);
-        return this.bicicletas.length < lengthBefore;
+        this.bicicletas = this.bicicletas.filter(bicicleta => bicicleta.id !== id);
+        return this.bicicletas.length !== lengthBefore;
+    }
+
+    static findByTrancaId(id: number): Bicicleta[] {
+        const bicicletas = this.bicicletas.filter(bicicleta => bicicleta.tranca?.id === id);
+        return bicicletas;
+    }
+
+    static findByTotemId(id: number): Bicicleta[] {
+        const bicicletas = this.bicicletas.filter(bicicleta => bicicleta.tranca?.totem?.id === id);
+        return bicicletas;
     }
 }
