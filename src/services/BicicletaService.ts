@@ -28,17 +28,21 @@ export class BicicletaService {
     }
 
     async listarBicicletas(): Promise<Bicicleta[]> {
+        const bicicletas = BicicletaRepository.getAll();
+        if (!bicicletas) {
+            throw new Error('404', Constantes.ERRO_LISTAR_BICICLETAS);
+        }
         return BicicletaRepository.getAll();
     }
 
     async editarBicicleta(id: number, dto: NovaBicicletaDTO) : Promise<Bicicleta>{
         const bicicleta = BicicletaRepository.getById(id);
         if (!bicicleta) {
-            throw new Error('422', Constantes.BICICLETA_NAO_ENCONTRADA);
+            throw new Error('404', Constantes.BICICLETA_NAO_ENCONTRADA);
         }
         const updatedBicicleta = BicicletaRepository.update(id, dto);
         if (!updatedBicicleta) {
-            throw new Error('404', Constantes.ERRO_EDITAR_BICICLETA);
+            throw new Error('422', Constantes.ERRO_EDITAR_BICICLETA);
         }
         return updatedBicicleta;
     }
@@ -49,6 +53,9 @@ export class BicicletaService {
             throw new Error('404', Constantes.BICICLETA_NAO_ENCONTRADA);
         }
         const deleted = BicicletaRepository.delete(id);
+        if (!deleted) {
+            throw new Error('422', Constantes.ERRO_REMOVER_BICICLETA);
+        }
     }
 
     async integrarNaRede(dto: IntegrarBicicletaNaRedeDTO) : Promise<void>{

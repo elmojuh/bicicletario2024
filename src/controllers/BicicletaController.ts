@@ -13,7 +13,7 @@ export class BicicletaController {
             const id = parseInt(req.params.id);
             const bicicleta = await new BicicletaService().getById(id);
             const bicicletaJson = bicicleta.toResponseJSON();
-            res.json(bicicletaJson).json(Constantes.BICICLETA_ENCONTRADA);
+            res.json(bicicletaJson);
         }catch (error){
             res.status(404).json(error);
         }
@@ -36,7 +36,7 @@ export class BicicletaController {
             await new BicicletaService().removerBicicleta(id);
             res.status(200).json(Constantes.BICICLETA_REMOVIDA);
         }catch (error){
-            res.status(422).json(error);
+            res.status(404).json(error);
         }
     }
 
@@ -46,7 +46,7 @@ export class BicicletaController {
             const dataJson = data.map(bicicleta => bicicleta.toResponseJSON());
             res.json(dataJson);
         }catch (error){
-            res.status(422).json(error);
+            res.status(404).json(error);
         }
     }
 
@@ -55,7 +55,7 @@ export class BicicletaController {
             const id = parseInt(req.params.id);
             const data = req.body;
             const bicicleta = await new BicicletaService().editarBicicleta(id, data);
-            const bicicletaJson = bicicleta.toJSON();
+            const bicicletaJson = bicicleta.toResponseJSON();
             res.status(200).json(bicicletaJson);
         }catch (error){
             res.status(422).json(error);
