@@ -65,7 +65,7 @@ export class BicicletaController {
     async integrarNaRede(req: Request, res: Response) {
         try{
             const data: IntegrarBicicletaNaRedeDTO = req.body;
-            const bicicleta = await new BicicletaService().integrarNaRede(data);
+            await new BicicletaService().integrarNaRede(data);
             res.status(200).json(Constantes.DADOS_CADASTRADOS);
         }catch (error){
             res.status(422).json(error);
@@ -75,7 +75,7 @@ export class BicicletaController {
     async retirarDaRede(req: Request, res: Response) {
         try{
             const data: RetirarBicicletaDaRedeDTO = req.body;
-            const bicicleta = await new BicicletaService().retirarDaRede(data);
+            await new BicicletaService().retirarDaRede(data);
             res.status(200).json(Constantes.DADOS_CADASTRADOS);
         }catch (error){
             res.status(422).json(error);
@@ -86,7 +86,7 @@ export class BicicletaController {
     try {
         const idBicicleta = parseInt(req.params.idBicicleta);
         const acao = req.params.acao;
-        const bicicleta = await new BicicletaService().alterarStatus(idBicicleta, acao);
+        await new BicicletaService().alterarStatus(idBicicleta, acao);
         res.status(200).json(Constantes.ACAO_BEM_SUCEDIDA);
     } catch (error) {
         res.status(422).json(error);

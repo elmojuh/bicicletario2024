@@ -41,7 +41,7 @@ export class TotemController {
     async removerTotem(req: Request, res: Response) {
         try {
             const idTotem = parseInt(req.params.id);
-            const totem = await new TotemService().removerTotem(idTotem);
+            await new TotemService().removerTotem(idTotem);
             res.json({ message: Constantes.TOTEM_REMOVIDO });
         } catch (error) {
             res.status(422).json(error);

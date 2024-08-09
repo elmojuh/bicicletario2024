@@ -252,7 +252,7 @@ describe('Rotas de Bicicleta em Controller', () => {
     it('deve integrar bicicleta na rede', async () => {
         const dto = new IntegrarBicicletaNaRedeDTO(1, 1, 1);
         const bicicleta = new Bicicleta(1, 'Marca de Teste', 'Modelo de Teste', '2023', 12344, StatusBicicleta.NOVA);
-        const tranca = new Tranca(1, 12344, 'localizacao', '1998', 'modelo', StatusTranca.LIVRE,);
+        new Tranca(1, 12344, 'localizacao', '1998', 'modelo', StatusTranca.LIVRE,);
 
         bicicletaServiceMock.prototype.getById = jest.fn().mockResolvedValue(bicicleta);
         bicicletaServiceMock.prototype.alterarStatus = jest.fn().mockResolvedValue(bicicleta);
@@ -288,7 +288,7 @@ describe('Rotas de Bicicleta em Controller', () => {
     it('deve retirar bicicleta da rede', async () => {
         const dto = new RetirarBicicletaDaRedeDTO(1, 1, 1, 'EM_REPARO');
         const bicicleta = new Bicicleta(1, 'Marca de Teste', 'Modelo de Teste', '2023', 12344, StatusBicicleta.NOVA);
-        const tranca = new Tranca(1, 12344, 'localizacao', '1998', 'modelo', StatusTranca.LIVRE,);
+        new Tranca(1, 12344, 'localizacao', '1998', 'modelo', StatusTranca.LIVRE,);
 
         bicicletaServiceMock.prototype.getById = jest.fn().mockResolvedValue(bicicleta);
         bicicletaServiceMock.prototype.alterarStatus = jest.fn().mockResolvedValue(bicicleta);

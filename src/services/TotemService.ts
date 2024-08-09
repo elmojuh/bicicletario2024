@@ -42,7 +42,7 @@ export class TotemService {
         if (!totem) {
             throw new Error('404', Constantes.TOTEM_NAO_ENCONTRADO);
         }
-        const removed = TotemRepository.delete(id);
+        TotemRepository.delete(id);
     }
 
     async listarTrancas(id: number) : Promise<Tranca[]>{

@@ -25,13 +25,6 @@ export class Totem {
     set descricao(value: string) {
         this._descricao = value;
     }
-    toJSON() {
-        return {
-            id: this._id,
-            localizacao: this._localizacao,
-            descricao: this._descricao
-        }
-    }
     toResponseJSON() {
         return {
             id: this._id,
