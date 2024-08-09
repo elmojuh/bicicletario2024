@@ -15,11 +15,11 @@ export class TotemService {
     }
 
     async cadastrarTotem(totemData: NovoTotemDTO): Promise<Totem> {
-        const savedTotem = await TotemRepository.create(totemData);
+        const savedTotem = TotemRepository.create(totemData);
         return savedTotem;
     }
     async getById(id: number) : Promise<Totem>{
-        const totem = await TotemRepository.getById(id);
+        const totem = TotemRepository.getById(id);
         if (!totem) {
             throw new Error('404', Constantes.TOTEM_NAO_ENCONTRADO);
         }
@@ -27,7 +27,7 @@ export class TotemService {
     }
     async editarTotem(id: number, totemData: Totem): Promise<Totem> {
         await this.getById(id);
-        const updatedTotem = await TotemRepository.update(id, totemData);
+        const updatedTotem = TotemRepository.update(id, totemData);
         if (!updatedTotem) {
             throw new Error('422', Constantes.ERRO_EDITAR_TOTEM);
         }
@@ -40,13 +40,13 @@ export class TotemService {
     }
 
     async listarTrancas(id: number) : Promise<Tranca[]>{
-        const trancas = await TrancaRepository.findByTotemId(id);
+        const trancas = TrancaRepository.findByTotemId(id);
         return trancas;
 
     }
 
     async listarBicicletas(id: number) : Promise<Bicicleta[]>{
-        const bicicletas = await BicicletaRepository.findByTotemId(id);
+        const bicicletas = BicicletaRepository.findByTotemId(id);
         return bicicletas;
     }
 }

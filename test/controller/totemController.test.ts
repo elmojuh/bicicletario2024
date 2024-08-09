@@ -54,13 +54,6 @@ describe('Rotas de Totem em Controller', () => {
         expect(res.statusCode).toBe(422);
     });
 
-    // it('deve buscar um Totem por id', async () => {
-    //     const res = await request(app)
-    //         .get(`/api/totem/${totemId}`);
-    //     expect(res.statusCode).toEqual(200);
-    //     expect(res.body).toHaveProperty('id', totemId);
-    // });
-
 
     it('deve listar todos os Totens', async () => {
         const totens = [
