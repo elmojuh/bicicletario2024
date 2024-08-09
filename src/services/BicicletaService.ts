@@ -15,12 +15,12 @@ import { Error } from "../entities/Error"
 export class BicicletaService {
 
     async criarBicicleta(dto: NovaBicicletaDTO): Promise<Bicicleta> {
-        const savedBicicleta = BicicletaRepository.create(dto);
+        const savedBicicleta = await BicicletaRepository.create(dto);
         return savedBicicleta;
     }
 
     async getById(id: number): Promise<Bicicleta> {
-        const bicicleta = BicicletaRepository.getById(id);
+        const bicicleta = await BicicletaRepository.getById(id);
         if (!bicicleta) {
             throw new Error('404', Constantes.BICICLETA_NAO_ENCONTRADA);
         }
@@ -28,7 +28,7 @@ export class BicicletaService {
     }
 
     async listarBicicletas(): Promise<Bicicleta[]> {
-        const bicicletas = BicicletaRepository.getAll();
+        const bicicletas = await BicicletaRepository.getAll();
         if (!bicicletas) {
             throw new Error('404', Constantes.ERRO_LISTAR_BICICLETAS);
         }
@@ -36,7 +36,7 @@ export class BicicletaService {
     }
 
     async editarBicicleta(id: number, dto: NovaBicicletaDTO) : Promise<Bicicleta>{
-        const bicicleta = BicicletaRepository.getById(id);
+        const bicicleta = await BicicletaRepository.getById(id);
         if (!bicicleta) {
             throw new Error('404', Constantes.BICICLETA_NAO_ENCONTRADA);
         }
@@ -48,7 +48,7 @@ export class BicicletaService {
     }
 
     async removerBicicleta(id: number): Promise<void>{
-        const bicicleta = BicicletaRepository.getById(id);
+        const bicicleta = await BicicletaRepository.getById(id);
         if (!bicicleta) {
             throw new Error('404', Constantes.BICICLETA_NAO_ENCONTRADA);
         }
@@ -60,7 +60,7 @@ export class BicicletaService {
 
     async integrarNaRede(dto: IntegrarBicicletaNaRedeDTO) : Promise<void>{
         const idBicicleta = dto.idBicicleta;
-        const bicicleta = BicicletaRepository.getById(idBicicleta);
+        const bicicleta = await BicicletaRepository.getById(idBicicleta);
         if(!bicicleta){
             throw new Error('404', Constantes.BICICLETA_NAO_ENCONTRADA);
         }

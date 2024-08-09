@@ -6,4 +6,12 @@ export class Error {
         this.codigo = codigo;
         this.mensagem = mensagem;
     }
+
+    getCodigo(): string {
+        return this.codigo;
+    }
+
+    getMensagem(): string {
+        return this.mensagem;
+    }
 }

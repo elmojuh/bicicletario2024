@@ -1,8 +1,9 @@
 import { Request, Response } from 'express';
 import { TotemService } from '../services/TotemService';
 import { NovoTotemDTO } from '../entities/dto/NovoTotemDTO';
-import {Totem} from "../entities/Totem";
-import {Constantes} from "../entities/constants/Constantes";
+import { Totem } from "../entities/Totem";
+import { Constantes } from "../entities/constants/Constantes";
+import { Error } from "../entities/Error";
 
 export class TotemController {
 
@@ -32,11 +33,23 @@ export class TotemController {
             const idTotem = parseInt(req.params.id);
             const totem: Totem = req.body;
             const totemEditado = await new TotemService().editarTotem(idTotem, totem);
-            res.json(totemEditado);
-        } catch (error) {
-            res.status(422).json(error);
+            const totemJson = totemEditado.toResponseJSON();
+            res.status(200).json(totemJson);
+        } catch (error: Error | any) {
+            if (error instanceof Error) {
+                if (error.getCodigo() === '404') {
+                    res.status(404).json({ codigo: '404', mensagem: 'Totem não encontrado' });
+                } else if (error.getCodigo() === '422') {
+                    res.status(422).json({ codigo: '422', mensagem: 'Erro ao editar totem' });
+                } else {
+                    res.status(500).json({ codigo: '500', mensagem: 'Erro interno do servidor', detalhes: error.getMensagem() });
+                }
+            } else {
+                res.status(500).json({ codigo: '500', mensagem: 'Erro desconhecido', detalhes: String(error) });
+            }
         }
     }
+
 
     async removerTotem(req: Request, res: Response) {
         try {

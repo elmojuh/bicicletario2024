@@ -15,22 +15,19 @@ export class TotemService {
     }
 
     async cadastrarTotem(totemData: NovoTotemDTO): Promise<Totem> {
-        const savedTotem = TotemRepository.create(totemData);
+        const savedTotem = await TotemRepository.create(totemData);
         return savedTotem;
     }
     async getById(id: number) : Promise<Totem>{
-        const totem = TotemRepository.getById(id);
+        const totem = await TotemRepository.getById(id);
         if (!totem) {
             throw new Error('404', Constantes.TOTEM_NAO_ENCONTRADO);
         }
         return totem;
     }
-    async editarTotem(id: number, totemData: Totem) : Promise<Totem>{
-        const totem = TotemRepository.getById(id);
-        if (!totem) {
-            throw new Error('404', Constantes.TOTEM_NAO_ENCONTRADO);
-        }
-        const updatedTotem = TotemRepository.update(id, totemData);
+    async editarTotem(id: number, totemData: Totem): Promise<Totem> {
+        await this.getById(id);
+        const updatedTotem = await TotemRepository.update(id, totemData);
         if (!updatedTotem) {
             throw new Error('422', Constantes.ERRO_EDITAR_TOTEM);
         }
@@ -38,21 +35,18 @@ export class TotemService {
     }
 
     async removerTotem(id: number) : Promise<void>{
-        const totem = TotemRepository.getById(id);
-        if (!totem) {
-            throw new Error('404', Constantes.TOTEM_NAO_ENCONTRADO);
-        }
+        await this.getById(id);
         TotemRepository.delete(id);
     }
 
     async listarTrancas(id: number) : Promise<Tranca[]>{
-        const trancas = TrancaRepository.findByTotemId(id);
+        const trancas = await TrancaRepository.findByTotemId(id);
         return trancas;
 
     }
 
     async listarBicicletas(id: number) : Promise<Bicicleta[]>{
-        const bicicletas = BicicletaRepository.findByTotemId(id);
+        const bicicletas = await BicicletaRepository.findByTotemId(id);
         return bicicletas;
     }
 }

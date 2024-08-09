@@ -70,18 +70,6 @@ export class Bicicleta{
     set tranca(value: Tranca | null ) {
         this._tranca = value;
     }
-    toJSON() {
-        return {
-            id: (this.id),
-            marca: this.marca,
-            modelo: this.modelo,
-            ano: this.ano,
-            numero: this.numero,
-            statusBicicleta: this.statusBicicleta,
-            dataInsercaoTranca: this.dataInsercaoTranca,
-            tranca: this.tranca
-        };
-    }
 
     toResponseJSON() {
         return {

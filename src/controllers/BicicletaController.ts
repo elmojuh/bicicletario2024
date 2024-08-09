@@ -22,6 +22,9 @@ export class BicicletaController {
     async create(req: Request, res: Response) {
         try {
             const dto: NovaBicicletaDTO = req.body;
+            if (typeof dto.marca !== 'string' || typeof dto.modelo !== 'string' || typeof dto.ano !== 'string' || typeof dto.numero !== 'number' || typeof dto.status !== 'string') {
+                return res.status(400).json({ message: 'Dados inválidos' });
+            }
             const newBicicleta = await new BicicletaService().criarBicicleta(dto);
             const bicicletaJson = newBicicleta.toResponseJSON();
             res.status(201).json(bicicletaJson);
@@ -46,7 +49,7 @@ export class BicicletaController {
             const dataJson = data.map(bicicleta => bicicleta.toResponseJSON());
             res.json(dataJson);
         }catch (error){
-            res.status(404).json(error);
+            res.status(500).json(error);
         }
     }
 
@@ -58,7 +61,7 @@ export class BicicletaController {
             const bicicletaJson = bicicleta.toResponseJSON();
             res.status(200).json(bicicletaJson);
         }catch (error){
-            res.status(422).json(error);
+            res.status(404).json(error);
         }
     }
 

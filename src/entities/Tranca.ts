@@ -77,28 +77,16 @@ export class Tranca {
     set modelo(value: string) {
         this._modelo = value;
     }
-    toJSON() {
-        return {
-            id: this._id,
-            bicicleta: this._bicicleta?.id,
-            numero: this._numero,
-            localizacao: this._localizacao,
-            anoDeFabricacao: this._anoDeFabricacao,
-            modelo: this._modelo,
-            statusTranca: this._statusTranca,
-            dataInsercaoTotem: this._dataInsercaoTotem,
-            totem: this._totem
-        }
-    }
+
     toResponseJSON(){
         return {
-            id: this._id,
-            bicicleta: this._bicicleta?.id,
-            numero: this._numero,
-            localizacao: this._localizacao,
-            anoDeFabricacao: this._anoDeFabricacao,
-            modelo: this._modelo,
-            statusTranca: this._statusTranca
+            id: this.id,
+            bicicleta: this.bicicleta?.id,
+            numero: this.numero,
+            localizacao: this.localizacao,
+            anoDeFabricacao: this.anoDeFabricacao,
+            modelo: this.modelo,
+            statusTranca: this.statusTranca
         }
 
     }
