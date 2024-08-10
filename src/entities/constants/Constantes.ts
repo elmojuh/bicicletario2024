@@ -28,7 +28,8 @@ export class Constantes {
     static readonly ERRO_CRIAR_TOTEM = "Erro ao criar totem";
     static readonly ERRO_EDITAR_TOTEM = "Erro ao editar totem";
     static readonly ERRO_REMOVER_TOTEM = "Erro ao remover totem";
-    static readonly ERRO_LISTAR_TRANCAS = "Erro ao listar trancas do totem";
+    static readonly ERRO_LISTAR_TRANCAS_DO_TOTEM = "Erro ao listar trancas do totem";
+    static readonly ERRO_LISTAR_TRANCAS = "Erro ao listar trancas";
     static readonly ERRO_LISTAR_BICICLETAS_TOTEM = "Erro ao listar bicicletas do totem";
     static readonly TOTEM_NAO_ENCONTRADO = "Totem não encontrado";
     static readonly TOTEM_REMOVIDO = "Totem removido";
@@ -37,6 +38,7 @@ export class Constantes {
     static readonly ERRO_CRIAR_TRANCA = "Erro ao criar tranca";
     static readonly ERRO_EDITAR_TRANCA = "Erro ao editar tranca";
     static readonly ERRO_REMOVER_TRANCA = "Erro ao remover tranca";
+    static readonly ERRO_ALTERAR_STATUS_TRANCA = "Erro ao alterar status da tranca";
     static readonly ERRO_OBTER_TRANCA = "Erro ao obter tranca";
     static readonly ERRO_OBTER_BICICLETA_TRANCA = "Erro ao obter bicicleta na tranca";
     static readonly ERRO_TRANCAR_TRANCA = "Erro ao trancar tranca";

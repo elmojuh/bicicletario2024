@@ -77,7 +77,6 @@ export class Tranca {
     set modelo(value: string) {
         this._modelo = value;
     }
-
     toResponseJSON(){
         return {
             id: this.id,

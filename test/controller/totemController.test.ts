@@ -16,9 +16,7 @@ const novoTotemDTO = (localizacao: string = 'Localização de Teste', descricao:
 const novoTotem = (id: number = 1) =>
     new Totem(id, 'Localização de Teste', 'Descricao de Teste');
 
-let totemId: string;
-
-describe('Rotas de Totem em Controller', () => {
+describe('Totem em Controller', () => {
     it('deve criar um novo Totem', async () => {
         const dto = novoTotemDTO();
         const totem = novoTotem(1);
@@ -29,31 +27,21 @@ describe('Rotas de Totem em Controller', () => {
             .post('/api/totem')
             .send(dto)
             .expect('Content-Type', /json/)
-        expect(res.statusCode).toBe(201);
+        expect(res.statusCode).toBe(200);
         expect(res.body).toEqual(totem.toResponseJSON());
     });
 
     it('deve retornar erro ao criar um novo Totem com dados inválidos', async () => {
         const dto = novoTotemDTO('Localização de Teste', '');
-        totemServiceMock.prototype.cadastrarTotem = jest.fn().mockRejectedValue(new Error('442', Constantes.DADOS_INVALIDOS));
-
-        const res = await request(app)
-            .post('/api/totem')
-            .send(dto)
-            .expect('Content-Type', /json/)
-        expect(res.statusCode).toBe(422);
-    });
-
-    it('deve retornar erro ao criar um novo Totem com falha no serviço', async () => {
         totemServiceMock.prototype.cadastrarTotem = jest.fn().mockRejectedValue(new Error('422', Constantes.ERRO_CRIAR_TOTEM));
-        const dto = novoTotemDTO();
+
         const res = await request(app)
             .post('/api/totem')
             .send(dto)
             .expect('Content-Type', /json/)
         expect(res.statusCode).toBe(422);
+        expect(res.body).toEqual({ codigo: '422', mensagem: 'Erro ao criar totem' });
     });
-
 
     it('deve listar todos os Totens', async () => {
         const totens = [
@@ -93,15 +81,16 @@ describe('Rotas de Totem em Controller', () => {
     });
 
     it('deve retornar erro ao editar um Totem com dados inválidos', async () => {
-        totemServiceMock.prototype.editarTotem = jest.fn().mockRejectedValue(new Error('422', Constantes.ERRO_EDITAR_TOTEM));
+        const dto = novoTotemDTO('Nova Localização', '');
 
-        const dto = novoTotemDTO();
+        totemServiceMock.prototype.editarTotem = jest.fn().mockRejectedValue(new Error('422', Constantes.DADOS_INVALIDOS));
+
         const res = await request(app)
             .put('/api/totem/1')
             .send(dto)
             .expect('Content-Type', /json/)
         expect(res.statusCode).toBe(422);
-        expect(res.body).toEqual({ codigo: '422', mensagem: 'Erro ao editar totem' });
+        expect(res.body).toEqual({ codigo: '422', mensagem: 'Dados inválidos' });
     });
 
     it('deve retornar erro ao editar um Totem que não existe', async () => {
@@ -115,18 +104,6 @@ describe('Rotas de Totem em Controller', () => {
         expect(res.body).toEqual({ codigo: '404', mensagem: 'Totem não encontrado' });
     });
 
-    it('deve retornar erro ao editar um Totem com falha no serviço', async () => {
-        totemServiceMock.prototype.editarTotem = jest.fn().mockRejectedValue(new Error('422', Constantes.ERRO_EDITAR_TOTEM));
-
-        const dto = novoTotemDTO();
-        const res = await request(app)
-            .put('/api/totem/1')
-            .send(dto)
-            .expect('Content-Type', /json/)
-        expect(res.statusCode).toBe(422);
-        expect(res.body).toEqual({ codigo: '422', mensagem: 'Erro ao editar totem' });
-    });
-
     it('deve remover um Totem existente', async () => {
         totemServiceMock.prototype.removerTotem = jest.fn().mockResolvedValue('1');
 
@@ -135,6 +112,16 @@ describe('Rotas de Totem em Controller', () => {
             .expect('Content-Type', /json/)
             .expect(200);
         expect(res.statusCode).toBe(200);
+    });
+
+    it('deve retornar erro ao remover um Totem que não existe', async () => {
+        totemServiceMock.prototype.removerTotem = jest.fn().mockRejectedValue(new Error('404', Constantes.TOTEM_NAO_ENCONTRADO));
+
+        const res = await request(app)
+            .delete('/api/totem/1')
+            .expect('Content-Type', /json/)
+        expect(res.statusCode).toBe(404);
+        expect(res.body).toEqual({ codigo: '404', mensagem: 'Totem não encontrado' });
     });
 
 });

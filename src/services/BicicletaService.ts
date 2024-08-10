@@ -14,12 +14,12 @@ import { Error } from "../entities/Error"
 
 export class BicicletaService {
 
-    async criarBicicleta(dto: NovaBicicletaDTO): Promise<Bicicleta> {
+    criarBicicleta(dto: NovaBicicletaDTO): Bicicleta {
         const savedBicicleta = BicicletaRepository.create(dto);
         return savedBicicleta;
     }
 
-    async getById(id: number): Promise<Bicicleta> {
+    getById(id: number): Bicicleta {
         const bicicleta = BicicletaRepository.getById(id);
         if (!bicicleta) {
             throw new Error('404', Constantes.BICICLETA_NAO_ENCONTRADA);
@@ -27,7 +27,7 @@ export class BicicletaService {
         return bicicleta;
     }
 
-    async listarBicicletas(): Promise<Bicicleta[]> {
+    listarBicicletas(): Bicicleta[] {
         const bicicletas = BicicletaRepository.getAll();
         if (!bicicletas) {
             throw new Error('404', Constantes.ERRO_LISTAR_BICICLETAS);
@@ -35,11 +35,8 @@ export class BicicletaService {
         return BicicletaRepository.getAll();
     }
 
-    async editarBicicleta(id: number, dto: NovaBicicletaDTO) : Promise<Bicicleta>{
-        const bicicleta = BicicletaRepository.getById(id);
-        if (!bicicleta) {
-            throw new Error('404', Constantes.BICICLETA_NAO_ENCONTRADA);
-        }
+    editarBicicleta(id: number, dto: NovaBicicletaDTO) : Bicicleta{
+        this.getById(id);
         const updatedBicicleta = BicicletaRepository.update(id, dto);
         if (!updatedBicicleta) {
             throw new Error('422', Constantes.ERRO_EDITAR_BICICLETA);
@@ -47,18 +44,15 @@ export class BicicletaService {
         return updatedBicicleta;
     }
 
-    async removerBicicleta(id: number): Promise<void>{
-        const bicicleta = BicicletaRepository.getById(id);
-        if (!bicicleta) {
-            throw new Error('404', Constantes.BICICLETA_NAO_ENCONTRADA);
-        }
+    removerBicicleta(id: number): void{
+        const bicicleta = this.getById(id);
         const deleted = BicicletaRepository.delete(id);
         if (!deleted) {
             throw new Error('422', Constantes.ERRO_REMOVER_BICICLETA);
         }
     }
 
-    async integrarNaRede(dto: IntegrarBicicletaNaRedeDTO) : Promise<void>{
+    integrarNaRede(dto: IntegrarBicicletaNaRedeDTO) : void{
         const idBicicleta = dto.idBicicleta;
         const bicicleta = BicicletaRepository.getById(idBicicleta);
         if(!bicicleta){
@@ -75,7 +69,7 @@ export class BicicletaService {
         }
 
         const idFuncionario = dto.idFuncionario;
-        const funcionarioDisponivel = await FuncionarioService.isFuncionarioValido(idFuncionario);
+        const funcionarioDisponivel = FuncionarioService.isFuncionarioValido(idFuncionario);
         if (!funcionarioDisponivel) {
             throw new Error('422', Constantes.FUNCIONARIO_INVALIDO);
         }
@@ -88,13 +82,13 @@ export class BicicletaService {
 
         const emailService = new EmailService();
         try {
-            await emailService.enviarEmailParaReparador(dto.idFuncionario);
+            emailService.enviarEmailParaReparador(dto.idFuncionario);
         } catch (e) {
             throw new Error("422", Constantes.ERROR_ENVIAR_EMAIL);
         }
     }
 
-    async retirarDaRede(dto: RetirarBicicletaDaRedeDTO) : Promise<void>{
+    retirarDaRede(dto: RetirarBicicletaDaRedeDTO) : void{
         const idBicicleta = dto.idBicicleta;
         const bicicleta = BicicletaRepository.getById(idBicicleta);
         if(!bicicleta){
@@ -133,13 +127,13 @@ export class BicicletaService {
 
         const emailService = new EmailService();
         try {
-            await emailService.enviarEmailParaReparador(dto.idFuncionario);
+            emailService.enviarEmailParaReparador(dto.idFuncionario);
         } catch (e) {
             throw new Error('',Constantes.ERROR_ENVIAR_EMAIL);
         }
     }
 
-    async alterarStatus(id: number, acao: string) : Promise<Bicicleta>{
+    alterarStatus(id: number, acao: string) : Bicicleta{
         const bicicleta = BicicletaRepository.getById(id);
         if (!bicicleta) {
             throw new Error('404', Constantes.BICICLETA_NAO_ENCONTRADA);
