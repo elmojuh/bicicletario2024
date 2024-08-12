@@ -33,7 +33,7 @@ export class TrancaService {
     }
 
     async editarTranca(id: number, trancaData: Tranca): Promise<Tranca> {
-        const tranca = this.getById(id);
+        await this.getById(id);
         const trancaUpdate = TrancaRepository.update(id, trancaData);
         if (!trancaUpdate) {
             throw new Error('404', Constantes.TRANCA_NAO_ENCONTRADA);
@@ -42,7 +42,7 @@ export class TrancaService {
     }
 
     async removerTranca(id: number): Promise<void> {
-        this.getById(id);
+        await this.getById(id);
         TrancaRepository.delete(id);
     }
 

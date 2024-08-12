@@ -39,7 +39,7 @@ export class TrancaController {
     async integrarNaRede(req: Request, res: Response) {
         try {
             await new TrancaService().integrarNaRede(req.body as IntegrarTrancaNaRedeDTO);
-            res.status(200).json;
+            res.status(200).json(Constantes.ACAO_BEM_SUCEDIDA);
         } catch (error: Error | unknown) {
             if(error instanceof Error){
                 res.status(422).json({codigo: '422', mensagem: Constantes.ERRO_INTEGRAR_TRANCA});
@@ -53,7 +53,7 @@ export class TrancaController {
     async retirarDaRede(req: Request, res: Response) {
         try {
             await new TrancaService().retirarDaRede(req.body as RetirarTrancaDaRedeDTO);
-            res.status(200).json;
+            res.status(200).json(Constantes.ACAO_BEM_SUCEDIDA);
         } catch (error: Error | unknown){
             if(error instanceof Error){
                 res.status(422).json({codigo: '422', mensagem: Constantes.ERRO_RETIRAR_TRANCA});

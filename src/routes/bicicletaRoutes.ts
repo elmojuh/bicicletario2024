@@ -8,7 +8,7 @@ export class BicicletaRouter {
     const controller = new BicicletaController();
     this.router = Router();
 
-    this.router.route('/').post(controller.create);
+    this.router.route('/').post(controller.cadastrarBicicleta);
     this.router.route('/:id').get(controller.buscarPorId);
     this.router.route('/').get(controller.listar);
     this.router.route('/:id').put(controller.editarBicicleta);

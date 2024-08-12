@@ -45,7 +45,7 @@ export class BicicletaService {
     }
 
     async removerBicicleta(id: number): Promise<void>{
-        const bicicleta = await this.getById(id);
+        await this.getById(id);
         const deleted = BicicletaRepository.delete(id);
         if (!deleted) {
             throw new Error('422', Constantes.ERRO_REMOVER_BICICLETA);

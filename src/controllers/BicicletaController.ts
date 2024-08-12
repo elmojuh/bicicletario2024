@@ -23,7 +23,7 @@ export class BicicletaController {
         }
     }
 
-    async create(req: Request, res: Response) {
+    async cadastrarBicicleta(req: Request, res: Response) {
         try {
             const dto: NovaBicicletaDTO = req.body;
             if (typeof dto.marca !== 'string' || typeof dto.modelo !== 'string' || typeof dto.ano !== 'string' || typeof dto.numero !== 'number' || typeof dto.status !== 'string') {
