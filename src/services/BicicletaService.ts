@@ -14,12 +14,12 @@ import { Error } from "../entities/Error"
 
 export class BicicletaService {
 
-    criarBicicleta(dto: NovaBicicletaDTO): Bicicleta {
+    async criarBicicleta(dto: NovaBicicletaDTO): Promise<Bicicleta> {
         const savedBicicleta = BicicletaRepository.create(dto);
         return savedBicicleta;
     }
 
-    getById(id: number): Bicicleta {
+    async getById(id: number): Promise<Bicicleta> {
         const bicicleta = BicicletaRepository.getById(id);
         if (!bicicleta) {
             throw new Error('404', Constantes.BICICLETA_NAO_ENCONTRADA);
@@ -27,7 +27,7 @@ export class BicicletaService {
         return bicicleta;
     }
 
-    listarBicicletas(): Bicicleta[] {
+    async listarBicicletas(): Promise<Bicicleta[]> {
         const bicicletas = BicicletaRepository.getAll();
         if (!bicicletas) {
             throw new Error('404', Constantes.ERRO_LISTAR_BICICLETAS);
@@ -35,8 +35,8 @@ export class BicicletaService {
         return BicicletaRepository.getAll();
     }
 
-    editarBicicleta(id: number, dto: NovaBicicletaDTO) : Bicicleta{
-        this.getById(id);
+    async editarBicicleta(id: number, dto: NovaBicicletaDTO) : Promise<Bicicleta>{
+        await this.getById(id);
         const updatedBicicleta = BicicletaRepository.update(id, dto);
         if (!updatedBicicleta) {
             throw new Error('422', Constantes.ERRO_EDITAR_BICICLETA);
@@ -44,17 +44,17 @@ export class BicicletaService {
         return updatedBicicleta;
     }
 
-    removerBicicleta(id: number): void{
-        const bicicleta = this.getById(id);
+    async removerBicicleta(id: number): Promise<void>{
+        const bicicleta = await this.getById(id);
         const deleted = BicicletaRepository.delete(id);
         if (!deleted) {
             throw new Error('422', Constantes.ERRO_REMOVER_BICICLETA);
         }
     }
 
-    integrarNaRede(dto: IntegrarBicicletaNaRedeDTO) : void{
+    async integrarNaRede(dto: IntegrarBicicletaNaRedeDTO) : Promise<void>{
         const idBicicleta = dto.idBicicleta;
-        const bicicleta = BicicletaRepository.getById(idBicicleta);
+        const bicicleta = await this.getById(idBicicleta);
         if(!bicicleta){
             throw new Error('404', Constantes.BICICLETA_NAO_ENCONTRADA);
         }
@@ -88,9 +88,9 @@ export class BicicletaService {
         }
     }
 
-    retirarDaRede(dto: RetirarBicicletaDaRedeDTO) : void{
+    async retirarDaRede(dto: RetirarBicicletaDaRedeDTO) : Promise<void>{
         const idBicicleta = dto.idBicicleta;
-        const bicicleta = BicicletaRepository.getById(idBicicleta);
+        const bicicleta = await this.getById(idBicicleta);
         if(!bicicleta){
             throw new Error('404', Constantes.BICICLETA_NAO_ENCONTRADA);
         }
@@ -133,8 +133,8 @@ export class BicicletaService {
         }
     }
 
-    alterarStatus(id: number, acao: string) : Bicicleta{
-        const bicicleta = BicicletaRepository.getById(id);
+    async alterarStatus(id: number, acao: string) : Promise<Bicicleta>{
+        const bicicleta = await this.getById(id);
         if (!bicicleta) {
             throw new Error('404', Constantes.BICICLETA_NAO_ENCONTRADA);
         }

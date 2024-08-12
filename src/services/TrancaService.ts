@@ -15,16 +15,16 @@ import {StatusBicicleta} from "../entities/enums/StatusBicicleta";
 import {Error} from "../entities/Error";
 
 export class TrancaService {
-    cadastrarTranca(dto: NovaTrancaDTO): Tranca {
+    async cadastrarTranca(dto: NovaTrancaDTO): Promise<Tranca> {
         const savedTranca = TrancaRepository.create(dto);
         return savedTranca;
     }
 
-    listarTrancas(): Tranca[] {
+    async listarTrancas(): Promise<Tranca[]> {
         return TrancaRepository.getAll();
     }
 
-    getById(id: number ): Tranca {
+    async getById(id: number ): Promise<Tranca> {
         const tranca = TrancaRepository.getById(id);
         if(!tranca){
             throw new Error('404', Constantes.TRANCA_NAO_ENCONTRADA);
@@ -32,7 +32,7 @@ export class TrancaService {
         return tranca;
     }
 
-    editarTranca(id: number, trancaData: Tranca): Tranca {
+    async editarTranca(id: number, trancaData: Tranca): Promise<Tranca> {
         const tranca = this.getById(id);
         const trancaUpdate = TrancaRepository.update(id, trancaData);
         if (!trancaUpdate) {
@@ -41,13 +41,13 @@ export class TrancaService {
         return trancaUpdate;
     }
 
-    removerTranca(id: number): void {
+    async removerTranca(id: number): Promise<void> {
         this.getById(id);
         TrancaRepository.delete(id);
     }
 
-    obterBicicletaNaTranca(id: number): Bicicleta {
-        const tranca = this.getById(id);
+    async obterBicicletaNaTranca(id: number): Promise<Bicicleta> {
+        const tranca = await this.getById(id);
         const bicicleta = tranca.bicicleta;
         if (!bicicleta) {
             throw new Error('404', Constantes.BICICLETA_NAO_ENCONTRADA);
@@ -55,9 +55,9 @@ export class TrancaService {
         return bicicleta;
     }
 
-    integrarNaRede(dto: IntegrarTrancaNaRedeDTO): void {
+    async integrarNaRede(dto: IntegrarTrancaNaRedeDTO): Promise<void> {
         const idTranca = dto.idTranca;
-        const tranca = this.getById(idTranca);
+        const tranca = await this.getById(idTranca);
         if (tranca.statusTranca !== StatusTranca.NOVA || StatusTranca.EM_REPARO) {
             throw new Error('422', Constantes.ERRO_INTEGRAR_TRANCA);
         }
@@ -87,9 +87,9 @@ export class TrancaService {
         }
     }
 
-    retirarDaRede(dto: RetirarTrancaDaRedeDTO): void {
+    async retirarDaRede(dto: RetirarTrancaDaRedeDTO): Promise<void> {
         const idTranca = dto.idTranca;
-        const tranca = this.getById(idTranca);
+        const tranca = await this.getById(idTranca);
         if (tranca.statusTranca !== StatusTranca.LIVRE) {
             throw new Error('422', Constantes.ERRO_RETIRAR_TRANCA);
         }
@@ -115,8 +115,8 @@ export class TrancaService {
         }
     }
 
-    trancarTranca(idTranca: number, idBicicleta?: number): void {
-        const tranca = this.getById(idTranca);
+    async trancarTranca(idTranca: number, idBicicleta?: number): Promise<void> {
+        const tranca = await this.getById(idTranca);
         if (tranca.statusTranca !== StatusTranca.LIVRE) {
             throw new Error('422', Constantes.ERRO_TRANCAR_TRANCA);
         }
@@ -139,8 +139,8 @@ export class TrancaService {
         TrancaRepository.update(idTranca, tranca);
     }
 
-    destrancarTranca(idTranca: number, idBicicleta?: number): void {
-        const tranca = this.getById(idTranca);
+    async destrancarTranca(idTranca: number, idBicicleta?: number): Promise<void> {
+        const tranca = await this.getById(idTranca);
         if (idBicicleta) {
             const bicicleta = BicicletaRepository.getById(idBicicleta);
             if (!bicicleta) {
@@ -158,8 +158,8 @@ export class TrancaService {
         TrancaRepository.update(idTranca, tranca);
     }
 
-    alterarStatus(id: number, acao: string): Tranca {
-        const tranca = this.getById(id);
+    async alterarStatus(id: number, acao: string): Promise<Tranca> {
+        const tranca = await this.getById(id);
         switch (acao){
             case 'DESTRANCAR':
                 tranca.statusTranca = StatusTranca.LIVRE;
