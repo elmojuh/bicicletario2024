@@ -109,7 +109,7 @@ export class TrancaService {
 
         const emailService = new EmailService();
         try {
-            emailService.enviarEmailParaReparador(dto.idFuncionario);
+            await emailService.enviarEmailParaReparador(dto.idFuncionario);
         } catch (error) {
             throw new Error('400',Constantes.ERROR_ENVIAR_EMAIL);
         }

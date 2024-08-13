@@ -69,11 +69,11 @@ export class BicicletaService {
         }
 
         const idFuncionario = dto.idFuncionario;
-        const funcionarioDisponivel = FuncionarioService.isFuncionarioValido(idFuncionario);
+        const funcionarioDisponivel = await FuncionarioService.isFuncionarioValido(idFuncionario);
         if (!funcionarioDisponivel) {
             throw new Error('422', Constantes.FUNCIONARIO_INVALIDO);
         }
-        this.alterarStatus(idBicicleta, 'disponibilizar');
+        await this.alterarStatus(idBicicleta, 'disponibilizar');
         bicicleta.dataInsercaoTranca = new Date().toISOString();
         BicicletaRepository.update(idBicicleta, bicicleta);
 
@@ -82,7 +82,7 @@ export class BicicletaService {
 
         const emailService = new EmailService();
         try {
-            emailService.enviarEmailParaReparador(dto.idFuncionario);
+            await emailService.enviarEmailParaReparador(dto.idFuncionario);
         } catch (e) {
             throw new Error("422", Constantes.ERROR_ENVIAR_EMAIL);
         }
