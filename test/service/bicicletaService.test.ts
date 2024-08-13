@@ -103,6 +103,20 @@ describe('BicicletaService', () => {
         }
     });
 
+    it('deve retornar erro ao editar bicicleta', async () => {
+        const dto = new NovaBicicletaDTO('Marca de Teste', 'Modelo de Teste', '2023', 12345, StatusBicicleta.NOVA);
+        BicicletaRepository.update = jest.fn().mockReturnValue(undefined);
+        BicicletaRepository.getById = jest.fn().mockReturnValue(bicicletaMock);
+
+        try {
+            await bicicletaService.editarBicicleta(1, dto);
+        } catch (error: Error | any) {
+            expect(error).toBeInstanceOf(Error);
+            expect(error.codigo).toBe('422');
+            expect(error.mensagem).toBe(Constantes.ERRO_EDITAR_BICICLETA);
+        }
+    });
+
     it('deve remover uma bicicleta', async () => {
         BicicletaRepository.getById = jest.fn().mockReturnValue(bicicletaMock);
         BicicletaRepository.delete = jest.fn().mockReturnValue(true);
@@ -124,7 +138,22 @@ describe('BicicletaService', () => {
         }
     });
 
-    it('deve alterar o status da bicicleta', async () => {
+    it('deve retornar erro ao remover bicicleta', async () => {
+        BicicletaRepository.getById = jest.fn().mockReturnValue(bicicletaMock);
+        BicicletaRepository.delete = jest.fn().mockReturnValue(false);
+
+        try {
+            await bicicletaService.removerBicicleta(1);
+        } catch (error: Error | any) {
+            expect(error).toBeInstanceOf(Error);
+            expect(error.codigo).toBe('422');
+            expect(error.mensagem).toBe(Constantes.ERRO_REMOVER_BICICLETA);
+        }
+    });
+
+    
+
+    it('deve alterar o status da bicicleta para DISPONIVEL', async () => {
         BicicletaRepository.getById = jest.fn().mockReturnValue(bicicletaMock);
         BicicletaRepository.update = jest.fn().mockReturnValue(bicicletaMock);
 
@@ -132,6 +161,58 @@ describe('BicicletaService', () => {
 
         expect(result).toEqual(bicicletaMock);
         expect(BicicletaRepository.update).toHaveBeenCalledWith(1, expect.objectContaining({ statusBicicleta: StatusBicicleta.DISPONIVEL }));
+    });
+
+    it('deve alterar o status da bicicleta para EM_USO', async () => {
+        BicicletaRepository.getById = jest.fn().mockReturnValue(bicicletaMock);
+        BicicletaRepository.update = jest.fn().mockReturnValue(bicicletaMock);
+
+        const result = await bicicletaService.alterarStatus(1, StatusBicicleta.EM_USO);
+
+        expect(result).toEqual(bicicletaMock);
+        expect(BicicletaRepository.update).toHaveBeenCalledWith(1, expect.objectContaining({ statusBicicleta: StatusBicicleta.EM_USO }));
+    });
+
+    it('deve alterar o status da bicicleta para EM_REPARO', async () => {
+        BicicletaRepository.getById = jest.fn().mockReturnValue(bicicletaMock);
+        BicicletaRepository.update = jest.fn().mockReturnValue(bicicletaMock);
+
+        const result = await bicicletaService.alterarStatus(1, StatusBicicleta.EM_REPARO);
+
+        expect(result).toEqual(bicicletaMock);
+        expect(BicicletaRepository.update).toHaveBeenCalledWith(1, expect.objectContaining({ statusBicicleta: StatusBicicleta.EM_REPARO }));
+    });
+
+    it('deve alterar o status da bicicleta para NOVA', async () => {
+        BicicletaRepository.getById = jest.fn().mockReturnValue(bicicletaMock);
+        BicicletaRepository.update = jest.fn().mockReturnValue(bicicletaMock);
+
+        const result = await bicicletaService.alterarStatus(1, StatusBicicleta.NOVA);
+
+        expect(result).toEqual(bicicletaMock);
+        expect(BicicletaRepository.update).toHaveBeenCalledWith(1, expect.objectContaining({ statusBicicleta: StatusBicicleta.NOVA }));
+    });
+
+    it('deve alterar o status da bicicleta para APOSENTADA', async () => {
+        BicicletaRepository.getById = jest.fn().mockReturnValue(bicicletaMock);
+        BicicletaRepository.update = jest.fn().mockReturnValue(bicicletaMock);
+
+        const result = await bicicletaService.alterarStatus(1, StatusBicicleta.APOSENTADA);
+
+        expect(result).toEqual(bicicletaMock);
+        expect(BicicletaRepository.update).toHaveBeenCalledWith(1, expect.objectContaining({ statusBicicleta: StatusBicicleta.APOSENTADA }));
+    });
+
+    it('deve retornar erro ao alterar status da bicicleta para status inválido', async () => {
+        BicicletaRepository.getById = jest.fn().mockReturnValue(bicicletaMock);
+
+        try {
+            await bicicletaService.alterarStatus(1, 'status_invalido' as StatusBicicleta);
+        } catch (error: Error | any) {
+            expect(error).toBeInstanceOf(Error);
+            expect(error.codigo).toBe('422');
+            expect(error.mensagem).toBe(Constantes.STATUS_DA_BICICLETA_INVALIDO);
+        }
     });
 
     it('deve retornar erro ao alterar status de bicicleta não existente', async () => {

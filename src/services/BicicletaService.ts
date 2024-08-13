@@ -53,14 +53,12 @@ export class BicicletaService {
     }
 
     async integrarNaRede(dto: IntegrarBicicletaNaRedeDTO) : Promise<void>{
-        console.log("dto.idBicicleta em service", dto.idBicicleta);
         const bicicleta = await this.getById(dto.idBicicleta);
         if(!bicicleta){
             throw new Error('404', Constantes.BICICLETA_NAO_ENCONTRADA);
         }
-        console.log("bicicleta.id em service", bicicleta.id);
-        if (bicicleta.statusBicicleta !== StatusBicicleta.NOVA || StatusBicicleta.EM_REPARO ) {
-            throw new Error('404', Constantes.ERRO_INTEGRAR_BICICLETA);
+        if (bicicleta.statusBicicleta !== StatusBicicleta.NOVA && bicicleta.statusBicicleta !== StatusBicicleta.EM_REPARO) {
+            throw new Error('404', Constantes.STATUS_DA_BICICLETA_INVALIDO);
         }
 
         const tranca = TrancaRepository.getById( dto.idTranca);
