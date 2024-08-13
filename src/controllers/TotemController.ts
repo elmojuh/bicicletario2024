@@ -23,15 +23,11 @@ export class TotemController {
             const totemCadastrado = await new TotemService().cadastrarTotem(totemDTO);
             const totemJson = totemCadastrado.toResponseJSON();
             res.status(200).json(totemJson);
-        } catch (error: Error | unknown) {
-            if(error instanceof Error) {
-                switch (error.getCodigo()) {
-                    case '422':
-                        res.status(422).json({codigo: '422', mensagem: Constantes.ERRO_CRIAR_TOTEM});
-                        break;
-                }
-            }else {
-                res.status(500).json({codigo: '500', mensagem: 'Erro desconhecido', detalhes: String(error)});
+        } catch (error: Error | any) {
+            switch (error.getCodigo()) {
+                case '422':
+                    res.status(422).json({codigo: '422', mensagem: Constantes.ERRO_CRIAR_TOTEM});
+                    break;
             }
         }
     }
@@ -43,16 +39,12 @@ export class TotemController {
             const totemEditado = await new TotemService().editarTotem(idTotem, totem);
             const totemJson = totemEditado.toResponseJSON();
             res.status(200).json(totemJson);
-        } catch (error: Error | unknown) {
-            if (error instanceof Error) {
-                if (error.getCodigo() === '404') {
-                    res.status(404).json({ codigo: '404', mensagem: Constantes.TOTEM_NAO_ENCONTRADO });
-                }
-                if (error.getCodigo() === '422') {
-                    res.status(422).json({ codigo: '422', mensagem: Constantes.DADOS_INVALIDOS });
-                }
-            } else {
-                res.status(500).json({ codigo: '500', mensagem: 'Erro desconhecido', detalhes: String(error) });
+        } catch (error: Error | any) {
+            if (error.getCodigo() === '404') {
+                res.status(404).json({ codigo: '404', mensagem: Constantes.TOTEM_NAO_ENCONTRADO });
+            }
+            if (error.getCodigo() === '422') {
+                res.status(422).json({ codigo: '422', mensagem: Constantes.DADOS_INVALIDOS });
             }
         }
     }
@@ -63,13 +55,9 @@ export class TotemController {
             const idTotem = parseInt(req.params.id);
             await new TotemService().removerTotem(idTotem);
             res.status(200).json({ message: Constantes.TOTEM_REMOVIDO });
-        } catch (error: Error | unknown) {
-            if (error instanceof Error) {
-                if(error.getCodigo() === '404') {
-                    res.status(404).json({ codigo: '404', mensagem: Constantes.TOTEM_NAO_ENCONTRADO });
-                }
-            }else {
-                res.status(500).json({ codigo: '500', mensagem: 'Erro desconhecido', detalhes: String(error) });
+        } catch (error: Error | any) {
+            if(error.getCodigo() === '404') {
+                res.status(404).json({ codigo: '404', mensagem: Constantes.TOTEM_NAO_ENCONTRADO });
             }
 
         }
@@ -80,16 +68,12 @@ export class TotemController {
             const idTotem = parseInt(req.params.id);
             const trancas = await new TotemService().listarTrancas(idTotem);
             res.status(200).json(trancas);
-        } catch (error: Error | unknown) {
-            if (error instanceof Error) {
-                if(error.getCodigo() === '404') {
-                    res.status(404).json({ codigo: '404', mensagem: Constantes.TRANCA_NAO_ENCONTRADA });
-                }
-                if(error.getCodigo() === '422') {
-                    res.status(422).json({ codigo: '422', mensagem: Constantes.DADOS_INVALIDOS });
-                }
-            }else {
-                res.status(500).json({codigo: '500', mensagem: 'Erro desconhecido', detalhes: String(error)});
+        } catch (error: Error | any) {
+            if(error.getCodigo() === '404') {
+                res.status(404).json({ codigo: '404', mensagem: Constantes.TRANCA_NAO_ENCONTRADA });
+            }
+            if(error.getCodigo() === '422') {
+                res.status(422).json({ codigo: '422', mensagem: Constantes.DADOS_INVALIDOS });
             }
         }
     }
@@ -99,16 +83,12 @@ export class TotemController {
             const idTotem = parseInt(req.params.id);
             const bicicletas = await new TotemService().listarBicicletas(idTotem);
             res.status(200).json(bicicletas);
-        } catch (error) {
-            if (error instanceof Error) {
-                if(error.getCodigo() === '404') {
-                    res.status(404).json({ codigo: '404', mensagem: Constantes.BICICLETA_NAO_ENCONTRADA });
-                }
-                if(error.getCodigo() === '422') {
-                    res.status(422).json({ codigo: '422', mensagem: Constantes.DADOS_INVALIDOS });
-                }
-            }else {
-                res.status(500).json({codigo: '500', mensagem: 'Erro desconhecido', detalhes: String(error)});
+        } catch (error: Error | any) {
+            if(error.getCodigo() === '404') {
+                res.status(404).json({ codigo: '404', mensagem: Constantes.BICICLETA_NAO_ENCONTRADA });
+            }
+            if(error.getCodigo() === '422') {
+                res.status(422).json({ codigo: '422', mensagem: Constantes.DADOS_INVALIDOS });
             }
         }
     }

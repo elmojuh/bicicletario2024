@@ -53,7 +53,7 @@ describe('Bicicleta em Controller', () => {
         expect(res.statusCode).toBe(422);
     });
 
-    it('deve retornar erro ao criar bicicleta com dados inválidos', async () => {
+    it('deve retornar erro ao criar bicicleta', async () => {
         const dto = criarBicicletaDTO('Marca de Teste', '');
         bicicletaServiceMock.prototype.criarBicicleta = jest.fn().mockRejectedValue(new Error('422', Constantes.ERRO_CRIAR_BICICLETA));
 

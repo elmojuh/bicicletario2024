@@ -15,29 +15,18 @@ export class BicicletaController {
             const bicicletaJson = bicicleta.toResponseJSON();
             res.json(bicicletaJson);
         }catch (error: Error | any){
-            if(error instanceof Error){
-                res.status(404).json({codigo: '404', mensagem: Constantes.BICICLETA_NAO_ENCONTRADA});
-            }else{
-                res.status(500).json({codigo: '500', mensagem: 'Erro desconhecido'});
-            }
+            res.status(404).json({codigo: '404', mensagem: Constantes.BICICLETA_NAO_ENCONTRADA});
         }
     }
 
     async cadastrarBicicleta(req: Request, res: Response) {
         try {
             const dto: NovaBicicletaDTO = req.body;
-            if (typeof dto.marca !== 'string' || typeof dto.modelo !== 'string' || typeof dto.ano !== 'string' || typeof dto.numero !== 'number' || typeof dto.status !== 'string') {
-                return res.status(400).json({ message: Constantes.DADOS_INVALIDOS });
-            }
             const newBicicleta = await new BicicletaService().criarBicicleta(dto);
             const bicicletaJson = newBicicleta.toResponseJSON();
             res.status(200).json(bicicletaJson);
         } catch (error: Error | any) {
-            if(error instanceof Error){
-                res.status(422).json({codigo: '422', mensagem: Constantes.ERRO_CRIAR_BICICLETA});
-            } else {
-                res.status(500).json({codigo: '500', mensagem: 'Erro desconhecido'});
-            }
+            res.status(422).json({codigo: '422', mensagem: Constantes.ERRO_CRIAR_BICICLETA});
         }
     }
 
@@ -47,11 +36,7 @@ export class BicicletaController {
             await new BicicletaService().removerBicicleta(id);
             res.status(200).json(Constantes.BICICLETA_REMOVIDA);
         }catch (error: Error | any){
-            if(error instanceof Error) {
-                res.status(404).json({codigo: '404', mensagem: Constantes.BICICLETA_NAO_ENCONTRADA});
-            } else {
-                res.status(500).json({codigo: '500', mensagem: 'Erro desconhecido'});
-            }
+            res.status(404).json({codigo: '404', mensagem: Constantes.BICICLETA_NAO_ENCONTRADA});
         }
     }
 
@@ -61,11 +46,7 @@ export class BicicletaController {
             const dataJson = data.map(bicicleta => bicicleta.toResponseJSON());
             res.json(dataJson);
         }catch (error: Error | any){
-            if(error instanceof Error){
-                res.status(404).json({codigo: '404', mensagem: Constantes.ERRO_LISTAR_BICICLETAS});
-            }else{
-                res.status(500).json({codigo: '500', mensagem: 'Erro desconhecido'});
-            }
+            res.status(404).json({codigo: '404', mensagem: Constantes.ERRO_LISTAR_BICICLETAS});
         }
     }
 
@@ -77,15 +58,11 @@ export class BicicletaController {
             const bicicletaJson = bicicleta.toResponseJSON();
             res.status(200).json(bicicletaJson);
         }catch (error: Error | any){
-            if(error instanceof Error){
-                if(error.getCodigo() === '404'){
-                    res.status(404).json({codigo: '404', mensagem: Constantes.BICICLETA_NAO_ENCONTRADA});
-                }
-                if(error.getCodigo() === '422'){
-                    res.status(422).json({codigo: '422', mensagem: Constantes.ERRO_EDITAR_BICICLETA});
-                }
-            }else {
-                res.status(500).json({codigo: '500', mensagem: 'Erro desconhecido'});
+            if(error.getCodigo() === '404'){
+                res.status(404).json({codigo: '404', mensagem: Constantes.BICICLETA_NAO_ENCONTRADA});
+            }
+            if(error.getCodigo() === '422'){
+                res.status(422).json({codigo: '422', mensagem: Constantes.ERRO_EDITAR_BICICLETA});
             }
         }
     }
@@ -96,15 +73,11 @@ export class BicicletaController {
             await new BicicletaService().integrarNaRede(data);
             res.status(200).json(Constantes.DADOS_CADASTRADOS);
         }catch (error: Error | any){
-            if(error instanceof Error){
-                if(error.getCodigo() === '404'){
-                    res.status(404).json({codigo: '404', mensagem: Constantes.BICICLETA_NAO_ENCONTRADA});
-                }
-                if(error.getCodigo() === '422') {
-                    res.status(422).json({codigo: '422', mensagem: Constantes.DADOS_INVALIDOS});
-                }else{
-                    res.status(500).json({codigo: '500', mensagem: 'Erro desconhecido'});
-                }
+            if(error.getCodigo() === '404'){
+                res.status(404).json({codigo: '404', mensagem: Constantes.BICICLETA_NAO_ENCONTRADA});
+            }
+            if(error.getCodigo() === '422') {
+                res.status(422).json({codigo: '422', mensagem: Constantes.DADOS_INVALIDOS});
             }
         }
     }
@@ -115,15 +88,11 @@ export class BicicletaController {
             await new BicicletaService().retirarDaRede(data);
             res.status(200).json(Constantes.DADOS_CADASTRADOS);
         }catch (error: Error | any){
-            if(error instanceof Error){
-                if(error.getCodigo() === '404'){
-                    res.status(404).json({codigo: '404', mensagem: Constantes.BICICLETA_NAO_ENCONTRADA});
-                }
-                if(error.getCodigo() === '422'){
-                    res.status(422).json({codigo: '422', mensagem: Constantes.DADOS_INVALIDOS});
-                }
-            }else {
-                res.status(500).json({codigo: '500', mensagem: 'Erro desconhecido'});
+            if(error.getCodigo() === '404'){
+                res.status(404).json({codigo: '404', mensagem: Constantes.BICICLETA_NAO_ENCONTRADA});
+            }
+            if(error.getCodigo() === '422'){
+                res.status(422).json({codigo: '422', mensagem: Constantes.DADOS_INVALIDOS});
             }
         }
     }
@@ -135,15 +104,11 @@ export class BicicletaController {
         await new BicicletaService().alterarStatus(idBicicleta, acao);
         res.status(200).json(Constantes.ACAO_BEM_SUCEDIDA);
     } catch (error: Error | any) {
-        if(error instanceof Error){
-            if(error.getCodigo() === '404'){
-                res.status(404).json({codigo: '404', mensagem: Constantes.BICICLETA_NAO_ENCONTRADA});
-            }
-            if(error.getCodigo() === '422'){
-                res.status(422).json({codigo: '422', mensagem: Constantes.DADOS_INVALIDOS});
-            }
-        }else{
-            res.status(500).json({codigo: '500', mensagem: 'Erro desconhecido'});
+        if(error.getCodigo() === '404'){
+            res.status(404).json({codigo: '404', mensagem: Constantes.BICICLETA_NAO_ENCONTRADA});
+        }
+        if(error.getCodigo() === '422'){
+            res.status(422).json({codigo: '422', mensagem: Constantes.DADOS_INVALIDOS});
         }
     }
 }
