@@ -61,7 +61,7 @@ export class BicicletaController {
             if(error.getCodigo() === '404'){
                 res.status(404).json({codigo: '404', mensagem: Constantes.BICICLETA_NAO_ENCONTRADA});
             }
-            if(error.getCodigo() === '422'){
+            else if(error.getCodigo() === '422'){
                 res.status(422).json({codigo: '422', mensagem: Constantes.ERRO_EDITAR_BICICLETA});
             }
         }
@@ -76,7 +76,7 @@ export class BicicletaController {
             if(error.getCodigo() === '404'){
                 res.status(404).json({codigo: '404', mensagem: error.getMensagem()});
             }
-            if(error.getCodigo() === '422') {
+            else if(error.getCodigo() === '422') {
                 res.status(422).json({codigo: '422', mensagem: error.getMensagem()});
             }
         }
@@ -91,7 +91,7 @@ export class BicicletaController {
             if(error.getCodigo() === '404'){
                 res.status(404).json({codigo: '404', mensagem: Constantes.BICICLETA_NAO_ENCONTRADA});
             }
-            if(error.getCodigo() === '422'){
+            else if(error.getCodigo() === '422'){
                 res.status(422).json({codigo: '422', mensagem: Constantes.ERRO_RETIRAR_BICICLETA});
             }
         }
@@ -107,7 +107,7 @@ export class BicicletaController {
             if(error.getCodigo() === '404'){
                 res.status(404).json({codigo: '404', mensagem: Constantes.BICICLETA_NAO_ENCONTRADA});
             }
-            if(error.getCodigo() === '422'){
+            else if(error.getCodigo() === '422'){
                 res.status(422).json({codigo: '422', mensagem: Constantes.STATUS_DA_BICICLETA_INVALIDO});
             }
         }

@@ -5,8 +5,10 @@ import {TrancaService} from "../../src/services/TrancaService";
 import {Tranca} from "../../src/entities/Tranca";
 import {StatusTranca} from "../../src/entities/enums/StatusTranca";
 import {Constantes} from "../../src/entities/constants/Constantes";
-import { Error } from "../../src/entities/Error";
+import {Error} from "../../src/entities/Error";
 import {IntegrarTrancaNaRedeDTO} from "../../src/entities/dto/IntegrarTrancaNaRedeDTO";
+import {Bicicleta} from "../../src/entities/Bicicleta";
+import {StatusBicicleta} from "../../src/entities/enums/StatusBicicleta";
 
 jest.mock('../../src/services/TrancaService');
 
@@ -63,7 +65,7 @@ describe('Tranca em Controller', () => {
         trancaServiceMock.prototype.listarTrancas = jest.fn().mockRejectedValue(new Error('422', Constantes.ERRO_LISTAR_TRANCAS));
 
         const res = await request(app)
-            .get('/api/tranca');
+            .get(`/api/tranca`);
         expect(res.statusCode).toBe(422);
         expect(res.body).toEqual({ codigo: '422', mensagem: 'Erro ao listar trancas' });
     });
@@ -73,7 +75,7 @@ describe('Tranca em Controller', () => {
         trancaServiceMock.prototype.getById = jest.fn().mockResolvedValue(tranca);
 
         const res = await request(app)
-            .get('/api/tranca/1');
+            .get(`/api/tranca/${idTranca}`);
         expect(res.statusCode).toBe(200);
         expect(res.body).toEqual(tranca.toResponseJSON());
     });
@@ -82,7 +84,7 @@ describe('Tranca em Controller', () => {
         trancaServiceMock.prototype.getById = jest.fn().mockRejectedValue(new Error('404', Constantes.TRANCA_NAO_ENCONTRADA));
 
         const res = await request(app)
-            .get('/api/tranca/1');
+            .get(`/api/tranca/${idTranca}`);
         expect(res.statusCode).toBe(404);
         expect(res.body).toEqual({ codigo: '404', mensagem: 'Tranca não encontrada' });
     });
@@ -98,6 +100,17 @@ describe('Tranca em Controller', () => {
             .send(dto);
         expect(res.statusCode).toBe(200);
     });
+
+    it('deve retornar erro ao integrar tranca não existente', async () => {
+        const dto = new IntegrarTrancaNaRedeDTO(1, 999, 1);
+        trancaServiceMock.prototype.integrarNaRede = jest.fn().mockRejectedValue(new Error('404', Constantes.TRANCA_NAO_ENCONTRADA));
+
+        const res = await request(app)
+            .post('/api/tranca/integrarNaRede')
+            .send(dto);
+        expect(res.statusCode).toBe(404);
+        expect(res.body).toEqual({ codigo: '404', mensagem: 'Tranca não encontrada' });
+    })
 
     it('deve retornar erro ao integrar uma tranca na rede', async () => {
         const dto = new IntegrarTrancaNaRedeDTO(1, 1, 1);
@@ -139,18 +152,29 @@ describe('Tranca em Controller', () => {
         trancaServiceMock.prototype.editarTranca = jest.fn().mockResolvedValue(tranca);
 
         const res = await request(app)
-            .put('/api/tranca/1')
+            .put(`/api/tranca/${idTranca}`)
             .send(dto);
         expect(res.statusCode).toBe(200);
         expect(res.body).toEqual(tranca.toResponseJSON());
     });
+
+    it('deve retornar erro ao editar uma tranca não existente', async () =>{
+        const dto = novaTrancaDTO(12345, 'Localização de Teste', '2023', 'Modelo de Teste', 'NOVA');
+        trancaServiceMock.prototype.editarTranca = jest.fn().mockRejectedValue(new Error('404', Constantes.TRANCA_NAO_ENCONTRADA));
+
+        const res = await request(app)
+            .put(`/api/tranca/${idTranca}`)
+            .send(dto);
+        expect(res.statusCode).toBe(404);
+        expect(res.body).toEqual({ codigo: '404', mensagem: 'Tranca não encontrada' });
+    })
 
     it('deve retornar erro ao editar uma tranca', async () => {
         const dto = novaTrancaDTO(12345, 'Localização de Teste', '2023', 'Modelo de Teste', 'NOVA');
         trancaServiceMock.prototype.editarTranca = jest.fn().mockRejectedValue(new Error('422', Constantes.ERRO_EDITAR_TRANCA));
 
         const res = await request(app)
-            .put('/api/tranca/1')
+            .put(`/api/tranca/${idTranca}`)
             .send(dto);
         expect(res.statusCode).toBe(422);
         expect(res.body).toEqual({ codigo: '422', mensagem: 'Erro ao editar tranca' });
@@ -160,16 +184,48 @@ describe('Tranca em Controller', () => {
         trancaServiceMock.prototype.removerTranca = jest.fn().mockResolvedValue('1');
 
         const res = await request(app)
-            .delete('/api/tranca/1');
+            .delete(`/api/tranca/${idTranca}`);
         expect(res.statusCode).toBe(200);
     });
 
-    it('deve retornar erro ao remover uma tranca', async () => {
-        trancaServiceMock.prototype.removerTranca = jest.fn().mockRejectedValue(new Error('422', Constantes.ERRO_REMOVER_TRANCA));
+    it('deve retornar erro ao remover uma tranca não existente', async () => {
+        trancaServiceMock.prototype.removerTranca = jest.fn().mockRejectedValue(new Error('404', Constantes.TRANCA_NAO_ENCONTRADA));
 
         const res = await request(app)
-            .delete('/api/tranca/1');
+            .delete('/api/tranca/999');
+        expect(res.statusCode).toBe(404);
+        expect(res.body).toEqual({ codigo: '404', mensagem: 'Tranca não encontrada' });
+    })
+
+    it('deve obter bicicleta na tranca', async () => {
+        const bicicleta = new Bicicleta(101, 'Bicicleta de Teste', 'Modelo de Teste', '2023', 12345, StatusBicicleta.NOVA);
+        trancaServiceMock.prototype.obterBicicletaNaTranca = jest.fn().mockResolvedValue(bicicleta);
+
+        const res = await request(app)
+            .get(`/api/tranca/${idTranca}/bicicleta`);
+
+        expect(res.statusCode).toBe(200);
+        expect(res.body).toEqual(bicicleta.toResponseJSON());
+    });
+
+    it('deve retornar erro ao obter bicicleta na tranca não existente', async () => {
+        trancaServiceMock.prototype.obterBicicletaNaTranca = jest.fn().mockRejectedValue(new Error('404', Constantes.BICICLETA_NAO_ENCONTRADA));
+
+        const res = await request(app)
+            .get(`/api/tranca/999/bicicleta`);
+
+        expect(res.statusCode).toBe(404);
+        expect(res.body).toEqual({ codigo: '404', mensagem: 'Bicicleta não encontrada' });
+    });
+
+    it('deve retornar erro ao obter bicicleta na tranca', async () => {
+        trancaServiceMock.prototype.obterBicicletaNaTranca = jest.fn().mockRejectedValue(new Error('422', Constantes.ERRO_OBTER_BICICLETA_TRANCA));
+
+        const res = await request(app)
+            .get(`/api/tranca/${idTranca}/bicicleta`);
+
         expect(res.statusCode).toBe(422);
+        expect(res.body).toEqual({ codigo: '422', mensagem: 'Erro ao obter bicicleta na tranca' });
     });
 
     it('deve trancar uma tranca com sucesso', async () => {
@@ -181,6 +237,17 @@ describe('Tranca em Controller', () => {
 
         expect(res.statusCode).toBe(200);
         expect(res.body).toEqual('Ação bem sucedida');
+    });
+
+    it('deve retornar erro ao trancar uma tranca não existente', async () => {
+        trancaServiceMock.prototype.trancarTranca = jest.fn().mockRejectedValue(new Error('404', Constantes.TRANCA_NAO_ENCONTRADA));
+
+        const res = await request(app)
+            .post(`/api/tranca/${idTranca}/trancar`)
+            .send({ bicicleta: idBicicleta });
+
+        expect(res.statusCode).toBe(404);
+        expect(res.body).toEqual({ codigo: '404', mensagem: 'Tranca não encontrada' });
     });
 
     it('deve retornar erro ao trancar uma tranca já trancada', async () => {
@@ -204,6 +271,17 @@ describe('Tranca em Controller', () => {
         expect(res.statusCode).toBe(200);
         expect(res.body).toEqual('Ação bem sucedida');
     });
+
+    it('deve retornar erro ao destrancar uma tranca não existente', async () => {
+        trancaServiceMock.prototype.destrancarTranca = jest.fn().mockRejectedValue(new Error('404', Constantes.TRANCA_NAO_ENCONTRADA));
+
+        const res = await request(app)
+            .post(`/api/tranca/${idTranca}/destrancar`)
+            .send({ bicicleta: idBicicleta });
+
+        expect(res.statusCode).toBe(404);
+        expect(res.body).toEqual({ codigo: '404', mensagem: 'Tranca não encontrada' });
+    })
 
     it('deve retornar erro ao destrancar uma tranca já destrancada', async () => {
         trancaServiceMock.prototype.destrancarTranca = jest.fn().mockRejectedValue(new Error('422', Constantes.ERRO_DESTRANCAR_TRANCA));
@@ -236,6 +314,26 @@ describe('Tranca em Controller', () => {
             .send();
         expect(res.statusCode).toBe(200);
         expect(res.body).toEqual(tranca.toResponseJSON());
+    })
+
+    it('deve retornar erro ao alterar status da tranca não existente', async () => {
+        trancaServiceMock.prototype.alterarStatus = jest.fn().mockRejectedValue(new Error('404', Constantes.TRANCA_NAO_ENCONTRADA));
+
+        const res = await request(app)
+            .post('/api/tranca/999/status/TRANCAR')
+            .send();
+        expect(res.statusCode).toBe(404);
+        expect(res.body).toEqual({ codigo: '404', mensagem: 'Tranca não encontrada' });
+    })
+
+    it('deve retornar erro ao alterar status da tranca para TRANCAR', async () => {
+        trancaServiceMock.prototype.alterarStatus = jest.fn().mockRejectedValue(new Error('422', Constantes.ERRO_ALTERAR_STATUS_TRANCA));
+
+        const res = await request(app)
+            .post('/api/tranca/1/status/TRANCAR')
+            .send();
+        expect(res.statusCode).toBe(422);
+        expect(res.body).toEqual({ codigo: '422', mensagem: 'Erro ao alterar status da tranca' });
     })
 
 });

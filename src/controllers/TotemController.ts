@@ -24,11 +24,7 @@ export class TotemController {
             const totemJson = totemCadastrado.toResponseJSON();
             res.status(200).json(totemJson);
         } catch (error: Error | any) {
-            switch (error.getCodigo()) {
-                case '422':
-                    res.status(422).json({codigo: '422', mensagem: Constantes.ERRO_CRIAR_TOTEM});
-                    break;
-            }
+            res.status(422).json({codigo: '422', mensagem: Constantes.ERRO_CRIAR_TOTEM});
         }
     }
 
@@ -43,7 +39,7 @@ export class TotemController {
             if (error.getCodigo() === '404') {
                 res.status(404).json({ codigo: '404', mensagem: Constantes.TOTEM_NAO_ENCONTRADO });
             }
-            if (error.getCodigo() === '422') {
+            else if (error.getCodigo() === '422') {
                 res.status(422).json({ codigo: '422', mensagem: Constantes.DADOS_INVALIDOS });
             }
         }
@@ -56,9 +52,7 @@ export class TotemController {
             await new TotemService().removerTotem(idTotem);
             res.status(200).json({ message: Constantes.TOTEM_REMOVIDO });
         } catch (error: Error | any) {
-            if(error.getCodigo() === '404') {
-                res.status(404).json({ codigo: '404', mensagem: Constantes.TOTEM_NAO_ENCONTRADO });
-            }
+            res.status(404).json({ codigo: '404', mensagem: Constantes.TOTEM_NAO_ENCONTRADO });
 
         }
     }
@@ -72,7 +66,7 @@ export class TotemController {
             if(error.getCodigo() === '404') {
                 res.status(404).json({ codigo: '404', mensagem: Constantes.TRANCA_NAO_ENCONTRADA });
             }
-            if(error.getCodigo() === '422') {
+            else if(error.getCodigo() === '422') {
                 res.status(422).json({ codigo: '422', mensagem: Constantes.ERRO_LISTAR_TRANCAS });
             }
         }
@@ -87,7 +81,7 @@ export class TotemController {
             if(error.getCodigo() === '404') {
                 res.status(404).json({ codigo: '404', mensagem: Constantes.BICICLETA_NAO_ENCONTRADA });
             }
-            if(error.getCodigo() === '422') {
+            else if(error.getCodigo() === '422') {
                 res.status(422).json({ codigo: '422', mensagem: Constantes.ERRO_LISTAR_BICICLETAS });
             }
         }

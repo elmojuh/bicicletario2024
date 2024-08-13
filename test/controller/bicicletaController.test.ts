@@ -24,8 +24,6 @@ const criarBicicletaDTO = (marca: string = 'Marca de Teste', modelo: string = 'M
 const bicicleta1 = (id: number = 1) =>
     new Bicicleta(id, 'Marca de Teste', 'Modelo de Teste', '2023', 12344, StatusBicicleta.DISPONIVEL);
 
-const bicicletaUnExist = new Error('404', Constantes.BICICLETA_NAO_ENCONTRADA);
-
 describe('Bicicleta em Controller', () => {
     it('deve criar uma nova bicicleta', async () => {
         const dto = criarBicicletaDTO();
