@@ -228,4 +228,40 @@ describe('Bicicleta em Controller', () => {
         expect(res.statusCode).toBe(422);
         expect(res.body).toEqual({ codigo: '422', mensagem: 'Erro ao retirar bicicleta da rede' });
     });
+
+    it('deve alterar o status da bicicleta para EM_REPARO', async () => {
+        const bicicleta = bicicleta1(1);
+        bicicletaServiceMock.prototype.alterarStatus = jest.fn().mockResolvedValue(bicicleta);
+
+        const res = await request(app)
+            .post('/api/bicicleta/1/status/EM_REPARO')
+            .send();
+
+        expect(res.statusCode).toBe(200);
+        expect(res.body).toEqual(Constantes.ACAO_BEM_SUCEDIDA);
+    });
+
+
+    it('deve retornar erro ao tentar alterar status de uma bicicleta inexistente', async () => {
+        bicicletaServiceMock.prototype.alterarStatus = jest.fn().mockRejectedValue(new Error('404', Constantes.BICICLETA_NAO_ENCONTRADA));
+
+        const res = await request(app)
+            .post('/api/bicicleta/999/status/DISPONIVEL')
+            .send();
+
+        expect(res.statusCode).toBe(404);
+        expect(res.body).toEqual({ codigo: '404', mensagem: 'Bicicleta não encontrada' });
+    });
+
+    it('deve retornar erro ao tentar alterar para um status inválido', async () => {
+        bicicletaServiceMock.prototype.alterarStatus = jest.fn().mockRejectedValue(new Error('422', Constantes.STATUS_DA_BICICLETA_INVALIDO));
+
+        const res = await request(app)
+            .post('/api/bicicleta/1/status/INVALIDO')
+            .send();
+
+        expect(res.statusCode).toBe(422);
+        expect(res.body).toEqual({ codigo: '422', mensagem: 'Status da bicicleta inválido' });
+    });
+
 });

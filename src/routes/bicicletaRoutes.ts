@@ -15,6 +15,6 @@ export class BicicletaRouter {
     this.router.route('/:id').delete(controller.removerBicicleta);
     this.router.route('/integrarNaRede').post(controller.integrarNaRede);
     this.router.route('/retirarDaRede').post(controller.retirarDaRede);
-    this.router.route('/:idBicicleta/status/:acao').get(controller.alterarStatusDaBicicleta);
+    this.router.route('/:idBicicleta/status/:acao').post(controller.alterarStatusDaBicicleta);
   }
 }

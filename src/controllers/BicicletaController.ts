@@ -98,24 +98,18 @@ export class BicicletaController {
     }
 
     async alterarStatusDaBicicleta(req: Request, res: Response) {
-    try {
-        const idBicicleta = parseInt(req.params.idBicicleta);
-        const acao = req.params.acao;
-        await new BicicletaService().alterarStatus(idBicicleta, acao);
-        res.status(200).json(Constantes.ACAO_BEM_SUCEDIDA);
-    } catch (error: Error | any) {
-        if(error.getCodigo() === '404'){
-            res.status(404).json({codigo: '404', mensagem: Constantes.BICICLETA_NAO_ENCONTRADA});
-        }
-        if(error.getCodigo() === '422'){
-            res.status(422).json({codigo: '422', mensagem: Constantes.DADOS_INVALIDOS});
+        try {
+            const idBicicleta = parseInt(req.params.idBicicleta);
+            const acao = req.params.acao;
+            await new BicicletaService().alterarStatus(idBicicleta, acao);
+            res.status(200).json(Constantes.ACAO_BEM_SUCEDIDA);
+        } catch (error: Error | any) {
+            if(error.getCodigo() === '404'){
+                res.status(404).json({codigo: '404', mensagem: Constantes.BICICLETA_NAO_ENCONTRADA});
+            }
+            if(error.getCodigo() === '422'){
+                res.status(422).json({codigo: '422', mensagem: Constantes.STATUS_DA_BICICLETA_INVALIDO});
+            }
         }
     }
-}
-
-
-
-
-
-
 }

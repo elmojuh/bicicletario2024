@@ -116,14 +116,14 @@ export class BicicletaService {
             throw new Error('404', Constantes.TRANCA_NAO_ENCONTRADA);
         }
 
-        this.alterarStatus(idBicicleta, 'reparar');
+        await this.alterarStatus(idBicicleta, 'reparar');
 
         tranca.statusTranca = StatusTranca.LIVRE;
         TrancaRepository.update(idTranca, tranca);
 
         const emailService = new EmailService();
         try {
-            emailService.enviarEmailParaReparador(dto.idFuncionario);
+            await emailService.enviarEmailParaReparador(dto.idFuncionario);
         } catch (e) {
             throw new Error('',Constantes.ERROR_ENVIAR_EMAIL);
         }
@@ -131,9 +131,6 @@ export class BicicletaService {
 
     async alterarStatus(id: number, acao: string) : Promise<Bicicleta>{
         const bicicleta = await this.getById(id);
-        if (!bicicleta) {
-            throw new Error('404', Constantes.BICICLETA_NAO_ENCONTRADA);
-        }
         switch (acao) {
             case 'DISPONIVEL':
                 bicicleta.statusBicicleta = StatusBicicleta.DISPONIVEL;
