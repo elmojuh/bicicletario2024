@@ -59,7 +59,7 @@ describe('Bicicleta em Controller', () => {
         expect(res.body).toEqual({ codigo: '422', mensagem: 'Erro ao criar bicicleta' });
     });
 
-    it('deve obter uma bicicleta por ID', async () => {
+    it('deve obter uma bicicleta pelo ID', async () => {
         const bicicleta = bicicleta1(1);
         bicicletaServiceMock.prototype.getById = jest.fn().mockResolvedValue(bicicleta);
 
@@ -69,7 +69,7 @@ describe('Bicicleta em Controller', () => {
         expect(res.body).toEqual(bicicleta.toResponseJSON());
     });
 
-    it('deve retornar erro ao obter bicicleta por ID', async () => {
+    it('deve retornar erro ao obter bicicleta pelo ID', async () => {
         bicicletaServiceMock.prototype.getById = jest.fn().mockRejectedValue(new Error('404', Constantes.BICICLETA_NAO_ENCONTRADA));
 
         const res = await request(app)

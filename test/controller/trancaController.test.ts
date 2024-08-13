@@ -197,6 +197,15 @@ describe('Tranca em Controller', () => {
         expect(res.body).toEqual({ codigo: '404', mensagem: 'Tranca não encontrada' });
     })
 
+    it('deve retornar erro ao remover uma tranca', async() => {
+        trancaServiceMock.prototype.removerTranca = jest.fn().mockRejectedValue(new Error('422', Constantes.ERRO_REMOVER_TRANCA));
+
+        const res = await request(app)
+            .delete(`/api/tranca/${idTranca}`);
+        expect(res.statusCode).toBe(422);
+        expect(res.body).toEqual({ codigo: '422', mensagem: 'Erro ao remover tranca' });
+    })
+
     it('deve obter bicicleta na tranca', async () => {
         const bicicleta = new Bicicleta(101, 'Bicicleta de Teste', 'Modelo de Teste', '2023', 12345, StatusBicicleta.NOVA);
         trancaServiceMock.prototype.obterBicicletaNaTranca = jest.fn().mockResolvedValue(bicicleta);
