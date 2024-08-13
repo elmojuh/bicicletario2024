@@ -15,9 +15,9 @@ export class TrancaRouter {
     this.router.route('/:id').get(controller.obterTranca);
     this.router.route('/integrarNaRede').post(controller.integrarNaRede);
     this.router.route('/retirarDaRede').post(controller.retirarDaRede);
-    this.router.route('/:idTranca/status/:acao').get(controller.alterarStatusDaTranca);
-    this.router.route('/:idTranca/trancar').get(controller.trancar);
-    this.router.route('/:idTranca/destrancar').get(controller.destrancar);
+    this.router.route('/:idTranca/status/:acao').post(controller.alterarStatusDaTranca);
+    this.router.route('/:idTranca/trancar').post(controller.trancar);
+    this.router.route('/:idTranca/destrancar').post(controller.destrancar);
 
   }
 }

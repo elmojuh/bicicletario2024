@@ -33,7 +33,12 @@ export class TrancaController {
             await new TrancaService().integrarNaRede(req.body as IntegrarTrancaNaRedeDTO);
             res.status(200).json(Constantes.ACAO_BEM_SUCEDIDA);
         } catch (error: Error | any) {
-            res.status(422).json({codigo: '422', mensagem: Constantes.ERRO_INTEGRAR_TRANCA});
+            if(error.getCodigo() === '404'){
+                res.status(404).json({codigo: '404', mensagem: error.getMensagem()});
+            }
+            if(error.getCodigo() === '422'){
+                res.status(422).json({codigo: '422', mensagem: Constantes.ERRO_INTEGRAR_TRANCA});
+            }
         }
     }
 
@@ -142,7 +147,7 @@ export class TrancaController {
             const idTranca = parseInt(req.params.idTranca);
             const acao = req.params.acao
             const tranca = await new TrancaService().alterarStatus(idTranca, acao);
-            res.status(200).json(tranca);
+            res.status(200).json(tranca.toResponseJSON());
         }catch (error: Error | any){
             if (error.getCodigo() === '404') {
                 res.status(404).json({codigo: '404', mensagem: Constantes.TRANCA_NAO_ENCONTRADA});

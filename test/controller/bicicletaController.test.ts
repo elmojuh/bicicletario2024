@@ -158,7 +158,6 @@ describe('Bicicleta em Controller', () => {
         const dto = new IntegrarBicicletaNaRedeDTO(1, 1, 1);
         const bicicleta = bicicleta1(1);
 
-        bicicletaServiceMock.prototype.getById = jest.fn().mockResolvedValue(bicicleta);
         bicicletaServiceMock.prototype.integrarNaRede = jest.fn().mockResolvedValue(bicicleta);
 
         const res = await request(app)
@@ -178,7 +177,7 @@ describe('Bicicleta em Controller', () => {
         expect(res.body).toEqual({ codigo: '404', mensagem: 'Bicicleta não encontrada' });
     });
 
-    it('deve retornar erro ao integrar bicicleta na rede com dados inválidos', async () => {
+    it('deve retornar erro ao integrar bicicleta na rede', async () => {
         const dto = new IntegrarBicicletaNaRedeDTO(1, 1, 1);
         bicicletaServiceMock.prototype.integrarNaRede = jest.fn().mockRejectedValue(new Error('422', Constantes.ERRO_INTEGRAR_BICICLETA));
 
@@ -233,7 +232,7 @@ describe('Bicicleta em Controller', () => {
             .send();
 
         expect(res.statusCode).toBe(200);
-        expect(res.body).toEqual(Constantes.ACAO_BEM_SUCEDIDA);
+        expect(res.body).toEqual(bicicleta.toResponseJSON());
     });
 
 

@@ -101,8 +101,8 @@ export class BicicletaController {
         try {
             const idBicicleta = parseInt(req.params.idBicicleta);
             const acao = req.params.acao;
-            await new BicicletaService().alterarStatus(idBicicleta, acao);
-            res.status(200).json(Constantes.ACAO_BEM_SUCEDIDA);
+            const bicicleta = await new BicicletaService().alterarStatus(idBicicleta, acao);
+            res.status(200).json(bicicleta.toResponseJSON());
         } catch (error: Error | any) {
             if(error.getCodigo() === '404'){
                 res.status(404).json({codigo: '404', mensagem: Constantes.BICICLETA_NAO_ENCONTRADA});
