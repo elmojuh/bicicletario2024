@@ -73,7 +73,7 @@ export class TotemController {
                 res.status(404).json({ codigo: '404', mensagem: Constantes.TRANCA_NAO_ENCONTRADA });
             }
             if(error.getCodigo() === '422') {
-                res.status(422).json({ codigo: '422', mensagem: Constantes.DADOS_INVALIDOS });
+                res.status(422).json({ codigo: '422', mensagem: Constantes.ERRO_LISTAR_TRANCAS });
             }
         }
     }
@@ -88,7 +88,7 @@ export class TotemController {
                 res.status(404).json({ codigo: '404', mensagem: Constantes.BICICLETA_NAO_ENCONTRADA });
             }
             if(error.getCodigo() === '422') {
-                res.status(422).json({ codigo: '422', mensagem: Constantes.DADOS_INVALIDOS });
+                res.status(422).json({ codigo: '422', mensagem: Constantes.ERRO_LISTAR_BICICLETAS });
             }
         }
     }

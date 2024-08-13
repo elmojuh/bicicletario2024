@@ -17,11 +17,6 @@ jest.mock('../../src/services/TrancaService');
 jest.mock('../../src/services/TotemService');
 
 const bicicletaServiceMock = BicicletaService as jest.Mocked<typeof BicicletaService>;
-const funcionarioServiceMock = FuncionarioService as jest.Mocked<typeof FuncionarioService>;
-
-beforeEach(() => {
-    funcionarioServiceMock.isFuncionarioValido = jest.fn().mockResolvedValue(true);
-});
 
 const criarBicicletaDTO = (marca: string = 'Marca de Teste', modelo: string = 'Modelo de Teste') =>
     new NovaBicicletaDTO(marca, modelo, '2023', 12344, StatusBicicleta.DISPONIVEL);
@@ -174,13 +169,13 @@ describe('Bicicleta em Controller', () => {
 
     it('deve retornar erro ao integrar bicicleta não existente', async () => {
         const dto = new IntegrarBicicletaNaRedeDTO(1, 999, 1);
-        bicicletaServiceMock.prototype.integrarNaRede = jest.fn().mockRejectedValue(new Error('422', Constantes.BICICLETA_NAO_ENCONTRADA));
+        bicicletaServiceMock.prototype.integrarNaRede = jest.fn().mockRejectedValue(new Error('404', Constantes.BICICLETA_NAO_ENCONTRADA));
 
         const res = await request(app)
             .post('/api/bicicleta/integrarNaRede')
             .send(dto);
-        expect(res.statusCode).toBe(422);
-        expect(res.body).toEqual({ codigo: '422', mensagem: 'Bicicleta não encontrada' });
+        expect(res.statusCode).toBe(404);
+        expect(res.body).toEqual({ codigo: '404', mensagem: 'Bicicleta não encontrada' });
     });
 
     it('deve retornar erro ao integrar bicicleta na rede com dados inválidos', async () => {

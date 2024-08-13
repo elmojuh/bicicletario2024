@@ -124,4 +124,72 @@ describe('Totem em Controller', () => {
         expect(res.body).toEqual({ codigo: '404', mensagem: 'Totem não encontrado' });
     });
 
+    it('deve listar trancas presentes em um totem', async () => {
+        const trancas = [
+            { id: 1, localizacao: 'Localização 1', descricao: 'Descrição 1' },
+            { id: 2, localizacao: 'Localização 2', descricao: 'Descrição 2' },
+        ];
+        totemServiceMock.prototype.listarTrancas = jest.fn().mockResolvedValue(trancas);
+
+        const res = await request(app)
+            .get('/api/totem/1/trancas')
+            .expect('Content-Type', /json/)
+        expect(res.statusCode).toBe(200);
+        expect(res.body).toEqual(trancas);
+    })
+
+    it('deve retornar erro ao não listar nenhuma tranca presente em um totem', async () => {
+        totemServiceMock.prototype.listarTrancas = jest.fn().mockRejectedValue(new Error('404', Constantes.TRANCA_NAO_ENCONTRADA));
+
+        const res = await request(app)
+            .get('/api/totem/1/trancas')
+            .expect('Content-Type', /json/)
+        expect(res.statusCode).toBe(404);
+        expect(res.body).toEqual({ codigo: '404', mensagem: 'Tranca não encontrada' });
+    });
+
+    it('deve retornar erro ao listar trancas presentes em um totem', async () => {
+        totemServiceMock.prototype.listarTrancas = jest.fn().mockRejectedValue(new Error('422', Constantes.ERRO_LISTAR_TRANCAS));
+
+        const res = await request(app)
+            .get('/api/totem/1/trancas')
+            .expect('Content-Type', /json/)
+        expect(res.statusCode).toBe(422);
+        expect(res.body).toEqual({ codigo: '422', mensagem: 'Erro ao listar trancas' });
+    });
+
+    it('deve listar bicicletas presentes em um totem', async () => {
+        const bicicletas = [
+            { id: 1, modelo: 'Modelo 1', marca: 'Marca 1' },
+            { id: 2, modelo: 'Modelo 2', marca: 'Marca 2' },
+        ];
+        totemServiceMock.prototype.listarBicicletas = jest.fn().mockResolvedValue(bicicletas);
+
+        const res = await request(app)
+            .get('/api/totem/1/bicicletas')
+            .expect('Content-Type', /json/)
+        expect(res.statusCode).toBe(200);
+        expect(res.body).toEqual(bicicletas);
+    })
+
+    it('deve retornar erro ao não listar nenhuma bicicletas presentes em um totem', async () => {
+        totemServiceMock.prototype.listarBicicletas = jest.fn().mockRejectedValue(new Error('404', Constantes.BICICLETA_NAO_ENCONTRADA));
+
+        const res = await request(app)
+            .get('/api/totem/1/bicicletas')
+            .expect('Content-Type', /json/)
+        expect(res.statusCode).toBe(404);
+        expect(res.body).toEqual({ codigo: '404', mensagem: 'Bicicleta não encontrada' });
+    });
+
+    it('deve retornar erro ao listar bicicletas presentes em um totem', async () => {
+        totemServiceMock.prototype.listarBicicletas = jest.fn().mockRejectedValue(new Error('422', Constantes.ERRO_LISTAR_BICICLETAS));
+
+        const res = await request(app)
+            .get('/api/totem/1/bicicletas')
+            .expect('Content-Type', /json/)
+        expect(res.statusCode).toBe(422);
+        expect(res.body).toEqual({ codigo: '422', mensagem: 'Erro ao listar bicicletas' });
+    });
+
 });
