@@ -53,32 +53,31 @@ export class BicicletaService {
     }
 
     async integrarNaRede(dto: IntegrarBicicletaNaRedeDTO) : Promise<void>{
-        const idBicicleta = dto.idBicicleta;
-        const bicicleta = await this.getById(idBicicleta);
+        console.log("dto.idBicicleta em service", dto.idBicicleta);
+        const bicicleta = await this.getById(dto.idBicicleta);
         if(!bicicleta){
             throw new Error('404', Constantes.BICICLETA_NAO_ENCONTRADA);
         }
+        console.log("bicicleta.id em service", bicicleta.id);
         if (bicicleta.statusBicicleta !== StatusBicicleta.NOVA || StatusBicicleta.EM_REPARO ) {
-            throw new Error('Bicicleta não pode ser integrada na rede', Constantes.ERRO_INTEGRAR_BICICLETA);
+            throw new Error('404', Constantes.ERRO_INTEGRAR_BICICLETA);
         }
 
-        const idTranca = dto.idTranca;
-        const tranca = TrancaRepository.getById(idTranca);
+        const tranca = TrancaRepository.getById( dto.idTranca);
         if(!tranca){
             throw new Error('404', Constantes.TRANCA_NAO_ENCONTRADA);
         }
 
-        const idFuncionario = dto.idFuncionario;
-        const funcionarioDisponivel = await FuncionarioService.isFuncionarioValido(idFuncionario);
+        const funcionarioDisponivel = await FuncionarioService.isFuncionarioValido(dto.idFuncionario);
         if (!funcionarioDisponivel) {
             throw new Error('422', Constantes.FUNCIONARIO_INVALIDO);
         }
-        await this.alterarStatus(idBicicleta, 'disponibilizar');
+        await this.alterarStatus(dto.idBicicleta, 'disponibilizar');
         bicicleta.dataInsercaoTranca = new Date().toISOString();
-        BicicletaRepository.update(idBicicleta, bicicleta);
+        BicicletaRepository.update(dto.idBicicleta, bicicleta);
 
         tranca.statusTranca = StatusTranca.OCUPADA;
-        TrancaRepository.update(idTranca, tranca);
+        TrancaRepository.update(dto.idTranca, tranca);
 
         const emailService = new EmailService();
         try {
@@ -91,9 +90,6 @@ export class BicicletaService {
     async retirarDaRede(dto: RetirarBicicletaDaRedeDTO) : Promise<void>{
         const idBicicleta = dto.idBicicleta;
         const bicicleta = await this.getById(idBicicleta);
-        if(!bicicleta){
-            throw new Error('404', Constantes.BICICLETA_NAO_ENCONTRADA);
-        }
         if (bicicleta.statusBicicleta !== StatusBicicleta.DISPONIVEL) {
             throw new Error('422', Constantes.ERRO_RETIRAR_BICICLETA);
         }

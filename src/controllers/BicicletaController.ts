@@ -15,7 +15,7 @@ export class BicicletaController {
             const bicicletaJson = bicicleta.toResponseJSON();
             res.json(bicicletaJson);
         }catch (error: Error | any){
-            res.status(404).json({codigo: '404', mensagem: Constantes.BICICLETA_NAO_ENCONTRADA});
+            res.status(404).json({codigo: error.getCodigo(), mensagem: error.getMensagem()});
         }
     }
 
@@ -74,10 +74,10 @@ export class BicicletaController {
             res.status(200).json(Constantes.DADOS_CADASTRADOS);
         }catch (error: Error | any){
             if(error.getCodigo() === '404'){
-                res.status(404).json({codigo: '404', mensagem: Constantes.BICICLETA_NAO_ENCONTRADA});
+                res.status(404).json({codigo: '404', mensagem: error.getMensagem()});
             }
             if(error.getCodigo() === '422') {
-                res.status(422).json({codigo: '422', mensagem: Constantes.DADOS_INVALIDOS});
+                res.status(422).json({codigo: '422', mensagem: error.getMensagem()});
             }
         }
     }
@@ -92,7 +92,7 @@ export class BicicletaController {
                 res.status(404).json({codigo: '404', mensagem: Constantes.BICICLETA_NAO_ENCONTRADA});
             }
             if(error.getCodigo() === '422'){
-                res.status(422).json({codigo: '422', mensagem: Constantes.DADOS_INVALIDOS});
+                res.status(422).json({codigo: '422', mensagem: Constantes.ERRO_RETIRAR_BICICLETA});
             }
         }
     }
