@@ -88,8 +88,7 @@ export class BicicletaService {
     }
 
     async retirarDaRede(dto: RetirarBicicletaDaRedeDTO) : Promise<void>{
-        const idBicicleta = dto.idBicicleta;
-        const bicicleta = await this.getById(idBicicleta);
+        const bicicleta = await this.getById(dto.idBicicleta);
         if (bicicleta.statusBicicleta !== StatusBicicleta.DISPONIVEL) {
             throw new Error('422', Constantes.STATUS_DA_BICICLETA_INVALIDO);
         }
@@ -116,7 +115,7 @@ export class BicicletaService {
             throw new Error('404', Constantes.TRANCA_NAO_ENCONTRADA);
         }
 
-        await this.alterarStatus(idBicicleta, StatusBicicleta.EM_REPARO);
+        await this.alterarStatus(dto.idBicicleta, StatusBicicleta.EM_REPARO);
 
         tranca.statusTranca = StatusTranca.LIVRE;
         TrancaRepository.update(idTranca, tranca);
