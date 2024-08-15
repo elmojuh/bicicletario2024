@@ -105,7 +105,7 @@ export class TrancaController {
                 res.status(404).json({codigo: '404', mensagem: Constantes.BICICLETA_NAO_ENCONTRADA});
             }
             else if(error.getCodigo() === '422'){
-                res.status(422).json({codigo: '422', mensagem: Constantes.ERRO_OBTER_BICICLETA_TRANCA});
+                res.status(422).json({codigo: '422', mensagem: error.getMensagem()});
             }
         }
     }
