@@ -14,8 +14,8 @@ export class BicicletaController {
             const bicicleta = await new BicicletaService().getById(id);
             const bicicletaJson = bicicleta.toResponseJSON();
             res.json(bicicletaJson);
-        }catch (error: Error | any){
-            res.status(404).json({codigo: error.getCodigo(), mensagem: error.getMensagem()});
+        }catch (error){
+            res.status(404).json({codigo: '404', mensagem: Constantes.BICICLETA_NAO_ENCONTRADA});
         }
     }
 
@@ -25,7 +25,7 @@ export class BicicletaController {
             const newBicicleta = await new BicicletaService().criarBicicleta(dto);
             const bicicletaJson = newBicicleta.toResponseJSON();
             res.status(200).json(bicicletaJson);
-        } catch (error: Error | any) {
+        } catch (error) {
             res.status(422).json({codigo: '422', mensagem: Constantes.ERRO_CRIAR_BICICLETA});
         }
     }
