@@ -1,3 +1,14 @@
+interface FuncionarioProps {
+    id: number;
+    nome: string;
+    email: string;
+    cpf: string;
+    senha: string;
+    confirmacaoSenha: string;
+    idade: number;
+    funcao: string;
+}
+
 export class Funcionario {
     private _id: number;
     private _nome: string;
@@ -8,7 +19,7 @@ export class Funcionario {
     private _idade: number;
     private _funcao: string;
 
-    constructor(id: number, nome: string, email: string, cpf: string, senha: string, confirmacaoSenha: string, idade: number, funcao: string) {
+    constructor({ id, nome, email, cpf, senha, confirmacaoSenha, idade, funcao }: FuncionarioProps) {
         this._id = id;
         this._nome = nome;
         this._email = email;
