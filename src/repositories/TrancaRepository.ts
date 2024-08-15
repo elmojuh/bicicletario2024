@@ -29,7 +29,7 @@ export class TrancaRepository {
     }
 
     static update(id: number, trancaData: Partial<Tranca>): Tranca | null{
-        const tranca = this.trancas.find(t => t.id === id);
+        const tranca = this.trancas.find(tranca => tranca.id === id);
         if (!tranca) {
             return null
         }

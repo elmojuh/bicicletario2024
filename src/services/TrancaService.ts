@@ -56,7 +56,6 @@ export class TrancaService {
 
     async obterBicicletaNaTranca(id: number): Promise<Bicicleta> {
         const tranca = await this.getById(id);
-        tranca.bicicleta;
         if (!tranca.bicicleta) {
             throw new Error('422', Constantes.ERRO_OBTER_BICICLETA_TRANCA);
         }
@@ -120,7 +119,7 @@ export class TrancaService {
     async trancarTranca(idTranca: number, idBicicleta?: number): Promise<void> {
         const tranca = await this.getById(idTranca);
         if (tranca.statusTranca !== StatusTranca.LIVRE) {
-            throw new Error('422', Constantes.ERRO_TRANCAR_TRANCA);
+            throw new Error('422', Constantes.STATUS_DA_TRANCA_INVALIDO);
         }
 
         if (idBicicleta) {
@@ -146,6 +145,9 @@ export class TrancaService {
 
     async destrancarTranca(idTranca: number, idBicicleta?: number): Promise<void> {
         const tranca = await this.getById(idTranca);
+        if (tranca.statusTranca !== StatusTranca.OCUPADA && tranca.statusTranca !== StatusTranca.EM_REPARO) {
+            throw new Error('422', Constantes.STATUS_DA_TRANCA_INVALIDO);
+        }
         if (idBicicleta) {
             const bicicleta = BicicletaRepository.getById(idBicicleta);
             if (!bicicleta) {
@@ -159,10 +161,17 @@ export class TrancaService {
             BicicletaRepository.update(idBicicleta, bicicleta);
         }
 
-        tranca.statusTranca = StatusTranca.LIVRE;
-        const update = TrancaRepository.update(idTranca, tranca);
-        if(!update){
-            throw new Error('422', Constantes.ERRO_DESTRANCAR_TRANCA);
+        if(tranca.statusTranca === StatusTranca.OCUPADA){
+            await this.alterarStatus(idTranca, StatusTranca.LIVRE);
+        }
+        await this.alterarStatus(idTranca, StatusTranca.LIVRE);
+        if(tranca.statusTranca === StatusTranca.EM_REPARO){
+            const emailService = new EmailService();
+            try {
+                await emailService.enviarEmailParaReparador(1);
+            } catch (error) {
+                throw new Error('422',Constantes.ERROR_ENVIAR_EMAIL);
+            }
         }
     }
 
