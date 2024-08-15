@@ -12,7 +12,7 @@ import {IntegrarTrancaNaRedeDTO} from '../../src/entities/dto/IntegrarTrancaNaRe
 import {RetirarTrancaDaRedeDTO} from '../../src/entities/dto/RetirarTrancaDaRedeDTO';
 import {StatusAcaoReparador} from "../../src/entities/enums/StatusAcaoReparador";
 import {StatusBicicleta} from "../../src/entities/enums/StatusBicicleta";
-import { Error } from '../../src/entities/Error';
+import {Error} from '../../src/entities/Error';
 import {EmailService} from "../../src/services/EmailService";
 import {Totem} from "../../src/entities/Totem";
 
@@ -119,6 +119,19 @@ describe('TrancaService', () => {
         }
     });
 
+    it('deve retornar erro ao editar tranca', async () => {
+        TrancaRepository.getById = jest.fn().mockReturnValue(trancaLivreMock);
+        TrancaRepository.update = jest.fn().mockReturnValue(undefined);
+
+        try {
+            await trancaService.editarTranca(1, trancaLivreMock);
+        } catch (error: Error | any) {
+            expect(error).toBeInstanceOf(Error);
+            expect(error.codigo).toBe('422');
+            expect(error.mensagem).toBe(Constantes.ERRO_EDITAR_TRANCA);
+        }
+    });
+
     it('deve remover uma tranca existente', async () => {
         TrancaRepository.getById = jest.fn().mockReturnValue(trancaLivreMock);
         TrancaRepository.delete = jest.fn().mockReturnValue(true);
@@ -152,7 +165,6 @@ describe('TrancaService', () => {
         expect(TrancaRepository.getById).toHaveBeenCalledWith(1);
     });
 
-
     it('deve retornar erro ao tentar obter bicicleta em uma tranca que não tem bicicleta', async () => {
         TrancaRepository.getById = jest.fn().mockReturnValue(trancaLivreMock);
 
@@ -162,6 +174,19 @@ describe('TrancaService', () => {
             expect(error).toBeInstanceOf(Error);
             expect(error.codigo).toBe('404');
             expect(error.mensagem).toBe(Constantes.BICICLETA_NAO_ENCONTRADA);
+        }
+    });
+
+    it('deve retornar erro ao obter bicicleta em uma tranca', async () => {
+        trancaLivreMock.statusTranca = StatusTranca.LIVRE;
+        TrancaRepository.getById = jest.fn().mockReturnValue(trancaLivreMock);
+
+        try {
+            await trancaService.obterBicicletaNaTranca(1);
+        } catch (error: Error | any) {
+            expect(error).toBeInstanceOf(Error);
+            expect(error.codigo).toBe('422');
+            expect(error.mensagem).toBe(Constantes.ERRO_OBTER_BICICLETA_TRANCA);
         }
     });
 
@@ -252,21 +277,45 @@ describe('TrancaService', () => {
         }
     });
 
+    it('deve retornar erro ao integrar tranca com falha no envio de e-mail', async () => {
+        const dto = new IntegrarTrancaNaRedeDTO(1, 1, 1);
+        const totemMock = { id: 1 };
+
+        trancaLivreMock.statusTranca = StatusTranca.NOVA;
+
+        TrancaRepository.getById = jest.fn().mockReturnValue(trancaLivreMock);
+        TotemRepository.getById = jest.fn().mockReturnValue(totemMock);
+        FuncionarioService.isFuncionarioValido = jest.fn().mockResolvedValue(true);
+
+        TrancaRepository.update = jest.fn().mockImplementation((id, updatedTranca) => {
+            updatedTranca.statusTranca = StatusTranca.LIVRE; // Simulando a atualização correta
+            return updatedTranca;
+        });
+
+        // Simulando erro no envio do e-mail
+        EmailService.prototype.enviarEmailParaReparador = jest.fn().mockRejectedValue(new Error('422', Constantes.ERROR_ENVIAR_EMAIL));
+
+        try {
+            await trancaService.integrarNaRede(dto);
+        } catch (error: Error | any) {
+            expect(error).toBeInstanceOf(Error);
+            expect(error.codigo).toBe('422');
+            expect(error.mensagem).toBe(Constantes.ERROR_ENVIAR_EMAIL);
+        }
+    });
+
     it('deve retirar a tranca da rede com sucesso EM_REPARO', async () => {
         const dtoMock = new RetirarTrancaDaRedeDTO(1, 1, 1, StatusAcaoReparador.EM_REPARO);
 
-        trancaLivreMock.totem = totemMockCompleta;
         trancaLivreMock.statusTranca = StatusTranca.LIVRE;
 
         TrancaRepository.getById = jest.fn().mockReturnValue(trancaLivreMock);
-        TotemRepository.getById = jest.fn().mockReturnValue(totemMockCompleta);
         TrancaRepository.update = jest.fn().mockReturnValue(trancaLivreMock);
         EmailService.prototype.enviarEmailParaReparador = jest.fn();
 
         await trancaService.retirarDaRede(dtoMock);
 
         expect(TrancaRepository.getById).toHaveBeenCalledWith(1);
-        expect(TotemRepository.getById).toHaveBeenCalledWith(1);
         expect(TrancaRepository.update).toHaveBeenCalledWith(1, expect.objectContaining({ statusTranca: StatusTranca.EM_REPARO }));
         expect(EmailService.prototype.enviarEmailParaReparador).toHaveBeenCalledWith(1);
     });
@@ -274,20 +323,34 @@ describe('TrancaService', () => {
     it('deve retirar a tranca da rede com sucesso APOSENTADA', async () => {
         const dtoMock = new RetirarTrancaDaRedeDTO(1, 1, 1, StatusAcaoReparador.APOSENTADA);
 
-        trancaLivreMock.totem = totemMockCompleta;
         trancaLivreMock.statusTranca = StatusTranca.LIVRE;
 
         TrancaRepository.getById = jest.fn().mockReturnValue(trancaLivreMock);
-        TotemRepository.getById = jest.fn().mockReturnValue(totemMockCompleta);
         TrancaRepository.update = jest.fn().mockReturnValue(trancaLivreMock);
         EmailService.prototype.enviarEmailParaReparador = jest.fn();
 
         await trancaService.retirarDaRede(dtoMock);
 
         expect(TrancaRepository.getById).toHaveBeenCalledWith(1);
-        expect(TotemRepository.getById).toHaveBeenCalledWith(1);
         expect(TrancaRepository.update).toHaveBeenCalledWith(1, expect.objectContaining({ statusTranca: StatusTranca.APOSENTADA }));
         expect(EmailService.prototype.enviarEmailParaReparador).toHaveBeenCalledWith(1);
+    });
+
+    it('deve retornar erro ao retirar tranca com status da tranca invalido', async () => {
+        const dtoMock = new RetirarTrancaDaRedeDTO(1, 1, 1, StatusAcaoReparador.EM_REPARO);
+
+        trancaLivreMock.totem = totemMockCompleta;
+        trancaLivreMock.statusTranca = StatusTranca.OCUPADA;
+
+        TrancaRepository.getById = jest.fn().mockReturnValue(trancaLivreMock);
+
+        try {
+            await trancaService.retirarDaRede(dtoMock);
+        } catch (error: Error | any) {
+            expect(error).toBeInstanceOf(Error);
+            expect(error.codigo).toBe('422');
+            expect(error.mensagem).toBe(Constantes.STATUS_DA_TRANCA_INVALIDO);
+        }
     });
 
     it('deve retornar erro ao tentar retirar tranca com status de statusAcaoReparador STATUS_DE_ACAO_REPARADOR_INVALIDO', async () => {
@@ -327,7 +390,7 @@ describe('TrancaService', () => {
 
         trancaLivreMock.totem = totemMockCompleta;
         trancaLivreMock.statusTranca = StatusTranca.LIVRE;
-        
+
         TrancaRepository.getById = jest.fn().mockReturnValue(trancaLivreMock);
         TotemRepository.getById = jest.fn().mockReturnValue(totemMockCompleta);
         TrancaRepository.update = jest.fn().mockReturnValue(trancaLivreMock);
@@ -345,6 +408,68 @@ describe('TrancaService', () => {
         }
     });
 
+    it('deve trancar tranca com sucesso', async () => {
+        const bicicletaMock = new Bicicleta(1, 'Marca de Teste', 'Modelo de Teste', '2023', 12345, StatusBicicleta.NOVA);
+        trancaLivreMock.statusTranca = StatusTranca.LIVRE;
+        trancaLivreMock.bicicleta = bicicletaMock;
+
+        TrancaRepository.getById = jest.fn().mockReturnValue(trancaLivreMock);
+        BicicletaRepository.getById = jest.fn().mockReturnValue(bicicletaMock);
+
+        await trancaService.trancarTranca(1, 1);
+
+        expect(TrancaRepository.getById).toHaveBeenCalledWith(1);
+        expect(BicicletaRepository.getById).toHaveBeenCalledWith(1);
+    });
+
+    it('deve retornar erro ao trancar tranca com bicicleta não existente', async () => {
+        const bicicletaMock = new Bicicleta(1, 'Marca de Teste', 'Modelo de Teste', '2023', 12345, StatusBicicleta.NOVA);
+        trancaLivreMock.statusTranca = StatusTranca.LIVRE;
+        trancaLivreMock.bicicleta = bicicletaMock;
+
+        TrancaRepository.getById = jest.fn().mockReturnValue(trancaLivreMock);
+        BicicletaRepository.getById = jest.fn().mockReturnValue(undefined);
+
+        try {
+            await trancaService.trancarTranca(1, 1);
+        } catch (error: Error | any) {
+            expect(error).toBeInstanceOf(Error);
+            expect(error.codigo).toBe('404');
+            expect(error.mensagem).toBe(Constantes.BICICLETA_NAO_ENCONTRADA);
+        }
+    });
+
+    it('deve retornar erro ao trancar tranca com tranca inexistente', async () => {
+        TrancaRepository.getById = jest.fn().mockReturnValue(undefined);
+
+        try {
+            await trancaService.trancarTranca(1, 1);
+        } catch (error: Error | any) {
+            expect(error).toBeInstanceOf(Error);
+            expect(error.codigo).toBe('404');
+            expect(error.mensagem).toBe(Constantes.TRANCA_NAO_ENCONTRADA);
+        }
+    });
+
+    it('deve retornar erro ao trancar tranca com status da bicicleta invalido', async () => {
+        const bicicletaMock = new Bicicleta(1, 'Marca de Teste', 'Modelo de Teste', '2023', 12345, StatusBicicleta.APOSENTADA);
+        trancaLivreMock.statusTranca = StatusTranca.LIVRE;
+        trancaLivreMock.bicicleta = bicicletaMock;
+        trancaLivreMock.bicicleta.statusBicicleta = StatusBicicleta.APOSENTADA
+
+        TrancaRepository.getById = jest.fn().mockReturnValue(trancaLivreMock);
+        BicicletaRepository.getById = jest.fn().mockReturnValue(bicicletaMock);
+
+        try {
+            await trancaService.trancarTranca(1, 1);
+        } catch (error: Error | any) {
+            expect(error).toBeInstanceOf(Error);
+            expect(error.codigo).toBe('422');
+            expect(error.mensagem).toBe(Constantes.STATUS_DA_BICICLETA_INVALIDO);
+        }
+    });
+
+
     it('deve retornar erro ao destrancar tranca com bicicleta inexistente', async () => {
         TrancaRepository.getById = jest.fn().mockReturnValue(trancaLivreMock);
         BicicletaRepository.getById = jest.fn().mockReturnValue(undefined);
@@ -355,6 +480,25 @@ describe('TrancaService', () => {
             expect(error).toBeInstanceOf(Error);
             expect(error.codigo).toBe('404');
             expect(error.mensagem).toBe(Constantes.BICICLETA_NAO_ENCONTRADA);
+        }
+    });
+
+    it('deve retornar erro ao destrancar tranca com status da bicicleta invalido', async () => {
+        const bicicletaMock = new Bicicleta(1, 'Marca de Teste', 'Modelo de Teste', '2023', 12345, StatusBicicleta.NOVA);
+        bicicletaMock.statusBicicleta = StatusBicicleta.APOSENTADA;
+        trancaLivreMock.statusTranca = StatusTranca.OCUPADA;
+        trancaLivreMock.bicicleta = bicicletaMock;
+        trancaLivreMock.bicicleta.statusBicicleta = StatusBicicleta.APOSENTADA
+
+        TrancaRepository.getById = jest.fn().mockReturnValue(trancaLivreMock);
+        BicicletaRepository.getById = jest.fn().mockReturnValue(bicicletaMock);
+
+        try {
+            await trancaService.destrancarTranca(1, 1);
+        } catch (error: Error | any) {
+            expect(error).toBeInstanceOf(Error);
+            expect(error.codigo).toBe('422');
+            expect(error.mensagem).toBe(Constantes.STATUS_DA_BICICLETA_INVALIDO);
         }
     });
 
@@ -369,4 +513,5 @@ describe('TrancaService', () => {
             expect(error.mensagem).toBe(Constantes.TRANCA_NAO_ENCONTRADA);
         }
     });
+
 });

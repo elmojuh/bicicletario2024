@@ -44,7 +44,7 @@ export class TrancaService {
         await this.getById(id);
         const trancaUpdate = TrancaRepository.update(id, trancaData);
         if (!trancaUpdate) {
-            throw new Error('404', Constantes.TRANCA_NAO_ENCONTRADA);
+            throw new Error('422', Constantes.ERRO_EDITAR_TRANCA);
         }
         return trancaUpdate;
     }
@@ -56,11 +56,11 @@ export class TrancaService {
 
     async obterBicicletaNaTranca(id: number): Promise<Bicicleta> {
         const tranca = await this.getById(id);
-        const bicicleta = tranca.bicicleta;
-        if (!bicicleta) {
-            throw new Error('404', Constantes.BICICLETA_NAO_ENCONTRADA);
+        tranca.bicicleta;
+        if (!tranca.bicicleta) {
+            throw new Error('422', Constantes.ERRO_OBTER_BICICLETA_TRANCA);
         }
-        return bicicleta;
+        return tranca.bicicleta;
     }
 
     async integrarNaRede(dto: IntegrarTrancaNaRedeDTO): Promise<void> {
@@ -109,15 +109,6 @@ export class TrancaService {
                 throw new Error('422', Constantes.STATUS_DE_ACAO_REPARADOR_INVALIDO);
         }
 
-        const idTotem = tranca.totem?.id;
-        if(!idTotem){
-            throw new Error('422', Constantes.ERRO_RETIRAR_TRANCA);
-        }
-        const totem = TotemRepository.getById(idTotem);
-        if(!totem){
-            throw new Error('404', Constantes.TOTEM_NAO_ENCONTRADO);
-        }
-
         const emailService = new EmailService();
         try {
             await emailService.enviarEmailParaReparador(dto.idFuncionario);
@@ -138,7 +129,7 @@ export class TrancaService {
                 throw new Error('404', Constantes.BICICLETA_NAO_ENCONTRADA);
             }
             if (bicicleta.statusBicicleta !== StatusBicicleta.EM_USO && bicicleta.statusBicicleta !== StatusBicicleta.EM_REPARO && bicicleta.statusBicicleta !== StatusBicicleta.NOVA) {
-                throw new Error('422', Constantes.ERRO_TRANCAR_TRANCA);
+                throw new Error('422', Constantes.STATUS_DA_BICICLETA_INVALIDO);
             }
 
             bicicleta.statusBicicleta = StatusBicicleta.DISPONIVEL;
@@ -147,7 +138,10 @@ export class TrancaService {
         }
 
         tranca.statusTranca = StatusTranca.OCUPADA;
-        TrancaRepository.update(idTranca, tranca);
+        const update = TrancaRepository.update(idTranca, tranca);
+        if(!update){
+            throw new Error('422', Constantes.ERRO_TRANCAR_TRANCA);
+        }
     }
 
     async destrancarTranca(idTranca: number, idBicicleta?: number): Promise<void> {
@@ -158,7 +152,7 @@ export class TrancaService {
                 throw new Error('404', Constantes.BICICLETA_NAO_ENCONTRADA);
             }
             if (bicicleta.statusBicicleta !== StatusBicicleta.DISPONIVEL) {
-                throw new Error('422', Constantes.ERRO_DESTRANCAR_TRANCA);
+                throw new Error('422', Constantes.STATUS_DA_BICICLETA_INVALIDO);
             }
             bicicleta.statusBicicleta = StatusBicicleta.EM_USO;
             bicicleta.tranca = null;
@@ -166,7 +160,10 @@ export class TrancaService {
         }
 
         tranca.statusTranca = StatusTranca.LIVRE;
-        TrancaRepository.update(idTranca, tranca);
+        const update = TrancaRepository.update(idTranca, tranca);
+        if(!update){
+            throw new Error('422', Constantes.ERRO_DESTRANCAR_TRANCA);
+        }
     }
 
     async alterarStatus(id: number, acao: string): Promise<Tranca> {
