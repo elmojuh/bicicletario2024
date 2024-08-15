@@ -108,7 +108,7 @@ export class BicicletaService {
 
         const idTranca = bicicleta.tranca?.id;
         if(!idTranca){
-            throw new Error('404', Constantes.ERRO_RETIRAR_TRANCA);
+            throw new Error('422', Constantes.ERRO_RETIRAR_BICICLETA);
         }
         const tranca = TrancaRepository.getById(idTranca);
         if(!tranca){

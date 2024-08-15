@@ -257,7 +257,7 @@ describe('BicicletaService', () => {
         BicicletaRepository.update = jest.fn().mockReturnValue(novaBicicletaMock);
         TrancaRepository.update = jest.fn().mockReturnValue(trancaMock);
 
-        EmailService.prototype.enviarEmailParaReparador = jest.fn().mockRejectedValue(new Error('400', Constantes.ERROR_ENVIAR_EMAIL));
+        EmailService.prototype.enviarEmailParaReparador = jest.fn().mockRejectedValue(new Error('422', Constantes.ERROR_ENVIAR_EMAIL));
 
         try {
             await bicicletaService.integrarNaRede(dto);
@@ -274,17 +274,14 @@ describe('BicicletaService', () => {
         bicicletaDisponivelMock.tranca = trancaMockCompleta;
         bicicletaDisponivelMock.statusBicicleta = StatusBicicleta.DISPONIVEL;
 
-        // Mockando os repositórios
         BicicletaRepository.getById = jest.fn().mockReturnValue(bicicletaDisponivelMock);
         TrancaRepository.getById = jest.fn().mockReturnValue(trancaMockCompleta);
         BicicletaRepository.update = jest.fn().mockReturnValue(bicicletaDisponivelMock);
         TrancaRepository.update = jest.fn();
         EmailService.prototype.enviarEmailParaReparador = jest.fn();
 
-        // Chama o método para retirar a bicicleta da rede
         await bicicletaService.retirarDaRede(dtoMock);
 
-        // Verifica se os métodos foram chamados corretamente
         expect(BicicletaRepository.getById).toHaveBeenCalledWith(1);
         expect(TrancaRepository.getById).toHaveBeenCalledWith(1);
         expect(BicicletaRepository.update).toHaveBeenCalledWith(1, expect.objectContaining({ statusBicicleta: StatusBicicleta.EM_REPARO }));
@@ -304,10 +301,8 @@ describe('BicicletaService', () => {
         TrancaRepository.update = jest.fn();
         EmailService.prototype.enviarEmailParaReparador = jest.fn();
 
-        // Chama o método para retirar a bicicleta da rede
         await bicicletaService.retirarDaRede(dtoMock);
 
-        // Verifica se os métodos foram chamados corretamente
         expect(BicicletaRepository.getById).toHaveBeenCalledWith(1);
         expect(TrancaRepository.getById).toHaveBeenCalledWith(1);
         expect(BicicletaRepository.update).toHaveBeenCalledWith(1, expect.objectContaining({ statusBicicleta: StatusBicicleta.EM_REPARO }));
@@ -315,6 +310,22 @@ describe('BicicletaService', () => {
         expect(EmailService.prototype.enviarEmailParaReparador).toHaveBeenCalledWith(1);
     });
 
+    it('deve retor erro ao retirar bicicleta com status invalido', async () => {
+        const dtoMock = new RetirarBicicletaDaRedeDTO(1, 1, 1, 'status_invalido' as StatusAcaoReparador);
+
+        bicicletaDisponivelMock.tranca = trancaMockCompleta;
+        bicicletaDisponivelMock.statusBicicleta = StatusBicicleta.DISPONIVEL;
+
+        BicicletaRepository.getById = jest.fn().mockReturnValue(bicicletaDisponivelMock);
+
+        try {
+            await bicicletaService.retirarDaRede(dtoMock);
+        } catch (error: any) {
+            expect(error).toBeInstanceOf(Error);
+            expect(error.codigo).toBe('422');
+            expect(error.mensagem).toBe(Constantes.STATUS_DA_BICICLETA_INVALIDO);
+        }
+    });
 
     it('deve retornar erro ao retirar bicicleta que não está disponível', async () => {
         const dtoMock = new RetirarBicicletaDaRedeDTO(1, 1, 1, StatusAcaoReparador.EM_REPARO as StatusAcaoReparador);
@@ -345,11 +356,37 @@ describe('BicicletaService', () => {
         }
     });
 
-    it('deve retornar erro ao enviar e-mail ao reparador', async () => {
+    it('deve retornar erro ao retirar bicicleta', async () => {
         const dtoMock = new RetirarBicicletaDaRedeDTO(1, 1, 1, StatusAcaoReparador.EM_REPARO);
+        const novaBicicletaMock = new Bicicleta(1, 'Marca de Teste', 'Modelo de Teste', '2023', 12345, StatusBicicleta.DISPONIVEL);
+
         novaBicicletaMock.statusBicicleta = StatusBicicleta.DISPONIVEL;
         BicicletaRepository.getById = jest.fn().mockReturnValue(novaBicicletaMock);
         TrancaRepository.getById = jest.fn().mockReturnValue(trancaMock);
+        BicicletaRepository.update = jest.fn().mockReturnValue(novaBicicletaMock);
+        TrancaRepository.update = jest.fn().mockReturnValue(trancaMock);
+
+        try {
+            await bicicletaService.retirarDaRede(dtoMock);
+        } catch (error: any) {
+            expect(error).toBeInstanceOf(Error);
+            expect(error.codigo).toBe('422');
+            expect(error.mensagem).toBe(Constantes.ERRO_RETIRAR_BICICLETA);
+        }
+    });
+
+    it('deve retornar erro ao retirar bicicleta a rede com erro ao enviar email', async () => {
+        const dtoMock = new RetirarBicicletaDaRedeDTO(1, 1, 1, StatusAcaoReparador.EM_REPARO);
+
+        bicicletaDisponivelMock.tranca = trancaMockCompleta;
+        bicicletaDisponivelMock.statusBicicleta = StatusBicicleta.DISPONIVEL;
+
+        BicicletaRepository.getById = jest.fn().mockReturnValue(bicicletaDisponivelMock);
+        TrancaRepository.getById = jest.fn().mockReturnValue(trancaMockCompleta);
+
+        BicicletaRepository.update = jest.fn().mockReturnValue(bicicletaDisponivelMock);
+        TrancaRepository.update = jest.fn().mockReturnValue(trancaMockCompleta);
+
         EmailService.prototype.enviarEmailParaReparador = jest.fn().mockRejectedValue(new Error('422', Constantes.ERROR_ENVIAR_EMAIL));
 
         try {
@@ -360,6 +397,7 @@ describe('BicicletaService', () => {
             expect(error.mensagem).toBe(Constantes.ERROR_ENVIAR_EMAIL);
         }
     });
+
 
     it('deve alterar o status da bicicleta para DISPONIVEL', async () => {
         BicicletaRepository.getById = jest.fn().mockReturnValue(novaBicicletaMock);
