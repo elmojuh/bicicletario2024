@@ -68,7 +68,7 @@ describe('BicicletaService', () => {
     });
 
     it('deve retornar erro ao listar bicicletas não existentes', async () => {
-        BicicletaRepository.getAll = jest.fn().mockReturnValue([]);
+        BicicletaRepository.getAll = jest.fn().mockReturnValue([null]);
 
         try {
             await bicicletaService.listarBicicletas();
@@ -151,7 +151,25 @@ describe('BicicletaService', () => {
         }
     });
 
-    
+    // it('deve integrar bicicleta a rede', async () => {
+    //     const dto = new IntegrarBicicletaNaRedeDTO(1, 1, 1);
+    //     const bicicletaMock = new Bicicleta(1, 'Marca de Teste', 'Modelo de Teste', '2023', 12345, StatusBicicleta.NOVA);
+    //     BicicletaRepository.getById = jest.fn().mockReturnValue(bicicletaMock);
+    //     const trancaMock = { id: 1, statusTranca: StatusTranca.LIVRE };
+    //     TrancaRepository.getById = jest.fn().mockReturnValue(trancaMock);
+    //     FuncionarioService.isFuncionarioValido = jest.fn().mockResolvedValue(true);
+    //
+    //     BicicletaRepository.update = jest.fn();
+    //     TrancaRepository.update = jest.fn();
+    //
+    //     await bicicletaService.integrarNaRede(dto);
+    //
+    //     expect(BicicletaRepository.getById).toHaveBeenCalledWith(1);
+    //     expect(TrancaRepository.getById).toHaveBeenCalledWith(1);
+    //     expect(FuncionarioService.isFuncionarioValido).toHaveBeenCalledWith(1);
+    //     expect(BicicletaRepository.update).toHaveBeenCalledWith(1, expect.objectContaining({ statusBicicleta: StatusBicicleta.DISPONIVEL }));
+    //     expect(TrancaRepository.update).toHaveBeenCalledWith(1, expect.objectContaining({ statusTranca: StatusTranca.OCUPADA }));
+    // });
 
     it('deve alterar o status da bicicleta para DISPONIVEL', async () => {
         BicicletaRepository.getById = jest.fn().mockReturnValue(bicicletaMock);
