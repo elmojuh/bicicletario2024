@@ -53,19 +53,20 @@ export class BicicletaService {
     }
 
     async integrarNaRede(dto: IntegrarBicicletaNaRedeDTO) : Promise<void>{
-        const bicicleta = await this.getById(dto.idBicicleta);
-        if (bicicleta.statusBicicleta != StatusBicicleta.NOVA) {
-            throw new Error('422', Constantes.STATUS_DA_BICICLETA_INVALIDO);
-        }
-
-        const tranca = TrancaRepository.getById( dto.idTranca);
-        if(!tranca){
-            throw new Error('404', Constantes.TRANCA_NAO_ENCONTRADA);
-        }
-
+        const tranca = TrancaRepository.getById(dto.idTranca);
         const funcionarioDisponivel = await FuncionarioService.isFuncionarioValido(dto.idFuncionario);
+        const bicicleta = await this.getById(dto.idBicicleta);
+
+        if (!tranca) {
+            throw new Error('404', Constantes.TRANCA_NAO_ENCONTRADA); // Lançando 404 corretamente
+        }
+
         if (!funcionarioDisponivel) {
             throw new Error('422', Constantes.FUNCIONARIO_INVALIDO);
+        }
+
+        if (bicicleta.statusBicicleta !== StatusBicicleta.NOVA) {
+            throw new Error('422', Constantes.STATUS_DA_BICICLETA_INVALIDO);
         }
 
         await this.alterarStatus(dto.idBicicleta, StatusBicicleta.DISPONIVEL);
@@ -79,7 +80,7 @@ export class BicicletaService {
         try {
             await emailService.enviarEmailParaReparador(dto.idFuncionario);
         } catch (e) {
-            throw new Error("422", Constantes.ERROR_ENVIAR_EMAIL);
+            throw new Error('422', Constantes.ERROR_ENVIAR_EMAIL); // Lançando erro de e-mail corretamente
         }
     }
 
