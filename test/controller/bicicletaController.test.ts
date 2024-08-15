@@ -9,6 +9,7 @@ import { IntegrarBicicletaNaRedeDTO } from "../../src/entities/dto/IntegrarBicic
 import { FuncionarioService } from "../../src/services/FuncionarioService";
 import { RetirarBicicletaDaRedeDTO } from "../../src/entities/dto/RetirarBicicletaDaRedeDTO";
 import { Error } from "../../src/entities/Error";
+import {StatusAcaoReparador} from "../../src/entities/enums/StatusAcaoReparador";
 
 jest.mock('../../src/services/BicicletaService');
 jest.mock('../../src/services/FuncionarioService');
@@ -187,7 +188,7 @@ describe('Bicicleta em Controller', () => {
     });
 
     it('deve retirar bicicleta da rede', async () => {
-        const dto = new RetirarBicicletaDaRedeDTO(1, 1, 1, 'EM_REPARO');
+        const dto = new RetirarBicicletaDaRedeDTO(1, 1, 1, StatusAcaoReparador.EM_REPARO);
         const bicicleta = bicicleta1(1);
 
         bicicletaServiceMock.prototype.getById = jest.fn().mockResolvedValue(bicicleta);
@@ -200,7 +201,7 @@ describe('Bicicleta em Controller', () => {
     });
 
     it('deve retornar erro ao retirar bicicleta não existente', async () => {
-        const dto = new RetirarBicicletaDaRedeDTO(1, 999, 1, 'EM_REPARO');
+        const dto = new RetirarBicicletaDaRedeDTO(1, 999, 1, StatusAcaoReparador.EM_REPARO);
         bicicletaServiceMock.prototype.retirarDaRede = jest.fn().mockRejectedValue(new Error('404', Constantes.BICICLETA_NAO_ENCONTRADA));
 
         const res = await request(app)
@@ -211,7 +212,7 @@ describe('Bicicleta em Controller', () => {
     });
 
     it('deve retornar erro ao retirar bicicleta da rede com dados inválidos', async () => {
-        const dto = new RetirarBicicletaDaRedeDTO(1, 1, 1, 'EM_REPARO');
+        const dto = new RetirarBicicletaDaRedeDTO(1, 1, 1, StatusAcaoReparador.EM_REPARO);
         bicicletaServiceMock.prototype.retirarDaRede = jest.fn().mockRejectedValue(new Error('422', Constantes.ERRO_RETIRAR_BICICLETA));
 
         const res = await request(app)

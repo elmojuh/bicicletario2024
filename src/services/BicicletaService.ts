@@ -11,6 +11,7 @@ import {RetirarBicicletaDaRedeDTO} from "../entities/dto/RetirarBicicletaDaRedeD
 import {Bicicleta} from "../entities/Bicicleta";
 import {TrancaRepository} from "../repositories/TrancaRepository";
 import { Error } from "../entities/Error"
+import {StatusAcaoReparador} from "../entities/enums/StatusAcaoReparador";
 
 export class BicicletaService {
 
@@ -65,12 +66,14 @@ export class BicicletaService {
             throw new Error('422', Constantes.FUNCIONARIO_INVALIDO);
         }
 
-        if (bicicleta.statusBicicleta !== StatusBicicleta.NOVA) {
+        if (bicicleta.statusBicicleta !== StatusBicicleta.NOVA && bicicleta.statusBicicleta !== StatusBicicleta.EM_REPARO) {
             throw new Error('422', Constantes.STATUS_DA_BICICLETA_INVALIDO);
         }
 
+
         await this.alterarStatus(dto.idBicicleta, StatusBicicleta.DISPONIVEL);
         bicicleta.dataInsercaoTranca = new Date().toISOString();
+        bicicleta.tranca = tranca;
         BicicletaRepository.update(dto.idBicicleta, bicicleta);
 
         tranca.statusTranca = StatusTranca.OCUPADA;
@@ -88,16 +91,16 @@ export class BicicletaService {
         const idBicicleta = dto.idBicicleta;
         const bicicleta = await this.getById(idBicicleta);
         if (bicicleta.statusBicicleta !== StatusBicicleta.DISPONIVEL) {
-            throw new Error('422', Constantes.ERRO_RETIRAR_BICICLETA);
+            throw new Error('422', Constantes.STATUS_DA_BICICLETA_INVALIDO);
         }
 
         const acao =  dto.statusAcaoReparador;
 
         switch (acao) {
-            case StatusBicicleta.EM_REPARO:
+            case StatusAcaoReparador.EM_REPARO:
                 bicicleta.statusBicicleta = StatusBicicleta.EM_REPARO;
                 break;
-            case StatusBicicleta.APOSENTADA:
+            case StatusAcaoReparador.APOSENTADA:
                 bicicleta.statusBicicleta = StatusBicicleta.APOSENTADA;
                 break;
             default:
@@ -106,7 +109,7 @@ export class BicicletaService {
 
         const idTranca = bicicleta.tranca?.id;
         if(!idTranca){
-            throw new Error('404', Constantes.BICICLETA_NAO_ENCONTRADA);
+            throw new Error('404', Constantes.ERRO_RETIRAR_TRANCA);
         }
         const tranca = TrancaRepository.getById(idTranca);
         if(!tranca){
@@ -122,7 +125,7 @@ export class BicicletaService {
         try {
             await emailService.enviarEmailParaReparador(dto.idFuncionario);
         } catch (e) {
-            throw new Error('',Constantes.ERROR_ENVIAR_EMAIL);
+            throw new Error('422',Constantes.ERROR_ENVIAR_EMAIL);
         }
     }
 

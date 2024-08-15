@@ -11,6 +11,8 @@ import { StatusTranca } from '../../src/entities/enums/StatusTranca';
 import { Error } from '../../src/entities/Error';
 import { Constantes } from '../../src/entities/constants/Constantes';
 import { Bicicleta } from "../../src/entities/Bicicleta";
+import { StatusAcaoReparador } from '../../src/entities/enums/StatusAcaoReparador';
+import {Tranca} from "../../src/entities/Tranca";
 
 jest.mock('../../src/repositories/BicicletaRepository');
 jest.mock('../../src/repositories/TrancaRepository');
@@ -20,6 +22,7 @@ jest.mock('../../src/services/EmailService');
 const bicicletaService = new BicicletaService();
 const bicicletaMock = new Bicicleta(1, 'Marca de Teste', 'Modelo de Teste', '2023', 12345, StatusBicicleta.NOVA);
 const trancaMock = { id: 1, statusTranca: StatusTranca.LIVRE };
+const trancaMockCompleta = new Tranca(1, 1, 'Localização de teste', '2022', 'Modelo Teste', StatusTranca.LIVRE);
 
 describe('BicicletaService', () => {
 
@@ -264,6 +267,80 @@ describe('BicicletaService', () => {
         }
     });
 
+    it('deve retirar a bicicleta da rede com sucesso', async () => {
+        const dtoMock = new RetirarBicicletaDaRedeDTO(1, 1, 1, StatusAcaoReparador.EM_REPARO as StatusAcaoReparador);
+
+        // Mock completo da bicicleta com status DISPONIVEL
+        const bicicletaDisponivelMock = new Bicicleta(1, 'Marca de Teste', 'Modelo de Teste', '2023', 12345, StatusBicicleta.DISPONIVEL);
+        bicicletaDisponivelMock.tranca = trancaMockCompleta;
+        bicicletaDisponivelMock.statusBicicleta = StatusBicicleta.DISPONIVEL;
+
+        // Mockando os repositórios
+        BicicletaRepository.getById = jest.fn().mockReturnValue(bicicletaDisponivelMock);
+        TrancaRepository.getById = jest.fn().mockReturnValue(trancaMockCompleta);
+        BicicletaRepository.update = jest.fn().mockReturnValue(bicicletaDisponivelMock);
+        TrancaRepository.update = jest.fn();
+        EmailService.prototype.enviarEmailParaReparador = jest.fn();
+
+        // Chama o método para retirar a bicicleta da rede
+        await bicicletaService.retirarDaRede(dtoMock);
+
+        // Verifica se os métodos foram chamados corretamente
+        expect(BicicletaRepository.getById).toHaveBeenCalledWith(1);
+        expect(TrancaRepository.getById).toHaveBeenCalledWith(1);
+        expect(BicicletaRepository.update).toHaveBeenCalledWith(1, expect.objectContaining({ statusBicicleta: StatusBicicleta.EM_REPARO }));
+        expect(TrancaRepository.update).toHaveBeenCalledWith(1, expect.objectContaining({ statusTranca: StatusTranca.LIVRE }));
+        expect(EmailService.prototype.enviarEmailParaReparador).toHaveBeenCalledWith(1);
+    });
+
+
+    it('deve retornar erro ao retirar bicicleta que não está disponível', async () => {
+        const dtoMock = new RetirarBicicletaDaRedeDTO(1, 1, 1, StatusAcaoReparador.EM_REPARO as StatusAcaoReparador);
+        bicicletaMock.statusBicicleta = StatusBicicleta.EM_USO;
+        BicicletaRepository.getById = jest.fn().mockReturnValue(bicicletaMock);
+
+        try {
+            await bicicletaService.retirarDaRede(dtoMock);
+        } catch (error: any) {
+            expect(error).toBeInstanceOf(Error);
+            expect(error.codigo).toBe('422');
+            expect(error.mensagem).toBe(Constantes.STATUS_DA_BICICLETA_INVALIDO);
+        }
+    });
+
+    it('deve retornar erro ao retirar bicicleta com tranca não encontrada', async () => {
+        const dtoMock = new RetirarBicicletaDaRedeDTO(1, 1, 1, StatusAcaoReparador.EM_REPARO as StatusAcaoReparador);
+        bicicletaMock.statusBicicleta = StatusBicicleta.DISPONIVEL;
+        BicicletaRepository.getById = jest.fn().mockReturnValue(bicicletaMock);
+        TrancaRepository.getById = jest.fn().mockReturnValue(undefined);
+
+        try {
+            await bicicletaService.retirarDaRede(dtoMock);
+        } catch (error: any) {
+            expect(error).toBeInstanceOf(Error);
+            expect(error.codigo).toBe('404');
+            expect(error.mensagem).toBe(Constantes.TRANCA_NAO_ENCONTRADA);
+        }
+    });
+
+
+
+    it('deve retornar erro ao enviar e-mail ao reparador', async () => {
+        const dtoMock = new RetirarBicicletaDaRedeDTO(1, 1, 1, StatusAcaoReparador.EM_REPARO);
+        bicicletaMock.statusBicicleta = StatusBicicleta.DISPONIVEL;
+        BicicletaRepository.getById = jest.fn().mockReturnValue(bicicletaMock);
+        TrancaRepository.getById = jest.fn().mockReturnValue(trancaMock);
+        EmailService.prototype.enviarEmailParaReparador = jest.fn().mockRejectedValue(new Error('422', Constantes.ERROR_ENVIAR_EMAIL));
+
+        try {
+            await bicicletaService.retirarDaRede(dtoMock);
+        } catch (error: any) {
+            expect(error).toBeInstanceOf(Error);
+            expect(error.codigo).toBe('422');
+            expect(error.mensagem).toBe(Constantes.ERROR_ENVIAR_EMAIL);
+        }
+    });
+
     it('deve alterar o status da bicicleta para DISPONIVEL', async () => {
         BicicletaRepository.getById = jest.fn().mockReturnValue(bicicletaMock);
         BicicletaRepository.update = jest.fn().mockReturnValue(bicicletaMock);
@@ -323,6 +400,19 @@ describe('BicicletaService', () => {
             expect(error).toBeInstanceOf(Error);
             expect(error.codigo).toBe('422');
             expect(error.mensagem).toBe(Constantes.STATUS_DA_BICICLETA_INVALIDO);
+        }
+    });
+
+    it('deve retornar erro ao alterar bicicleta', async () => {
+        BicicletaRepository.getById = jest.fn().mockReturnValue(bicicletaMock);
+        BicicletaRepository.update = jest.fn().mockReturnValue(undefined);
+
+        try {
+            await bicicletaService.alterarStatus(1, StatusBicicleta.DISPONIVEL);
+        } catch (error: Error | any) {
+            expect(error).toBeInstanceOf(Error);
+            expect(error.codigo).toBe('422');
+            expect(error.mensagem).toBe(Constantes.ERRO_EDITAR_BICICLETA);
         }
     });
 
