@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import {FuncionarioService} from "../services/FuncionarioService";
+import {Error} from "../entities/Error";
 
 export class FuncionarioController{
     async buscarPorId(req: Request, res: Response) {

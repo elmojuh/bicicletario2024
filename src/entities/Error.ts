@@ -14,19 +14,4 @@ export class Error {
     getMensagem(): string {
         return this.mensagem;
     }
-
-    setCodigo(codigo: string) {
-        this.codigo = codigo;
-    }
-
-    setMensagem(mensagem: string) {
-        this.mensagem = mensagem;
-    }
-
-    toJson() {
-        return {
-            codigo: this.codigo,
-            mensagem: this.mensagem
-        }
-    }
 }

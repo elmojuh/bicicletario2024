@@ -12,7 +12,7 @@ export class TotemController {
             const totens = await new TotemService().listarTotens();
             const totensJson = totens.map(totem => totem.toResponseJSON());
             res.status(200).json(totensJson);
-        } catch (error: Error | unknown) {
+        } catch (error) {
             res.status(422).json({ codigo: '422', mensagem: Constantes.ERRO_LISTAR_TOTENS });
         }
     }
@@ -23,7 +23,7 @@ export class TotemController {
             const totemCadastrado = await new TotemService().cadastrarTotem(totemDTO);
             const totemJson = totemCadastrado.toResponseJSON();
             res.status(200).json(totemJson);
-        } catch (error: Error | any) {
+        } catch (error) {
             res.status(422).json({codigo: '422', mensagem: Constantes.ERRO_CRIAR_TOTEM});
         }
     }
@@ -51,7 +51,7 @@ export class TotemController {
             const idTotem = parseInt(req.params.id);
             await new TotemService().removerTotem(idTotem);
             res.status(200).json({ message: Constantes.TOTEM_REMOVIDO });
-        } catch (error: Error | any) {
+        } catch (error) {
             res.status(404).json({ codigo: '404', mensagem: Constantes.TOTEM_NAO_ENCONTRADO });
 
         }

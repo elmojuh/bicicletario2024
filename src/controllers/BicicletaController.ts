@@ -35,7 +35,7 @@ export class BicicletaController {
             const id = parseInt(req.params.id);
             await new BicicletaService().removerBicicleta(id);
             res.status(200).json(Constantes.BICICLETA_REMOVIDA);
-        }catch (error: Error | any){
+        }catch (error){
             res.status(404).json({codigo: '404', mensagem: Constantes.BICICLETA_NAO_ENCONTRADA});
         }
     }
@@ -45,7 +45,7 @@ export class BicicletaController {
             const data = await new BicicletaService().listarBicicletas();
             const dataJson = data.map(bicicleta => bicicleta.toResponseJSON());
             res.json(dataJson);
-        }catch (error: Error | any){
+        }catch (error){
             res.status(404).json({codigo: '404', mensagem: Constantes.ERRO_LISTAR_BICICLETAS});
         }
     }
