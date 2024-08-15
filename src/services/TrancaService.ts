@@ -13,15 +13,23 @@ import {Bicicleta} from "../entities/Bicicleta";
 import {BicicletaRepository} from "../repositories/BicicletaRepository";
 import {StatusBicicleta} from "../entities/enums/StatusBicicleta";
 import {Error} from "../entities/Error";
+import {StatusAcaoReparador} from "../entities/enums/StatusAcaoReparador";
 
 export class TrancaService {
     async cadastrarTranca(dto: NovaTrancaDTO): Promise<Tranca> {
         const savedTranca = TrancaRepository.create(dto);
+        if(!savedTranca){
+            throw new Error('422', Constantes.ERRO_CRIAR_TRANCA);
+        }
         return savedTranca;
     }
 
     async listarTrancas(): Promise<Tranca[]> {
-        return TrancaRepository.getAll();
+        const trancas = TrancaRepository.getAll();
+        if(!trancas){
+            throw new Error('404', Constantes.ERRO_LISTAR_TRANCAS);
+        }
+        return trancas;
     }
 
     async getById(id: number ): Promise<Tranca> {
@@ -56,62 +64,65 @@ export class TrancaService {
     }
 
     async integrarNaRede(dto: IntegrarTrancaNaRedeDTO): Promise<void> {
-        const idTranca = dto.idTranca;
-        const tranca = await this.getById(idTranca);
-        if (tranca.statusTranca !== StatusTranca.NOVA || StatusTranca.EM_REPARO) {
-            throw new Error('422', Constantes.ERRO_INTEGRAR_TRANCA);
-        }
+        const tranca = await this.getById(dto.idTranca);
+        const totem = TotemRepository.getById(dto.idTotem);
+        const funcionarioDispobilidade = await FuncionarioService.isFuncionarioValido(dto.idFuncionario);
 
-        const idTotem = dto.idTotem;
-        const totem = TotemRepository.getById(idTotem);
         if (!totem) {
             throw new Error('404', Constantes.TOTEM_NAO_ENCONTRADO);
         }
-
-        const idFuncionario = dto.idFuncionario;
-        const funcionarioDispobilidade = await FuncionarioService.isFuncionarioValido(idFuncionario);
         if (!funcionarioDispobilidade) {
             throw new Error('422', Constantes.FUNCIONARIO_INVALIDO);
         }
+        if (tranca.statusTranca !== StatusTranca.NOVA && tranca.statusTranca !== StatusTranca.EM_REPARO) {
+            throw new Error('422', Constantes.STATUS_DA_TRANCA_INVALIDO);
+        }
 
-        tranca.totem = totem;
-        tranca.statusTranca = StatusTranca.LIVRE;
+        await this.alterarStatus(dto.idTranca, StatusTranca.LIVRE);
         tranca.dataInsercaoTotem = new Date().toISOString();
-        TrancaRepository.update(idTranca, tranca);
+        tranca.totem = totem;
+        TrancaRepository.update(dto.idTranca, tranca);
 
         const emailService = new EmailService();
         try {
             await emailService.enviarEmailParaReparador(dto.idFuncionario);
         } catch (error) {
-            throw new Error('400',Constantes.ERROR_ENVIAR_EMAIL);
+            throw new Error('422',Constantes.ERROR_ENVIAR_EMAIL);
         }
     }
 
     async retirarDaRede(dto: RetirarTrancaDaRedeDTO): Promise<void> {
-        const idTranca = dto.idTranca;
-        const tranca = await this.getById(idTranca);
+        const tranca = await this.getById(dto.idTranca);
         if (tranca.statusTranca !== StatusTranca.LIVRE) {
-            throw new Error('422', Constantes.ERRO_RETIRAR_TRANCA);
+            throw new Error('422', Constantes.STATUS_DA_TRANCA_INVALIDO);
         }
-        const acao =  dto.statusAcaoReparador.toString();
+        const acao =  dto.statusAcaoReparador;
 
         switch (acao) {
-            case 'reparo':
-                tranca.statusTranca = StatusTranca.EM_REPARO;
+            case StatusAcaoReparador.EM_REPARO:
+                await this.alterarStatus(dto.idTranca, StatusTranca.EM_REPARO);
                 break;
-            case "aposentadoria":
-                tranca.statusTranca = StatusTranca.APOSENTADA;
+            case StatusAcaoReparador.APOSENTADA:
+                await this.alterarStatus(dto.idTranca, StatusTranca.APOSENTADA);
                 break;
             default:
                 throw new Error('422', Constantes.STATUS_DE_ACAO_REPARADOR_INVALIDO);
         }
-        TrancaRepository.update(idTranca, tranca);
+
+        const idTotem = tranca.totem?.id;
+        if(!idTotem){
+            throw new Error('422', Constantes.ERRO_RETIRAR_TRANCA);
+        }
+        const totem = TotemRepository.getById(idTotem);
+        if(!totem){
+            throw new Error('404', Constantes.TOTEM_NAO_ENCONTRADO);
+        }
 
         const emailService = new EmailService();
         try {
             await emailService.enviarEmailParaReparador(dto.idFuncionario);
         } catch (error) {
-            throw new Error('400',Constantes.ERROR_ENVIAR_EMAIL);
+            throw new Error('422',Constantes.ERROR_ENVIAR_EMAIL);
         }
     }
 
@@ -160,13 +171,21 @@ export class TrancaService {
 
     async alterarStatus(id: number, acao: string): Promise<Tranca> {
         const tranca = await this.getById(id);
-        switch (acao){
-            case 'DESTRANCAR':
+        switch (acao as StatusTranca){
+            case StatusTranca.LIVRE:
                 tranca.statusTranca = StatusTranca.LIVRE;
                 break;
-            case 'TRANCAR':
+            case StatusTranca.APOSENTADA:
+                tranca.statusTranca = StatusTranca.APOSENTADA;
+                break;
+            case StatusTranca.EM_REPARO:
+                tranca.statusTranca = StatusTranca.EM_REPARO;
+                break;
+            case StatusTranca.OCUPADA:
                 tranca.statusTranca = StatusTranca.OCUPADA;
                 break;
+            default:
+                throw new Error('422', Constantes.STATUS_DA_TRANCA_INVALIDO);
         }
         const trancaUpdate = TrancaRepository.update(id, tranca);
         if (!trancaUpdate) {

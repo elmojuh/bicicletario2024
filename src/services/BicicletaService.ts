@@ -17,6 +17,9 @@ export class BicicletaService {
 
     async criarBicicleta(dto: NovaBicicletaDTO): Promise<Bicicleta> {
         const savedBicicleta = BicicletaRepository.create(dto);
+        if(!savedBicicleta){
+            throw new Error('422', Constantes.ERRO_CRIAR_BICICLETA);
+        }
         return savedBicicleta;
     }
 
@@ -59,17 +62,14 @@ export class BicicletaService {
         const bicicleta = await this.getById(dto.idBicicleta);
 
         if (!tranca) {
-            throw new Error('404', Constantes.TRANCA_NAO_ENCONTRADA); // Lançando 404 corretamente
+            throw new Error('404', Constantes.TRANCA_NAO_ENCONTRADA);
         }
-
         if (!funcionarioDisponivel) {
             throw new Error('422', Constantes.FUNCIONARIO_INVALIDO);
         }
-
         if (bicicleta.statusBicicleta !== StatusBicicleta.NOVA && bicicleta.statusBicicleta !== StatusBicicleta.EM_REPARO) {
             throw new Error('422', Constantes.STATUS_DA_BICICLETA_INVALIDO);
         }
-
 
         await this.alterarStatus(dto.idBicicleta, StatusBicicleta.DISPONIVEL);
         bicicleta.dataInsercaoTranca = new Date().toISOString();
@@ -97,10 +97,10 @@ export class BicicletaService {
 
         switch (acao) {
             case StatusAcaoReparador.EM_REPARO:
-                bicicleta.statusBicicleta = StatusBicicleta.EM_REPARO;
+                await this.alterarStatus(dto.idBicicleta, StatusBicicleta.EM_REPARO);
                 break;
             case StatusAcaoReparador.APOSENTADA:
-                bicicleta.statusBicicleta = StatusBicicleta.APOSENTADA;
+                await this.alterarStatus(dto.idBicicleta, StatusBicicleta.APOSENTADA)
                 break;
             default:
                 throw new Error ('422', Constantes.STATUS_DA_BICICLETA_INVALIDO);
@@ -114,8 +114,6 @@ export class BicicletaService {
         if(!tranca){
             throw new Error('404', Constantes.TRANCA_NAO_ENCONTRADA);
         }
-
-        await this.alterarStatus(dto.idBicicleta, StatusBicicleta.EM_REPARO);
 
         tranca.statusTranca = StatusTranca.LIVRE;
         TrancaRepository.update(idTranca, tranca);

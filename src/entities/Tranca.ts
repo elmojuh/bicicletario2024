@@ -19,7 +19,7 @@ export class Tranca {
         this._localizacao = localizacao;
         this._anoDeFabricacao = anoDeFabricacao;
         this._modelo = modelo;
-        this._statusTranca = statusTranca;
+        this._statusTranca = StatusTranca.NOVA;
         this._dataInsercaoTotem = '';
         this._totem = null;
     }

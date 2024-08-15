@@ -37,7 +37,7 @@ export class TrancaController {
                 res.status(404).json({codigo: '404', mensagem: error.getMensagem()});
             }
             else if(error.getCodigo() === '422'){
-                res.status(422).json({codigo: '422', mensagem: Constantes.ERRO_INTEGRAR_TRANCA});
+                res.status(422).json({codigo: '422', mensagem: error.getMensagem()});
             }
         }
     }
@@ -48,7 +48,7 @@ export class TrancaController {
             await new TrancaService().retirarDaRede(req.body as RetirarTrancaDaRedeDTO);
             res.status(200).json(Constantes.ACAO_BEM_SUCEDIDA);
         } catch (error: Error | any){
-            res.status(422).json({codigo: '422', mensagem: Constantes.ERRO_RETIRAR_TRANCA});
+            res.status(422).json({codigo: '422', mensagem: error.getMensagem()});
         }
     }
 

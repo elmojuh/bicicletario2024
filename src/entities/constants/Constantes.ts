@@ -6,6 +6,7 @@ export class Constantes {
     static readonly ACAO_BEM_SUCEDIDA = "Ação bem sucedida";
     static readonly STATUS_DE_ACAO_REPARADOR_INVALIDO = "Status de ação do reparador inválido";
     static readonly TRANCA_NAO_ENCONTRADA = "Tranca não encontrada";
+    static readonly STATUS_DA_TRANCA_INVALIDO = "Status da tranca inválido";
     static readonly TRANCA_REMOVIDA = "Tranca removida";
     static readonly EMAIL_ENVIADO_PARA_O_REPARADOR = "Email enviado para o reparador";
     static readonly ASSUNTO_EMAIL_REPARADOR = "Bicicletario";

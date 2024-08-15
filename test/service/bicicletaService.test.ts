@@ -41,6 +41,19 @@ describe('BicicletaService', () => {
         expect(BicicletaRepository.create).toHaveBeenCalledWith(dto);
     });
 
+    it('deve retornar erro ao criar bicicleta', async () => {
+        const dto = new NovaBicicletaDTO('Marca de Teste', 'Modelo de Teste', '2023', 12345, StatusBicicleta.NOVA);
+        BicicletaRepository.create = jest.fn().mockReturnValue(undefined);
+
+        try {
+            await bicicletaService.criarBicicleta(dto);
+        } catch (error: Error | any) {
+            expect(error).toBeInstanceOf(Error);
+            expect(error.codigo).toBe('422');
+            expect(error.mensagem).toBe(Constantes.ERRO_CRIAR_BICICLETA);
+        }
+    });
+
     it('deve obter uma bicicleta pelo ID', async () => {
         BicicletaRepository.getById = jest.fn().mockReturnValue(novaBicicletaMock);
 
@@ -305,7 +318,7 @@ describe('BicicletaService', () => {
 
         expect(BicicletaRepository.getById).toHaveBeenCalledWith(1);
         expect(TrancaRepository.getById).toHaveBeenCalledWith(1);
-        expect(BicicletaRepository.update).toHaveBeenCalledWith(1, expect.objectContaining({ statusBicicleta: StatusBicicleta.EM_REPARO }));
+        expect(BicicletaRepository.update).toHaveBeenCalledWith(1, expect.objectContaining({ statusBicicleta: StatusBicicleta.APOSENTADA }));
         expect(TrancaRepository.update).toHaveBeenCalledWith(1, expect.objectContaining({ statusTranca: StatusTranca.LIVRE }));
         expect(EmailService.prototype.enviarEmailParaReparador).toHaveBeenCalledWith(1);
     });
@@ -383,7 +396,6 @@ describe('BicicletaService', () => {
 
         BicicletaRepository.getById = jest.fn().mockReturnValue(bicicletaDisponivelMock);
         TrancaRepository.getById = jest.fn().mockReturnValue(trancaMockCompleta);
-
         BicicletaRepository.update = jest.fn().mockReturnValue(bicicletaDisponivelMock);
         TrancaRepository.update = jest.fn().mockReturnValue(trancaMockCompleta);
 
