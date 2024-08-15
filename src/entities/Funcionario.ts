@@ -4,17 +4,16 @@ export class Funcionario {
     private _email: string;
     private _cpf: string;
     private _senha: string;
-    private _confirmacaoSenha: string;
+    private _confirmacaoSenha: string | null = null;
     private _idade: number;
     private _funcao: string;
 
-    constructor(id: number, nome: string, email: string, cpf: string, senha: string, confirmacaoSenha: string, idade: number, funcao: string) {
+    constructor(id: number, nome: string, email: string, cpf: string, senha: string, idade: number, funcao: string) {
         this._id = id;
         this._nome = nome;
         this._email = email;
         this._cpf = cpf;
         this._senha = senha;
-        this._confirmacaoSenha = confirmacaoSenha;
         this._idade = idade;
         this._funcao = funcao;
     }
@@ -49,7 +48,7 @@ export class Funcionario {
     set senha(value: string) {
         this._senha = value;
     }
-    get confirmacaoSenha(): string {
+    get confirmacaoSenha(): string | null {
         return this._confirmacaoSenha;
     }
     set confirmacaoSenha(value: string) {
