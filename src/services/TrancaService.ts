@@ -69,7 +69,7 @@ export class TrancaService {
         }
 
         const idFuncionario = dto.idFuncionario;
-        const funcionarioDispobilidade = FuncionarioService.isFuncionarioValido(idFuncionario);
+        const funcionarioDispobilidade = await FuncionarioService.isFuncionarioValido(idFuncionario);
         if (!funcionarioDispobilidade) {
             throw new Error('422', Constantes.FUNCIONARIO_INVALIDO);
         }
@@ -81,7 +81,7 @@ export class TrancaService {
 
         const emailService = new EmailService();
         try {
-            emailService.enviarEmailParaReparador(dto.idFuncionario);
+            await emailService.enviarEmailParaReparador(dto.idFuncionario);
         } catch (error) {
             throw new Error('400',Constantes.ERROR_ENVIAR_EMAIL);
         }
