@@ -54,11 +54,8 @@ export class BicicletaService {
 
     async integrarNaRede(dto: IntegrarBicicletaNaRedeDTO) : Promise<void>{
         const bicicleta = await this.getById(dto.idBicicleta);
-        if(!bicicleta){
-            throw new Error('404', Constantes.BICICLETA_NAO_ENCONTRADA);
-        }
-        if (bicicleta.statusBicicleta !== StatusBicicleta.NOVA && bicicleta.statusBicicleta !== StatusBicicleta.EM_REPARO) {
-            throw new Error('404', Constantes.STATUS_DA_BICICLETA_INVALIDO);
+        if (bicicleta.statusBicicleta != StatusBicicleta.NOVA) {
+            throw new Error('422', Constantes.STATUS_DA_BICICLETA_INVALIDO);
         }
 
         const tranca = TrancaRepository.getById( dto.idTranca);
@@ -70,7 +67,8 @@ export class BicicletaService {
         if (!funcionarioDisponivel) {
             throw new Error('422', Constantes.FUNCIONARIO_INVALIDO);
         }
-        await this.alterarStatus(dto.idBicicleta, 'disponibilizar');
+
+        await this.alterarStatus(dto.idBicicleta, StatusBicicleta.DISPONIVEL);
         bicicleta.dataInsercaoTranca = new Date().toISOString();
         BicicletaRepository.update(dto.idBicicleta, bicicleta);
 
@@ -92,13 +90,13 @@ export class BicicletaService {
             throw new Error('422', Constantes.ERRO_RETIRAR_BICICLETA);
         }
 
-        const acao =  dto.statusAcaoReparador.toString();
+        const acao =  dto.statusAcaoReparador;
 
         switch (acao) {
-            case 'reparo':
+            case StatusBicicleta.EM_REPARO:
                 bicicleta.statusBicicleta = StatusBicicleta.EM_REPARO;
                 break;
-            case 'aposentadoria':
+            case StatusBicicleta.APOSENTADA:
                 bicicleta.statusBicicleta = StatusBicicleta.APOSENTADA;
                 break;
             default:
@@ -114,7 +112,7 @@ export class BicicletaService {
             throw new Error('404', Constantes.TRANCA_NAO_ENCONTRADA);
         }
 
-        await this.alterarStatus(idBicicleta, 'reparar');
+        await this.alterarStatus(idBicicleta, StatusBicicleta.EM_REPARO);
 
         tranca.statusTranca = StatusTranca.LIVRE;
         TrancaRepository.update(idTranca, tranca);
@@ -129,20 +127,20 @@ export class BicicletaService {
 
     async alterarStatus(id: number, acao: string) : Promise<Bicicleta>{
         const bicicleta = await this.getById(id);
-        switch (acao) {
-            case 'DISPONIVEL':
+        switch (acao as StatusBicicleta) {
+            case StatusBicicleta.DISPONIVEL:
                 bicicleta.statusBicicleta = StatusBicicleta.DISPONIVEL;
                 break;
-            case 'EM_USO':
+            case StatusBicicleta.EM_USO:
                 bicicleta.statusBicicleta = StatusBicicleta.EM_USO;
                 break;
-            case 'EM_REPARO':
+            case StatusBicicleta.EM_REPARO:
                 bicicleta.statusBicicleta = StatusBicicleta.EM_REPARO;
                 break;
-            case 'NOVA':
+            case StatusBicicleta.NOVA:
                 bicicleta.statusBicicleta = StatusBicicleta.NOVA;
                 break;
-            case 'APOSENTADA':
+            case StatusBicicleta.APOSENTADA:
                 bicicleta.statusBicicleta = StatusBicicleta.APOSENTADA;
                 break;
             default:

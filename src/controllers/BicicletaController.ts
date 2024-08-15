@@ -110,6 +110,9 @@ export class BicicletaController {
             else if(error.getCodigo() === '422'){
                 res.status(422).json({codigo: '422', mensagem: Constantes.STATUS_DA_BICICLETA_INVALIDO});
             }
+            else if(error.getCodigo() === '422'){
+                res.status(422).json({codigo: '422', mensagem: Constantes.ERRO_EDITAR_BICICLETA});
+            }
         }
     }
 }
