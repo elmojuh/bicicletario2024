@@ -507,7 +507,26 @@ describe('TrancaService', () => {
         }
     });
 
-    it('deve destrancar tranca com sucesso', async () => {
+    it('deve destrancar tranca com sucesso OCUPADA', async () => {
+        const bicicletaMock = new Bicicleta(1, 'Marca de Teste', 'Modelo de Teste', '2023', 12345, StatusBicicleta.DISPONIVEL);
+        bicicletaMock.statusBicicleta = StatusBicicleta.DISPONIVEL;
+        trancaLivreMock.statusTranca = StatusTranca.OCUPADA;
+        trancaLivreMock.bicicleta = bicicletaMock;
+
+        TrancaRepository.getById = jest.fn().mockReturnValue(trancaLivreMock);
+        BicicletaRepository.getById = jest.fn().mockReturnValue(bicicletaMock);
+        TrancaRepository.update = jest.fn().mockReturnValue(trancaLivreMock);
+        EmailService.prototype.enviarEmailParaReparador = jest.fn().mockResolvedValue(true);  // Mock de sucesso
+
+        await trancaService.destrancarTranca(1, 1);
+
+        expect(TrancaRepository.getById).toHaveBeenCalledWith(1);
+        expect(BicicletaRepository.getById).toHaveBeenCalledWith(1);
+        expect(TrancaRepository.update).toHaveBeenCalledWith(1, expect.objectContaining({ statusTranca: StatusTranca.LIVRE }));
+    });
+
+
+    it('deve destrancar tranca com sucesso e enviar email ao destrancar tranca com status EM_REPARO', async () => {
         const bicicletaMock = new Bicicleta(1, 'Marca de Teste', 'Modelo de Teste', '2023', 12345, StatusBicicleta.DISPONIVEL);
         bicicletaMock.statusBicicleta = StatusBicicleta.DISPONIVEL;
         trancaLivreMock.statusTranca = StatusTranca.EM_REPARO;
@@ -516,12 +535,17 @@ describe('TrancaService', () => {
         TrancaRepository.getById = jest.fn().mockReturnValue(trancaLivreMock);
         BicicletaRepository.getById = jest.fn().mockReturnValue(bicicletaMock);
         TrancaRepository.update = jest.fn().mockReturnValue(trancaLivreMock);
+        EmailService.prototype.enviarEmailParaReparador = jest.fn().mockResolvedValue(true);  // Mock de sucesso
 
         await trancaService.destrancarTranca(1, 1);
 
         expect(TrancaRepository.getById).toHaveBeenCalledWith(1);
         expect(BicicletaRepository.getById).toHaveBeenCalledWith(1);
+        expect(EmailService.prototype.enviarEmailParaReparador).toHaveBeenCalledWith(1);
+        expect(TrancaRepository.update).toHaveBeenCalledWith(1, expect.objectContaining({ statusTranca: StatusTranca.LIVRE }));
     });
+
+
 
     it('deve retornar erro de envio de email ao destrancar tranca', async () => {
         const bicicletaMock = new Bicicleta(1, 'Marca de Teste', 'Modelo de Teste', '2023', 12345, StatusBicicleta.DISPONIVEL);
@@ -593,22 +617,6 @@ describe('TrancaService', () => {
             expect(error.mensagem).toBe(Constantes.STATUS_DA_TRANCA_INVALIDO);
         }
     });
-
-    it('deve enviar email ao destrancar tranca com status EM_REPARO', async () => {
-        const bicicletaMock = new Bicicleta(1, 'Marca de Teste', 'Modelo de Teste', '2023', 12345, StatusBicicleta.DISPONIVEL);
-        bicicletaMock.statusBicicleta = StatusBicicleta.DISPONIVEL;
-        trancaLivreMock.statusTranca = StatusTranca.EM_REPARO;
-        trancaLivreMock.bicicleta = bicicletaMock;
-
-        TrancaRepository.getById = jest.fn().mockReturnValue(trancaLivreMock);
-        BicicletaRepository.getById = jest.fn().mockReturnValue(bicicletaMock);
-        TrancaRepository.update = jest.fn().mockReturnValue(trancaLivreMock);
-
-        await trancaService.destrancarTranca(1, 1);
-
-        expect(TrancaRepository.getById).toHaveBeenCalledWith(1);
-        expect(BicicletaRepository.getById).toHaveBeenCalledWith(1);
-    })
 
     it('deve retornar erro ao alterar status de tranca que não existe', async () => {
         TrancaRepository.getById = jest.fn().mockReturnValue(undefined);
