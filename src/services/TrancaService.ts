@@ -164,7 +164,6 @@ export class TrancaService {
         if(tranca.statusTranca === StatusTranca.OCUPADA){
             await this.alterarStatus(idTranca, StatusTranca.LIVRE);
         }
-        await this.alterarStatus(idTranca, StatusTranca.LIVRE);
         if(tranca.statusTranca === StatusTranca.EM_REPARO){
             const emailService = new EmailService();
             try {
@@ -172,6 +171,7 @@ export class TrancaService {
             } catch (error) {
                 throw new Error('422',Constantes.ERROR_ENVIAR_EMAIL);
             }
+            await this.alterarStatus(idTranca, StatusTranca.LIVRE);
         }
     }
 
