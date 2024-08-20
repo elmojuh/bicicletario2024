@@ -25,6 +25,34 @@ const bicicletaDisponivelMock = new Bicicleta(1, 'Marca de Teste', 'Modelo de Te
 const trancaMock = { id: 1, statusTranca: StatusTranca.LIVRE };
 const trancaMockCompleta = new Tranca(1, 1, 'Localização de teste', '2022', 'Modelo Teste', StatusTranca.LIVRE);
 
+const mockIntegracaoBicicleta = (bicicletaStatus: StatusBicicleta, emailError = false) => {
+    const novaBicicletaMock = new Bicicleta(1, 'Marca de Teste', 'Modelo de Teste', '2023', 12345, bicicletaStatus);
+
+    BicicletaRepository.getById = jest.fn().mockReturnValue(novaBicicletaMock);
+    TrancaRepository.getById = jest.fn().mockReturnValue(trancaMock);
+    FuncionarioService.isFuncionarioValido = jest.fn().mockResolvedValue(true);
+    BicicletaRepository.update = jest.fn().mockReturnValue(novaBicicletaMock);
+    TrancaRepository.update = jest.fn().mockReturnValue(trancaMock);
+
+    if (emailError) {
+        EmailService.prototype.enviarEmailParaReparador = jest.fn().mockRejectedValue(new Error('422', Constantes.ERROR_ENVIAR_EMAIL));
+    } else {
+        EmailService.prototype.enviarEmailParaReparador = jest.fn();
+    }
+};
+
+function mocksParaRetirarBicicletaDaRede() {
+    bicicletaDisponivelMock.tranca = trancaMockCompleta;
+    bicicletaDisponivelMock.statusBicicleta = StatusBicicleta.DISPONIVEL;
+
+    BicicletaRepository.getById = jest.fn().mockReturnValue(bicicletaDisponivelMock);
+    TrancaRepository.getById = jest.fn().mockReturnValue(trancaMockCompleta);
+    BicicletaRepository.update = jest.fn().mockReturnValue(bicicletaDisponivelMock);
+    TrancaRepository.update = jest.fn().mockReturnValue(trancaMockCompleta);
+    EmailService.prototype.enviarEmailParaReparador = jest.fn();
+}
+
+
 describe('BicicletaService', () => {
 
     beforeEach(() => {
@@ -171,11 +199,7 @@ describe('BicicletaService', () => {
     it('deve integrar bicicleta a rede', async () => {
         const dto = new IntegrarBicicletaNaRedeDTO(1, 1, 1);
 
-        BicicletaRepository.getById = jest.fn().mockReturnValue(novaBicicletaMock);
-        TrancaRepository.getById = jest.fn().mockReturnValue(trancaMock);
-        FuncionarioService.isFuncionarioValido = jest.fn().mockResolvedValue(true);
-        BicicletaRepository.update = jest.fn().mockReturnValue(novaBicicletaMock);
-        TrancaRepository.update = jest.fn().mockReturnValue(trancaMock);
+        mockIntegracaoBicicleta(StatusBicicleta.NOVA);
 
         await bicicletaService.integrarNaRede(dto);
 
@@ -262,15 +286,7 @@ describe('BicicletaService', () => {
     it('deve retornar erro ao integrar bicicleta a rede com erro ao enviar email', async () => {
         const dto = new IntegrarBicicletaNaRedeDTO(1, 1, 1);
 
-        const novaBicicletaMock = new Bicicleta(1, 'Marca de Teste', 'Modelo de Teste', '2023', 12345, StatusBicicleta.NOVA);
-
-        BicicletaRepository.getById = jest.fn().mockReturnValue(novaBicicletaMock);
-        TrancaRepository.getById = jest.fn().mockReturnValue(trancaMock);
-        FuncionarioService.isFuncionarioValido = jest.fn().mockResolvedValue(true);
-        BicicletaRepository.update = jest.fn().mockReturnValue(novaBicicletaMock);
-        TrancaRepository.update = jest.fn().mockReturnValue(trancaMock);
-
-        EmailService.prototype.enviarEmailParaReparador = jest.fn().mockRejectedValue(new Error('422', Constantes.ERROR_ENVIAR_EMAIL));
+        mockIntegracaoBicicleta(StatusBicicleta.NOVA, true);
 
         try {
             await bicicletaService.integrarNaRede(dto);
@@ -284,14 +300,7 @@ describe('BicicletaService', () => {
     it('deve retirar a bicicleta da rede com sucesso EM_REPARO', async () => {
         const dtoMock = new RetirarBicicletaDaRedeDTO(1, 1, 1, StatusAcaoReparador.EM_REPARO);
 
-        bicicletaDisponivelMock.tranca = trancaMockCompleta;
-        bicicletaDisponivelMock.statusBicicleta = StatusBicicleta.DISPONIVEL;
-
-        BicicletaRepository.getById = jest.fn().mockReturnValue(bicicletaDisponivelMock);
-        TrancaRepository.getById = jest.fn().mockReturnValue(trancaMockCompleta);
-        BicicletaRepository.update = jest.fn().mockReturnValue(bicicletaDisponivelMock);
-        TrancaRepository.update = jest.fn();
-        EmailService.prototype.enviarEmailParaReparador = jest.fn();
+        mocksParaRetirarBicicletaDaRede();
 
         await bicicletaService.retirarDaRede(dtoMock);
 
@@ -305,14 +314,7 @@ describe('BicicletaService', () => {
     it('deve retirar a bicicleta da rede com sucesso APOSENTADA', async () => {
         const dtoMock = new RetirarBicicletaDaRedeDTO(1, 1, 1, StatusAcaoReparador.APOSENTADA);
 
-        bicicletaDisponivelMock.tranca = trancaMockCompleta;
-        bicicletaDisponivelMock.statusBicicleta = StatusBicicleta.DISPONIVEL;
-
-        BicicletaRepository.getById = jest.fn().mockReturnValue(bicicletaDisponivelMock);
-        TrancaRepository.getById = jest.fn().mockReturnValue(trancaMockCompleta);
-        BicicletaRepository.update = jest.fn().mockReturnValue(bicicletaDisponivelMock);
-        TrancaRepository.update = jest.fn();
-        EmailService.prototype.enviarEmailParaReparador = jest.fn();
+        mocksParaRetirarBicicletaDaRede();
 
         await bicicletaService.retirarDaRede(dtoMock);
 
@@ -354,10 +356,12 @@ describe('BicicletaService', () => {
         }
     });
 
-    it('deve retornar erro ao retirar bicicleta com tranca não encontrada', async () => {
+    it('deve retornar erro ao retirar bicicleta com tranca não existente', async () => {
         const dtoMock = new RetirarBicicletaDaRedeDTO(1, 1, 1, StatusAcaoReparador.EM_REPARO as StatusAcaoReparador);
+
         novaBicicletaMock.statusBicicleta = StatusBicicleta.DISPONIVEL;
         BicicletaRepository.getById = jest.fn().mockReturnValue(novaBicicletaMock);
+        BicicletaRepository.update = jest.fn().mockReturnValue(novaBicicletaMock);
         TrancaRepository.getById = jest.fn().mockReturnValue(undefined);
 
         try {
@@ -368,6 +372,7 @@ describe('BicicletaService', () => {
             expect(error.mensagem).toBe(Constantes.TRANCA_NAO_ENCONTRADA);
         }
     });
+
 
     it('deve retornar erro ao retirar bicicleta', async () => {
         const dtoMock = new RetirarBicicletaDaRedeDTO(1, 1, 1, StatusAcaoReparador.EM_REPARO);
@@ -391,13 +396,7 @@ describe('BicicletaService', () => {
     it('deve retornar erro ao retirar bicicleta a rede com erro ao enviar email', async () => {
         const dtoMock = new RetirarBicicletaDaRedeDTO(1, 1, 1, StatusAcaoReparador.EM_REPARO);
 
-        bicicletaDisponivelMock.tranca = trancaMockCompleta;
-        bicicletaDisponivelMock.statusBicicleta = StatusBicicleta.DISPONIVEL;
-
-        BicicletaRepository.getById = jest.fn().mockReturnValue(bicicletaDisponivelMock);
-        TrancaRepository.getById = jest.fn().mockReturnValue(trancaMockCompleta);
-        BicicletaRepository.update = jest.fn().mockReturnValue(bicicletaDisponivelMock);
-        TrancaRepository.update = jest.fn().mockReturnValue(trancaMockCompleta);
+        mocksParaRetirarBicicletaDaRede();
 
         EmailService.prototype.enviarEmailParaReparador = jest.fn().mockRejectedValue(new Error('422', Constantes.ERROR_ENVIAR_EMAIL));
 

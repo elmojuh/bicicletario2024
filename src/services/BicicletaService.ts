@@ -106,13 +106,14 @@ export class BicicletaService {
                 throw new Error ('422', Constantes.STATUS_DA_BICICLETA_INVALIDO);
         }
 
+        const tranca = TrancaRepository.getById(dto.idTranca);
+        if(!tranca){
+            throw new Error('404', Constantes.TRANCA_NAO_ENCONTRADA);
+        }
+
         const idTranca = bicicleta.tranca?.id;
         if(!idTranca){
             throw new Error('422', Constantes.ERRO_RETIRAR_BICICLETA);
-        }
-        const tranca = TrancaRepository.getById(idTranca);
-        if(!tranca){
-            throw new Error('404', Constantes.TRANCA_NAO_ENCONTRADA);
         }
 
         tranca.statusTranca = StatusTranca.LIVRE;
