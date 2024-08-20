@@ -11,11 +11,18 @@ import {Constantes} from "../entities/constants/Constantes";
 export class TotemService {
 
     async listarTotens(): Promise<Totem[]> {
-        return TotemRepository.getAll();
+        const totens = TotemRepository.getAll();
+        if(!totens){
+            throw new Error('404', Constantes.ERRO_LISTAR_TOTENS);
+        }
+        return totens;
     }
 
     async cadastrarTotem(totemData: NovoTotemDTO): Promise<Totem> {
         const savedTotem = TotemRepository.create(totemData);
+        if(!savedTotem){
+            throw new Error('422', Constantes.ERRO_CRIAR_TOTEM);
+        }
         return savedTotem;
     }
     async getById(id: number) : Promise<Totem>{
@@ -35,8 +42,11 @@ export class TotemService {
     }
 
     async removerTotem(id: number) : Promise<void>{
-        this.getById(id);
-        TotemRepository.delete(id);
+        await this.getById(id);
+        const deleted = TotemRepository.delete(id);
+        if (!deleted) {
+            throw new Error('422', Constantes.ERRO_REMOVER_TOTEM);
+        }
     }
 
     async listarTrancas(id: number) : Promise<Tranca[]> {

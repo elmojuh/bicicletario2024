@@ -36,7 +36,7 @@ export class BicicletaService {
         if (!bicicletas) {
             throw new Error('404', Constantes.ERRO_LISTAR_BICICLETAS);
         }
-        return BicicletaRepository.getAll();
+        return bicicletas;
     }
 
     async editarBicicleta(id: number, dto: NovaBicicletaDTO) : Promise<Bicicleta>{
