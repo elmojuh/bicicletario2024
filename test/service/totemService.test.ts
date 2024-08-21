@@ -90,7 +90,6 @@ describe('TotemService', () => {
     });
 
     it('deve editar totem com sucesso', async () => {
-        const novoTotemDTO = new NovoTotemDTO('Localização Teste', 'Descrição Teste,');
         TotemRepository.update = jest.fn().mockReturnValue(novoTotemMock);
         TotemRepository.getById = jest.fn().mockReturnValue(novoTotemMock);
 
