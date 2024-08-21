@@ -205,6 +205,20 @@ describe('TrancaService', () => {
         }
     });
 
+    it('deve retornar erro ao obter bicicleta na tranca', async () => {
+        const trancaMock = new Tranca(1, 1, 'Local de Teste', '2023', 'Modelo Teste', StatusTranca.OCUPADA);
+        TrancaRepository.getById = jest.fn().mockReturnValue(trancaMock);
+
+        try {
+            await trancaService.obterBicicletaNaTranca(1);
+        } catch (error: Error | any) {
+            expect(error).toBeInstanceOf(Error);
+            expect(error.codigo).toBe('422');
+            expect(error.mensagem).toBe(Constantes.ERRO_OBTER_BICICLETA_TRANCA);
+        }
+    });
+
+
     it('deve retornar erro ao obter tranca com bicicleta não existente', async () => {
         trancaLivreMock.statusTranca = StatusTranca.OCUPADA;
         BicicletaRepository.getById = jest.fn().mockReturnValue(undefined);
