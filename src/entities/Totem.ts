@@ -1,5 +1,5 @@
 export class Totem {
-    private _id : number | undefined;
+    private _id : number;
     private _localizacao : string;
     private _descricao : string;
     constructor(id: number, localizacao: string, descricao: string) {
@@ -7,7 +7,7 @@ export class Totem {
         this._localizacao = localizacao;
         this._descricao = descricao;
     }
-    get id(): number | undefined{
+    get id(): number{
         return this._id;
     }
     set id(value: number) {
