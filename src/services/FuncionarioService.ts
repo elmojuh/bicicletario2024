@@ -5,7 +5,7 @@ import axios from "axios";
 
 export class FuncionarioService {
 
-    private readonly baseUrlDeAluguel = 'https://outro-microservico.com/api';
+    private readonly baseUrlDeAluguel = 'https://bike-aluguel.azurewebsites.net/swagger/index.html';
 
     async getById(idFuncionario: number) {
         try {
