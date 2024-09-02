@@ -14,7 +14,7 @@ export class RestaurarDadosRouter {
 
     private initializeRoutes(): void {
         this.router.post('/', this.restaurarDados);
-        this.router.get('/teste', this.testRoute);
+        this.router.get('/teste', this.testRoute);//teste
     }
 
     private async restaurarDados(req: Request, res: Response): Promise<void> {
