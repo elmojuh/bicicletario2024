@@ -1,22 +1,33 @@
 import {Funcionario} from "../entities/Funcionario";
+import {Error} from "../entities/Error";
+import {Constantes} from "../entities/constants/Constantes";
+import axios from "axios";
 
 export class FuncionarioService {
 
-    async getById(idFuncionario: number): Promise<Funcionario> {
-        const funcionario = new Funcionario(
-            idFuncionario,
-            "Funcionario",
-            "Funcionario@Funcionario.com",
-            "123.456.789-00",
-            "123456",
-            "123456",
-            30,
-            "Funcionario"
-        );
-        return funcionario;
+    private readonly baseUrlDeAluguel = 'https://outro-microservico.com/api';
+
+    async getById(idFuncionario: number) {
+        try {
+            // const response = await axios.get<Funcionario>(`${this.baseUrlDeAluguel}/${idFuncionario}`);
+            // if (response.status === 200) {
+            //     return response.data;
+            // }
+            const funcionario = new Funcionario(1, 'Nome', 'email@email.com', '12345678901', '123', '123', 20, '');
+            return funcionario;
+        } catch (error: Error | any) {
+            if(!idFuncionario){
+                throw new Error('404', Constantes.FUNCIONARIO_NAO_ENCONTRADO);
+            }
+            throw new Error('422', Constantes.FUNCIONARIO_INVALIDO);
+        }
     }
 
-    static async isFuncionarioValido(idFuncionario: number): Promise<boolean> {
+    async isFuncionarioValido(idFuncionario: number): Promise<boolean> {
+        const funcionario = await this.getById(idFuncionario);
+        if (!funcionario) {
+            throw new Error('404', Constantes.FUNCIONARIO_NAO_ENCONTRADO);
+        }
         return true;
     }
 }

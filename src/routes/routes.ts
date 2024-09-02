@@ -2,7 +2,8 @@ import { Router } from 'express';
 import { BicicletaRouter } from './bicicletaRoutes';
 import { TotemRouter } from './totemRoutes';
 import { TrancaRouter } from './trancaRoutes';
-import {FuncionarioRouter} from "./funcionarioRoutes";
+import { FuncionarioRouter } from "./funcionarioRoutes";
+import { RestaurarDadosRouter } from "./restaurarDadosRoutes";
 
 export default class AppRoutes {
     public router: Router;
@@ -24,10 +25,12 @@ export default class AppRoutes {
         const totemRouter = new TotemRouter().router;
         const trancaRouter = new TrancaRouter().router;
         const funcionarioRouter = new FuncionarioRouter().router;
+        const restaurarDadosRouter = new RestaurarDadosRouter().router;
 
         this.router.use('/bicicleta', bicicletaRouter);
         this.router.use('/totem', totemRouter);
         this.router.use('/tranca', trancaRouter);
         this.router.use('/funcionario', funcionarioRouter);
+        this.router.use('/restaurarDados', restaurarDadosRouter);
     }
 }

@@ -12,6 +12,7 @@ export class Constantes {
     static readonly ASSUNTO_EMAIL_REPARADOR = "Bicicletario";
     static readonly ERROR_ENVIAR_EMAIL = "Erro ao enviar email";
     static readonly FUNCIONARIO_INVALIDO = "Funcionário inválido para esta operação";
+    static readonly FUNCIONARIO_NAO_ENCONTRADO = "Funcionário não encontrado";
     static readonly BICICLETA_NAO_ENCONTRADA = "Bicicleta não encontrada";
     static readonly STATUS_DA_BICICLETA_INVALIDO = "Status da bicicleta inválido";
     static readonly DADOS_INVALIDOS = "Dados inválidos";

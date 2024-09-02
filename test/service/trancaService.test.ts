@@ -15,6 +15,7 @@ import {StatusBicicleta} from "../../src/entities/enums/StatusBicicleta";
 import {Error} from '../../src/entities/Error';
 import {EmailService} from "../../src/services/EmailService";
 import {Totem} from "../../src/entities/Totem";
+import {Funcionario} from "../../src/entities/Funcionario";
 
 jest.mock('../../src/repositories/TrancaRepository');
 jest.mock('../../src/repositories/BicicletaRepository');
@@ -30,13 +31,14 @@ const bicicletaMockNova = new Bicicleta(1, 'Marca de Teste', 'Modelo de Teste', 
 const bicicletaMockDisponivel = new Bicicleta(1, 'Marca de Teste', 'Modelo de Teste', '2023', 12345, StatusBicicleta.DISPONIVEL);
 const integrarTrancaNaRedeDTO = new IntegrarTrancaNaRedeDTO(1, 1, 1);
 const retirarTrancaDaRedeDTOEmReparo = new RetirarTrancaDaRedeDTO(1, 1, 1, StatusAcaoReparador.EM_REPARO);
+const funcionarioMock = new Funcionario(1, 'Nome', 'email@email.com', '12345678901', '123', '123', 20, '');
 
 const mockIntegracaoTranca = (statusTranca: StatusTranca, totemMock: any = { id: 1 }) => {
     trancaLivreMock.statusTranca = statusTranca;
 
     TrancaRepository.getById = jest.fn().mockReturnValue(trancaLivreMock);
     TotemRepository.getById = jest.fn().mockReturnValue(totemMock);
-    FuncionarioService.isFuncionarioValido = jest.fn().mockResolvedValue(true);
+    FuncionarioService.prototype.getById = jest.fn().mockResolvedValue(funcionarioMock);
 
     TrancaRepository.update = jest.fn().mockImplementation((id, updatedTranca) => {
         updatedTranca.statusTranca = StatusTranca.LIVRE; // Simulando a atualização correta
@@ -242,7 +244,7 @@ describe('TrancaService', () => {
         await trancaService.integrarNaRede(dto);
 
         expect(TrancaRepository.update).toHaveBeenCalledWith(1, expect.objectContaining({ statusTranca: StatusTranca.LIVRE }));
-        expect(FuncionarioService.isFuncionarioValido).toHaveBeenCalledWith(1);
+        expect(FuncionarioService.prototype.getById).toHaveBeenCalledWith(1);
         expect(TotemRepository.getById).toHaveBeenCalledWith(1);
     });
 
@@ -254,7 +256,7 @@ describe('TrancaService', () => {
 
         TrancaRepository.getById = jest.fn().mockReturnValue(trancaLivreMock);
         TotemRepository.getById = jest.fn().mockReturnValue(totemMock);
-        FuncionarioService.isFuncionarioValido = jest.fn().mockResolvedValue(true);
+        FuncionarioService.prototype.getById = jest.fn().mockResolvedValue(funcionarioMock);
 
         TrancaRepository.update = jest.fn().mockImplementation((id, updatedTranca) => {
             updatedTranca.statusTranca = StatusTranca.EM_REPARO; // Simulando a atualização correta
@@ -264,7 +266,7 @@ describe('TrancaService', () => {
         await trancaService.integrarNaRede(dto);
 
         expect(TrancaRepository.update).toHaveBeenCalledWith(1, expect.objectContaining({ statusTranca: StatusTranca.EM_REPARO }));
-        expect(FuncionarioService.isFuncionarioValido).toHaveBeenCalledWith(1);
+        expect(FuncionarioService.prototype.getById).toHaveBeenCalledWith(1);
         expect(TotemRepository.getById).toHaveBeenCalledWith(1);
     });
 
@@ -300,7 +302,7 @@ describe('TrancaService', () => {
         const dto = new IntegrarTrancaNaRedeDTO(1, 1, 1);
         TrancaRepository.getById = jest.fn().mockReturnValue(trancaLivreMock);
         TotemRepository.getById = jest.fn().mockReturnValue({ id: 1 });
-        FuncionarioService.isFuncionarioValido = jest.fn().mockResolvedValue(false);
+        FuncionarioService.prototype.getById = jest.fn().mockResolvedValue(undefined);
 
         try {
             await trancaService.integrarNaRede(dto);
@@ -337,7 +339,7 @@ describe('TrancaService', () => {
 
         expect(TrancaRepository.getById).toHaveBeenCalledWith(1);
         expect(TrancaRepository.update).toHaveBeenCalledWith(1, expect.objectContaining({ statusTranca: StatusTranca.EM_REPARO }));
-        expect(EmailService.prototype.enviarEmailParaReparador).toHaveBeenCalledWith(1);
+        expect(EmailService.prototype.enviarEmailParaReparador).toHaveBeenCalledWith(1, 'Retirar da rede', 'Retirando na rede');
     });
 
     it('deve retirar a tranca da rede com sucesso APOSENTADA', async () => {
@@ -349,7 +351,7 @@ describe('TrancaService', () => {
 
         expect(TrancaRepository.getById).toHaveBeenCalledWith(1);
         expect(TrancaRepository.update).toHaveBeenCalledWith(1, expect.objectContaining({ statusTranca: StatusTranca.APOSENTADA }));
-        expect(EmailService.prototype.enviarEmailParaReparador).toHaveBeenCalledWith(1);
+        expect(EmailService.prototype.enviarEmailParaReparador).toHaveBeenCalledWith(1, 'Retirar da rede', 'Retirando na rede');
     });
 
     it('deve retornar erro ao retirar tranca com status da tranca invalido', async () => {
@@ -550,7 +552,7 @@ describe('TrancaService', () => {
 
         expect(TrancaRepository.getById).toHaveBeenCalledWith(1);
         expect(BicicletaRepository.getById).toHaveBeenCalledWith(1);
-        expect(EmailService.prototype.enviarEmailParaReparador).toHaveBeenCalledWith(1);
+        expect(EmailService.prototype.enviarEmailParaReparador).toHaveBeenCalledWith(1, 'Destrancar', 'Destrancando');
         expect(TrancaRepository.update).toHaveBeenCalledWith(1, expect.objectContaining({ statusTranca: StatusTranca.LIVRE }));
     });
 

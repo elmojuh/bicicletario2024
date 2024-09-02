@@ -65,12 +65,12 @@ export class TrancaService {
     async integrarNaRede(dto: IntegrarTrancaNaRedeDTO): Promise<void> {
         const tranca = await this.getById(dto.idTranca);
         const totem = TotemRepository.getById(dto.idTotem);
-        const funcionarioDispobilidade = await FuncionarioService.isFuncionarioValido(dto.idFuncionario);
+        const funcionario = await new FuncionarioService().getById(dto.idFuncionario);
 
         if (!totem) {
             throw new Error('404', Constantes.TOTEM_NAO_ENCONTRADO);
         }
-        if (!funcionarioDispobilidade) {
+        if (!funcionario) {
             throw new Error('422', Constantes.FUNCIONARIO_INVALIDO);
         }
         if (tranca.statusTranca !== StatusTranca.NOVA && tranca.statusTranca !== StatusTranca.EM_REPARO) {
@@ -84,7 +84,7 @@ export class TrancaService {
 
         const emailService = new EmailService();
         try {
-            await emailService.enviarEmailParaReparador(dto.idFuncionario);
+            await emailService.enviarEmailParaReparador(dto.idFuncionario, 'Integrar na rede',  'Integrando na rede');
         } catch (error) {
             throw new Error('422',Constantes.ERROR_ENVIAR_EMAIL);
         }
@@ -110,7 +110,7 @@ export class TrancaService {
 
         const emailService = new EmailService();
         try {
-            await emailService.enviarEmailParaReparador(dto.idFuncionario);
+            await emailService.enviarEmailParaReparador(dto.idFuncionario, 'Retirar da rede',  'Retirando na rede');
         } catch (error) {
             throw new Error('422',Constantes.ERROR_ENVIAR_EMAIL);
         }
@@ -167,7 +167,7 @@ export class TrancaService {
         if(tranca.statusTranca === StatusTranca.EM_REPARO){
             const emailService = new EmailService();
             try {
-                await emailService.enviarEmailParaReparador(1);
+                await emailService.enviarEmailParaReparador(1, 'Destrancar',  'Destrancando');
             } catch (error) {
                 throw new Error('422',Constantes.ERROR_ENVIAR_EMAIL);
             }

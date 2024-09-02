@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/elmojuh/bicicletario2024#readme",
   "dependencies": {
+    "axios": "^1.7.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "swagger-ui-express": "^5.0.0"

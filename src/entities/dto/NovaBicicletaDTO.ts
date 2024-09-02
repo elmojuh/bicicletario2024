@@ -14,3 +14,5 @@ export class NovaBicicletaDTO{
         this.status = status;
     }
 }
+
+//tem que ser verificado ao enviar os dados

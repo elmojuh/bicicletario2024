@@ -53,7 +53,7 @@ export class Bicicleta{
         this._numero = value;
     }
     get statusBicicleta(): StatusBicicleta {
-        return <StatusBicicleta>this._statusBicicleta;
+        return this._statusBicicleta;
     }
     set statusBicicleta(value: StatusBicicleta) {
         this._statusBicicleta = value;

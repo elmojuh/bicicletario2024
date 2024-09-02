@@ -48,6 +48,7 @@ export class BicicletaService {
         return updatedBicicleta;
     }
 
+    //RN 4 - não contemplada
     async removerBicicleta(id: number): Promise<void>{
         await this.getById(id);
         const deleted = BicicletaRepository.delete(id);
@@ -56,9 +57,10 @@ export class BicicletaService {
         }
     }
 
+    //funcionario ao integrar bicicleta deve verificar se o mesmo funcionario que retirou no caso de reparo
     async integrarNaRede(dto: IntegrarBicicletaNaRedeDTO) : Promise<void>{
         const tranca = TrancaRepository.getById(dto.idTranca);
-        const funcionarioDisponivel = await FuncionarioService.isFuncionarioValido(dto.idFuncionario);
+        const funcionarioDisponivel = await new FuncionarioService().getById(dto.idFuncionario);
         const bicicleta = await this.getById(dto.idBicicleta);
 
         if (!tranca) {
@@ -73,6 +75,7 @@ export class BicicletaService {
 
         await this.alterarStatus(dto.idBicicleta, StatusBicicleta.DISPONIVEL);
         bicicleta.dataInsercaoTranca = new Date().toISOString();
+        //necessario log para salvar todas as datas de inserção
         bicicleta.tranca = tranca;
         BicicletaRepository.update(dto.idBicicleta, bicicleta);
 
@@ -81,7 +84,8 @@ export class BicicletaService {
 
         const emailService = new EmailService();
         try {
-            await emailService.enviarEmailParaReparador(dto.idFuncionario);
+            await emailService.enviarEmailParaReparador(dto.idFuncionario, 'Integrar bicicleta', 'Integrando bicicleta na rede');
+            //encviar para reparador os dados de inclusao da bicicleta e tranca
         } catch (e) {
             throw new Error('422', Constantes.ERROR_ENVIAR_EMAIL); // Lançando erro de e-mail corretamente
         }
@@ -119,9 +123,8 @@ export class BicicletaService {
         tranca.statusTranca = StatusTranca.LIVRE;
         TrancaRepository.update(idTranca, tranca);
 
-        const emailService = new EmailService();
         try {
-            await emailService.enviarEmailParaReparador(dto.idFuncionario);
+            await new EmailService().enviarEmailParaReparador(dto.idFuncionario, 'Retirar bicicleta', 'Retirando bicicleta da rede');
         } catch (e) {
             throw new Error('422',Constantes.ERROR_ENVIAR_EMAIL);
         }
