@@ -19,6 +19,7 @@ export class RestaurarDadosRouter {
     private async restaurarDados(req: Request, res: Response): Promise<void> {
         try {
             // Limpa os dados atuais
+            console.log("Iniciando restauração de dados...");
 
             // Adicione os dados iniciais conforme o seu cenário
             const dadosIniciais = {
