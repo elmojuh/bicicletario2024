@@ -13,7 +13,7 @@ export class RestaurarDadosRouter {
     }
 
     private initializeRoutes(): void {
-        this.router.get('/', this.restaurarDados);
+        this.router.post('/', this.restaurarDados);
     }
 
     private async restaurarDados(req: Request, res: Response): Promise<void> {
