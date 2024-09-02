@@ -14,6 +14,7 @@ export class RestaurarDadosRouter {
 
     private initializeRoutes(): void {
         this.router.post('/', this.restaurarDados);
+        this.router.get('/teste', this.testRoute);
     }
 
     private async restaurarDados(req: Request, res: Response): Promise<void> {
@@ -51,5 +52,8 @@ export class RestaurarDadosRouter {
         } catch (error) {
             res.status(500).send({ message: 'Erro ao restaurar os dados.' });
         }
+    }
+    private testRoute(req: Request, res: Response): void {
+        res.status(200).send({ message: 'Rota de teste funcionando!' });
     }
 }
