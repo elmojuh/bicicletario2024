@@ -58,7 +58,11 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no elmosanchesjr@34.95.254.151 <<EOF
             cd /var/www/bicicletario2024
-            git pull
-            npm install
-            pm2 restart all
+            git fetch origin
+            git reset --hard origin/main
+            npm install --production
+            npm run build
+            pm2 delete bicicletario2024 || true
+            pm2 start /var/www/bicicletario2024/dist/start.js --name bicicletario2024
+            pm2 save
           EOF
