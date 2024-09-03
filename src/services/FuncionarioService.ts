@@ -10,7 +10,8 @@ export class FuncionarioService {
     async getById(idFuncionario: number): Promise<Funcionario> {
         try {
             // const funcionario = await axios.get<Funcionario>(`${this.baseUrlDeAluguel}/${idFuncionario}`);
-            // console.log('URL ALUGUEL',this.baseUrlDeAluguel);
+            // console.log('URL ALUGUEL: ',this.baseUrlDeAluguel);
+            // console.log('FUNCIONARIO: ',funcionario.data);
             // if(!funcionario.data){
             //     throw new Error('404', Constantes.FUNCIONARIO_NAO_ENCONTRADO);
             // }
@@ -25,9 +26,6 @@ export class FuncionarioService {
                 throw new Error('404', Constantes.FUNCIONARIO_NAO_ENCONTRADO);
             }
         } catch (error: Error | any) {
-            if(!idFuncionario){
-                throw new Error('404', Constantes.FUNCIONARIO_NAO_ENCONTRADO);
-            }
             throw new Error('422', Constantes.FUNCIONARIO_INVALIDO);
         }
     }

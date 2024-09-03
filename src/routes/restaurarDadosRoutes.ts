@@ -13,7 +13,7 @@ export class RestaurarDadosRouter {
     }
 
     private initializeRoutes(): void {
-        this.router.post('/', this.restaurarDados.bind(this));
+        this.router.get('/', this.restaurarDados.bind(this));
     }
 
     private getDadosIniciais() {

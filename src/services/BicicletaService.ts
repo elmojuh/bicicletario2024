@@ -73,8 +73,8 @@ export class BicicletaService {
 
         const emailService = new EmailService();
         try {
-            await emailService.enviarEmailParaReparador(funcionario.id, 'Integrar bicicleta', 'Integrando bicicleta na rede');
             //encviar para reparador os dados de inclusao da bicicleta e tranca
+            await emailService.enviarEmailParaReparador(funcionario.id, 'Integrar bicicleta', ``);
         } catch (e) {
             throw new Error('422', Constantes.ERROR_ENVIAR_EMAIL); // Lançando erro de e-mail corretamente
         }
