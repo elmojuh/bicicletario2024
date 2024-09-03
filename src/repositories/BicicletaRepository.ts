@@ -55,5 +55,6 @@ export class BicicletaRepository {
 
     static clear(): void {
         this.bicicletas = [];
+        this.nextId = 1;
     }
 }

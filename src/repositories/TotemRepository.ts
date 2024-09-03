@@ -42,5 +42,6 @@ export class TotemRepository {
 
     static clear(): void {
         this.totens = [];
+        this.nextId = 1;
     }
 }

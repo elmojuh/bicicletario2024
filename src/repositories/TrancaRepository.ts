@@ -53,5 +53,6 @@ export class TrancaRepository {
 
     static clear(): void {
         this.trancas = [];
+        this.nextId = 1;
     }
 }
