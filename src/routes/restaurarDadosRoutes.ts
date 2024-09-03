@@ -13,36 +13,43 @@ export class RestaurarDadosRouter {
     }
 
     private initializeRoutes(): void {
-        this.router.post('/', this.restaurarDados);
-        this.router.get('/teste', this.testRoute);//teste
+        this.router.post('/', this.restaurarDados.bind(this));
     }
 
-    private async restaurarDados(req: Request, res: Response): Promise<void> {
+    private getDadosIniciais() {
+        return {
+            bicicletas: [
+                { id: 1, marca: 'Caloi', modelo: 'Caloi', ano: '2020', numero: 12345, status: StatusBicicleta.DISPONIVEL },
+                { id: 2, marca: 'Caloi', modelo: 'Caloi', ano: '2020', numero: 12345, status: StatusBicicleta.REPARO_SOLICITADO },
+                { id: 3, marca: 'Caloi', modelo: 'Caloi', ano: '2020', numero: 12345, status: StatusBicicleta.EM_USO },
+                { id: 4, marca: 'Caloi', modelo: 'Caloi', ano: '2020', numero: 12345, status: StatusBicicleta.EM_REPARO },
+                { id: 5, marca: 'Caloi', modelo: 'Caloi', ano: '2020', numero: 12345, status: StatusBicicleta.EM_USO },
+            ],
+            trancas: [
+                { id: 1, localizacao: 'Rio de Janeiro', numero: 12345, anoDeFabricacao: '2020', modelo: 'Caloi', status: 'OCUPADA', bicicletaId: 1, totemId: 1 },
+                { id: 2, localizacao: 'Rio de Janeiro', numero: 12345, anoDeFabricacao: '2020', modelo: 'Caloi', status: 'DISPONIVEL', totemId: 1 },
+                { id: 3, localizacao: 'Rio de Janeiro', numero: 12345, anoDeFabricacao: '2020', modelo: 'Caloi', status: 'OCUPADA', bicicletaId: 2, totemId: 1 },
+                { id: 4, localizacao: 'Rio de Janeiro', numero: 12345, anoDeFabricacao: '2020', modelo: 'Caloi', status: 'OCUPADA', bicicletaId: 5, totemId: 1 },
+                { id: 5, localizacao: 'Rio de Janeiro', numero: 12345, anoDeFabricacao: '2020', modelo: 'Caloi', status: 'EM_REPARO' },
+                { id: 6, localizacao: 'Rio de Janeiro', numero: 12345, anoDeFabricacao: '2020', modelo: 'Caloi', status: 'REPARO_SOLICITADO', totemId: 1 },
+            ],
+            totens: [
+                { id: 1, localizacao: 'Rio de Janeiro', descricao: 'Totem 1' },
+            ],
+        };
+    }
+
+    public async restaurarDados(req: Request, res: Response): Promise<void> {
         try {
             // Limpa os dados atuais
-            console.log("Iniciando restauração de dados...");
+            console.log("Restaurando dados...");
 
-            // Adicione os dados iniciais conforme o seu cenário
-            const dadosIniciais = {
-                bicicletas: [
-                    { id: 1, marca: 'Caloi', modelo: 'Caloi', ano: '2020', numero: 12345, status: StatusBicicleta.DISPONIVEL },
-                    { id: 2, marca: 'Caloi', modelo: 'Caloi', ano: '2020', numero: 12345, status: StatusBicicleta.REPARO_SOLICITADO },
-                    { id: 3, marca: 'Caloi', modelo: 'Caloi', ano: '2020', numero: 12345, status: StatusBicicleta.EM_USO },
-                    { id: 4, marca: 'Caloi', modelo: 'Caloi', ano: '2020', numero: 12345, status: StatusBicicleta.EM_REPARO },
-                    { id: 5, marca: 'Caloi', modelo: 'Caloi', ano: '2020', numero: 12345, status: StatusBicicleta.EM_USO },
-                ],
-                trancas: [
-                    { id: 1, localizacao: 'Rio de Janeiro', numero: 12345, anoDeFabricacao: '2020', modelo: 'Caloi', status: 'OCUPADA', bicicletaId: 1, totemId: 1 },
-                    { id: 2, localizacao: 'Rio de Janeiro', numero: 12345, anoDeFabricacao: '2020', modelo: 'Caloi', status: 'DISPONIVEL', totemId: 1 },
-                    { id: 3, localizacao: 'Rio de Janeiro', numero: 12345, anoDeFabricacao: '2020', modelo: 'Caloi', status: 'OCUPADA', bicicletaId: 2, totemId: 1 },
-                    { id: 4, localizacao: 'Rio de Janeiro', numero: 12345, anoDeFabricacao: '2020', modelo: 'Caloi', status: 'OCUPADA', bicicletaId: 5, totemId: 1 },
-                    { id: 5, localizacao: 'Rio de Janeiro', numero: 12345, anoDeFabricacao: '2020', modelo: 'Caloi', status: 'EM_REPARO' },
-                    { id: 6, localizacao: 'Rio de Janeiro', numero: 12345, anoDeFabricacao: '2020', modelo: 'Caloi', status: 'REPARO_SOLICITADO', totemId: 1 },
-                ],
-                totens: [
-                    { id: 1, localizacao: 'Rio de Janeiro', descricao: 'Totem 1' },
-                ],
-            };
+            BicicletaRepository.clear();
+            TrancaRepository.clear();
+            TotemRepository.clear();
+
+            // Adicione os dados iniciais
+            const dadosIniciais = this.getDadosIniciais();
 
             dadosIniciais.bicicletas.forEach(bicicleta => BicicletaRepository.create(bicicleta));
             dadosIniciais.trancas.forEach(tranca => TrancaRepository.create(tranca));
@@ -53,7 +60,23 @@ export class RestaurarDadosRouter {
             res.status(500).send({ message: 'Erro ao restaurar os dados.' });
         }
     }
-    private testRoute(req: Request, res: Response): void {
-        res.status(200).send({ message: 'Rota de teste funcionando!' });
+
+    public async inicializarDados(): Promise<void> {
+        try {
+            console.log("Inicializando dados...");
+            const dadosIniciais = this.getDadosIniciais();
+
+            BicicletaRepository.clear();
+            TrancaRepository.clear();
+            TotemRepository.clear();
+
+            dadosIniciais.bicicletas.forEach(bicicleta => BicicletaRepository.create(bicicleta));
+            dadosIniciais.trancas.forEach(tranca => TrancaRepository.create(tranca));
+            dadosIniciais.totens.forEach(totem => TotemRepository.create(totem));
+
+            console.log("Dados iniciais carregados com sucesso!");
+        } catch (error) {
+            console.error("Erro ao carregar os dados iniciais:", error);
+        }
     }
 }

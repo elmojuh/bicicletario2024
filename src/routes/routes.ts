@@ -16,7 +16,6 @@ export default class AppRoutes {
 
     private initializeMiddlewares(): void {
         this.router.use((req, res, next) => {
-            console.log(`Received request for ${req.method} ${req.url}`);
             next();
         });
     }
@@ -33,5 +32,8 @@ export default class AppRoutes {
         this.router.use('/tranca', trancaRouter);
         this.router.use('/funcionario', funcionarioRouter);
         this.router.use('/restaurarDados', restaurarDadosRouter);
+
+        // inicialização de dados ao inicializar as rotas
+        new RestaurarDadosRouter().inicializarDados();
     }
 }

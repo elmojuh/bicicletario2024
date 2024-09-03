@@ -25,7 +25,8 @@ export class TrancaRepository {
     }
 
     static getById(id: number): Tranca | null{
-        return this.trancas.find(tranca => tranca.id === id) || null;
+        const tranca = this.trancas.find(tranca => tranca.id === id) || null;
+        return tranca;
     }
 
     static update(id: number, trancaData: Partial<Tranca>): Tranca | null{
@@ -48,5 +49,9 @@ export class TrancaRepository {
     static findByTotemId(idTotem: number): Tranca[] {
         const trancas = this.trancas.filter(tranca => tranca.totem?.id === idTotem);
         return trancas;
+    }
+
+    static clear(): void {
+        this.trancas = [];
     }
 }

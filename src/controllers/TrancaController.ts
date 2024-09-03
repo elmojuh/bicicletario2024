@@ -54,7 +54,7 @@ export class TrancaController {
 
     async obterTranca(req: Request, res: Response) {
         try{
-            const id = parseInt(req.params.idTranca);
+            const id = parseInt(req.params.id);
             const tranca = await new TrancaService().getById(id);
             const trancaJson = tranca.toResponseJSON();
             res.status(200).json(trancaJson);

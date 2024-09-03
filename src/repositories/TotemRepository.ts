@@ -39,4 +39,8 @@ export class TotemRepository {
         this.totens = this.totens.filter(totem => totem.id !== id);
         return this.totens.length !== lengthBefore;
     }
+
+    static clear(): void {
+        this.totens = [];
+    }
 }

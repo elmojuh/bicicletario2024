@@ -12,6 +12,7 @@ import {Bicicleta} from "../entities/Bicicleta";
 import {TrancaRepository} from "../repositories/TrancaRepository";
 import { Error } from "../entities/Error"
 import {StatusAcaoReparador} from "../entities/enums/StatusAcaoReparador";
+import {TrancaService} from "./TrancaService";
 
 export class BicicletaService {
 
@@ -59,18 +60,23 @@ export class BicicletaService {
 
     //funcionario ao integrar bicicleta deve verificar se o mesmo funcionario que retirou no caso de reparo
     async integrarNaRede(dto: IntegrarBicicletaNaRedeDTO) : Promise<void>{
-        const tranca = TrancaRepository.getById(dto.idTranca);
-        const funcionarioDisponivel = await new FuncionarioService().getById(dto.idFuncionario);
+        const tranca = await new TrancaService().getById(dto.idTranca);
+        const funcionario = await new FuncionarioService().getById(dto.idFuncionario);
         const bicicleta = await this.getById(dto.idBicicleta);
 
-        if (!tranca) {
-            throw new Error('404', Constantes.TRANCA_NAO_ENCONTRADA);
-        }
-        if (!funcionarioDisponivel) {
-            throw new Error('422', Constantes.FUNCIONARIO_INVALIDO);
+        if (tranca.statusTranca !== StatusTranca.LIVRE && tranca.statusTranca !== StatusTranca.NOVA) {
+            throw new Error('422', Constantes.STATUS_DA_TRANCA_INVALIDO);
         }
         if (bicicleta.statusBicicleta !== StatusBicicleta.NOVA && bicicleta.statusBicicleta !== StatusBicicleta.EM_REPARO) {
             throw new Error('422', Constantes.STATUS_DA_BICICLETA_INVALIDO);
+        }
+
+        const emailService = new EmailService();
+        try {
+            await emailService.enviarEmailParaReparador(funcionario.id, 'Integrar bicicleta', 'Integrando bicicleta na rede');
+            //encviar para reparador os dados de inclusao da bicicleta e tranca
+        } catch (e) {
+            throw new Error('422', Constantes.ERROR_ENVIAR_EMAIL); // Lançando erro de e-mail corretamente
         }
 
         await this.alterarStatus(dto.idBicicleta, StatusBicicleta.DISPONIVEL);
@@ -82,19 +88,22 @@ export class BicicletaService {
         tranca.statusTranca = StatusTranca.OCUPADA;
         TrancaRepository.update(dto.idTranca, tranca);
 
-        const emailService = new EmailService();
-        try {
-            await emailService.enviarEmailParaReparador(dto.idFuncionario, 'Integrar bicicleta', 'Integrando bicicleta na rede');
-            //encviar para reparador os dados de inclusao da bicicleta e tranca
-        } catch (e) {
-            throw new Error('422', Constantes.ERROR_ENVIAR_EMAIL); // Lançando erro de e-mail corretamente
-        }
+
     }
 
     async retirarDaRede(dto: RetirarBicicletaDaRedeDTO) : Promise<void>{
+        const tranca = TrancaRepository.getById(dto.idTranca);
+        const funcionario = await new FuncionarioService().getById(dto.idFuncionario);
         const bicicleta = await this.getById(dto.idBicicleta);
+
         if (bicicleta.statusBicicleta !== StatusBicicleta.DISPONIVEL) {
             throw new Error('422', Constantes.STATUS_DA_BICICLETA_INVALIDO);
+        }
+        if(!tranca){
+            throw new Error('404', Constantes.TRANCA_NAO_ENCONTRADA);
+        }
+        if (!funcionario) {
+            throw new Error('422', Constantes.FUNCIONARIO_INVALIDO);
         }
 
         const acao =  dto.statusAcaoReparador;
@@ -110,24 +119,21 @@ export class BicicletaService {
                 throw new Error ('422', Constantes.STATUS_DA_BICICLETA_INVALIDO);
         }
 
-        const tranca = TrancaRepository.getById(dto.idTranca);
-        if(!tranca){
-            throw new Error('404', Constantes.TRANCA_NAO_ENCONTRADA);
-        }
-
         const idTranca = bicicleta.tranca?.id;
         if(!idTranca){
             throw new Error('422', Constantes.ERRO_RETIRAR_BICICLETA);
         }
-
-        tranca.statusTranca = StatusTranca.LIVRE;
-        TrancaRepository.update(idTranca, tranca);
 
         try {
             await new EmailService().enviarEmailParaReparador(dto.idFuncionario, 'Retirar bicicleta', 'Retirando bicicleta da rede');
         } catch (e) {
             throw new Error('422',Constantes.ERROR_ENVIAR_EMAIL);
         }
+
+        tranca.statusTranca = StatusTranca.LIVRE;
+        TrancaRepository.update(idTranca, tranca);
+
+
     }
 
     async alterarStatus(id: number, acao: string) : Promise<Bicicleta>{

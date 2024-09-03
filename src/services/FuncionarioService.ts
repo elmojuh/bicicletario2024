@@ -5,16 +5,24 @@ import axios from "axios";
 
 export class FuncionarioService {
 
-    private readonly baseUrlDeAluguel = 'https://bike-aluguel.azurewebsites.net/swagger/index.html';
+    private readonly baseUrlDeAluguel = 'https://bike-aluguel.azurewebsites.net/funcionario';
 
-    async getById(idFuncionario: number) {
+    async getById(idFuncionario: number): Promise<Funcionario> {
         try {
-            // const response = await axios.get<Funcionario>(`${this.baseUrlDeAluguel}/${idFuncionario}`);
-            // if (response.status === 200) {
-            //     return response.data;
+            // const funcionario = await axios.get<Funcionario>(`${this.baseUrlDeAluguel}/${idFuncionario}`);
+            // if(!funcionario.data){
+            //     throw new Error('404', Constantes.FUNCIONARIO_NAO_ENCONTRADO);
             // }
-            const funcionario = new Funcionario(1, 'Nome', 'email@email.com', '12345678901', '123', '123', 20, '');
-            return funcionario;
+            // if (funcionario.data.id === idFuncionario) {
+            //     return funcionario.data;
+            // }
+            const funcionarioMock = new Funcionario(1, 'Nome', 'email@email.com', '12345678901', '123', '123', 20, '');
+            if(idFuncionario === funcionarioMock.id){
+                return funcionarioMock;
+            }
+            else {
+                throw new Error('404', Constantes.FUNCIONARIO_NAO_ENCONTRADO);
+            }
         } catch (error: Error | any) {
             if(!idFuncionario){
                 throw new Error('404', Constantes.FUNCIONARIO_NAO_ENCONTRADO);

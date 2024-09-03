@@ -217,7 +217,10 @@ describe('BicicletaService', () => {
         const dto = new IntegrarBicicletaNaRedeDTO(1, 1, 1);
 
         const bicicletaMock = new Bicicleta(1, 'Marca de Teste', 'Modelo de Teste', '2023', 12345, StatusBicicleta.EM_USO);
+        const trancaMock = { id: 1, statusTranca: StatusTranca.LIVRE };
         BicicletaRepository.getById = jest.fn().mockReturnValue(bicicletaMock);
+        TrancaRepository.getById = jest.fn().mockReturnValue(trancaMock);
+
 
         try {
             await bicicletaService.integrarNaRede(dto);
@@ -244,8 +247,10 @@ describe('BicicletaService', () => {
 
     it('deve retornar erro ao integrar bicicleta com status invalido', async () => {
         const dto = new IntegrarBicicletaNaRedeDTO(1, 1, 1);
+        const trancaMock = { id: 1, statusTranca: StatusTranca.LIVRE };
 
         BicicletaRepository.getById = jest.fn().mockReturnValue(novaBicicletaMock);
+        TrancaRepository.getById = jest.fn().mockReturnValue(trancaMock);
         novaBicicletaMock.statusBicicleta = StatusBicicleta.EM_USO;
 
         try {
@@ -271,25 +276,12 @@ describe('BicicletaService', () => {
         }
     });
 
-    it('deve retornar erro ao integrar bicicleta a rede com funcionário inválido', async () => {
-        const dto = new IntegrarBicicletaNaRedeDTO(1, 1, 1);
-        BicicletaRepository.getById = jest.fn().mockReturnValue(novaBicicletaMock);
-        TrancaRepository.getById = jest.fn().mockReturnValue({ id: 1, statusTranca: StatusTranca.LIVRE });
-        FuncionarioService.prototype.getById = jest.fn().mockReturnValue(undefined);
-
-        try {
-            await bicicletaService.integrarNaRede(dto);
-        } catch (error: Error | any) {
-            expect(error).toBeInstanceOf(Error);
-            expect(error.codigo).toBe('422');
-            expect(error.mensagem).toBe(Constantes.FUNCIONARIO_INVALIDO);
-        }
-    });
-
     it('deve retornar erro ao integrar bicicleta a rede com erro ao enviar email', async () => {
         const dto = new IntegrarBicicletaNaRedeDTO(1, 1, 1);
+        const trancaMock = { id: 1, statusTranca: StatusTranca.LIVRE };
 
         mockIntegracaoBicicleta(StatusBicicleta.NOVA, true);
+        TrancaRepository.getById = jest.fn().mockReturnValue(trancaMock);
 
         try {
             await bicicletaService.integrarNaRede(dto);

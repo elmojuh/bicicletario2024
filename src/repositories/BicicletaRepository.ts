@@ -52,4 +52,8 @@ export class BicicletaRepository {
         const bicicletas = this.bicicletas.filter(bicicleta => bicicleta.tranca?.totem?.id === id);
         return bicicletas;
     }
+
+    static clear(): void {
+        this.bicicletas = [];
+    }
 }

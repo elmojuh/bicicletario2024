@@ -63,9 +63,13 @@ export class TrancaService {
     }
 
     async integrarNaRede(dto: IntegrarTrancaNaRedeDTO): Promise<void> {
-        const tranca = await this.getById(dto.idTranca);
-        const totem = TotemRepository.getById(dto.idTotem);
-        const funcionario = await new FuncionarioService().getById(dto.idFuncionario);
+        const idTranca = Number(dto.idTranca);
+        const idTotem = Number(dto.idTotem);
+        const idFuncionario = Number(dto.idFuncionario);
+
+        const tranca = await this.getById(idTranca);
+        const totem = TotemRepository.getById(idTotem);
+        const funcionario = await new FuncionarioService().getById(idFuncionario);
 
         if (!totem) {
             throw new Error('404', Constantes.TOTEM_NAO_ENCONTRADO);
@@ -77,43 +81,63 @@ export class TrancaService {
             throw new Error('422', Constantes.STATUS_DA_TRANCA_INVALIDO);
         }
 
-        await this.alterarStatus(dto.idTranca, StatusTranca.LIVRE);
-        tranca.dataInsercaoTotem = new Date().toISOString();
-        tranca.totem = totem;
-        TrancaRepository.update(dto.idTranca, tranca);
-
         const emailService = new EmailService();
         try {
-            await emailService.enviarEmailParaReparador(dto.idFuncionario, 'Integrar na rede',  'Integrando na rede');
+            await emailService.enviarEmailParaReparador(idFuncionario, 'Integrar na rede',  'Integrando na rede');
         } catch (error) {
             throw new Error('422',Constantes.ERROR_ENVIAR_EMAIL);
         }
+
+        await this.alterarStatus(idTranca, StatusTranca.LIVRE);
+        tranca.dataInsercaoTotem = new Date().toISOString();
+        tranca.totem = totem;
+        TrancaRepository.update(idTranca, tranca);
+
+
     }
 
     async retirarDaRede(dto: RetirarTrancaDaRedeDTO): Promise<void> {
-        const tranca = await this.getById(dto.idTranca);
-        if (tranca.statusTranca !== StatusTranca.LIVRE) {
+        const idTranca = Number(dto.idTranca);
+        const idTotem = Number(dto.idTotem);
+        const idFuncionario = Number(dto.idFuncionario);
+        const statusAcaoReparador = dto.statusAcaoReparador;
+
+        const tranca = await this.getById(idTranca);
+        const totem = TotemRepository.getById(idTotem);
+        const funcionario = await new FuncionarioService().getById(idFuncionario);
+
+        if (!totem) {
+            throw new Error('404', Constantes.TOTEM_NAO_ENCONTRADO);
+        }
+        if (!funcionario) {
+            throw new Error('422', Constantes.FUNCIONARIO_INVALIDO);
+        }
+
+        if (tranca.statusTranca !== StatusTranca.NOVA && tranca.statusTranca !== StatusTranca.LIVRE) {// Passa se for nova ou livre
             throw new Error('422', Constantes.STATUS_DA_TRANCA_INVALIDO);
         }
-        const acao =  dto.statusAcaoReparador;
+
+        const emailService = new EmailService();
+        try {
+            await emailService.enviarEmailParaReparador(idFuncionario, 'Retirar da rede',  'Retirando na rede');
+        } catch (error) {
+            throw new Error('422',Constantes.ERROR_ENVIAR_EMAIL);
+        }
+
+        const acao =  statusAcaoReparador;
 
         switch (acao) {
             case StatusAcaoReparador.EM_REPARO:
-                await this.alterarStatus(dto.idTranca, StatusTranca.EM_REPARO);
+                await this.alterarStatus(idTranca, StatusTranca.EM_REPARO);
                 break;
             case StatusAcaoReparador.APOSENTADA:
-                await this.alterarStatus(dto.idTranca, StatusTranca.APOSENTADA);
+                await this.alterarStatus(idTranca, StatusTranca.APOSENTADA);
                 break;
             default:
                 throw new Error('422', Constantes.STATUS_DE_ACAO_REPARADOR_INVALIDO);
         }
 
-        const emailService = new EmailService();
-        try {
-            await emailService.enviarEmailParaReparador(dto.idFuncionario, 'Retirar da rede',  'Retirando na rede');
-        } catch (error) {
-            throw new Error('422',Constantes.ERROR_ENVIAR_EMAIL);
-        }
+
     }
 
     async trancarTranca(idTranca: number, idBicicleta?: number): Promise<void> {
