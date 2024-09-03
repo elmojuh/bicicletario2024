@@ -32,7 +32,7 @@ export class Tranca {
     get bicicleta(): Bicicleta | null {
         return this._bicicleta;
     }
-    set bicicleta(value: Bicicleta) {
+    set bicicleta(value: Bicicleta | null) {
         this._bicicleta = value;
     }
     get numero(): number {

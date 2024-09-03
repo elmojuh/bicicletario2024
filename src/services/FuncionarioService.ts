@@ -10,6 +10,7 @@ export class FuncionarioService {
     async getById(idFuncionario: number): Promise<Funcionario> {
         try {
             // const funcionario = await axios.get<Funcionario>(`${this.baseUrlDeAluguel}/${idFuncionario}`);
+            // console.log('URL ALUGUEL',this.baseUrlDeAluguel);
             // if(!funcionario.data){
             //     throw new Error('404', Constantes.FUNCIONARIO_NAO_ENCONTRADO);
             // }

@@ -83,6 +83,7 @@ export class BicicletaService {
         bicicleta.dataInsercaoTranca = new Date().toISOString();
         //necessario log para salvar todas as datas de inserção
         bicicleta.tranca = tranca;
+        tranca.bicicleta = bicicleta;
         BicicletaRepository.update(dto.idBicicleta, bicicleta);
 
         tranca.statusTranca = StatusTranca.OCUPADA;
@@ -131,6 +132,7 @@ export class BicicletaService {
         }
 
         tranca.statusTranca = StatusTranca.LIVRE;
+        tranca.bicicleta = null;
         TrancaRepository.update(idTranca, tranca);
 
 
