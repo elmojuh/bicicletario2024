@@ -85,7 +85,7 @@ export class Tranca {
             localizacao: this.localizacao,
             anoDeFabricacao: this.anoDeFabricacao,
             modelo: this.modelo,
-            statusTranca: this.statusTranca
+            status: this.statusTranca
         }
 
     }
