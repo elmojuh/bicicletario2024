@@ -33,7 +33,7 @@ export default class AppRoutes {
         this.router.use('/funcionario', funcionarioRouter);
         this.router.use('/restaurarDados', restaurarDadosRouter);
 
-        // inicialização de dados ao inicializar as rotas
+        // Inicializa os dados ao iniciar as rotas
         new RestaurarDadosRouter().inicializarDados();
     }
 }

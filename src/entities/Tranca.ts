@@ -12,16 +12,16 @@ export class Tranca {
     private _statusTranca: StatusTranca;
     private _dataInsercaoTotem: string;
     private _totem: Totem | null;
-    constructor(id: number, numero: number, localizacao: string, anoDeFabricacao: string, modelo: string, statusTranca: StatusTranca) {
+    constructor(id: number, numero: number, localizacao: string, anoDeFabricacao: string, modelo: string, statusTranca: StatusTranca, bicicleta?: Bicicleta, totem?: Totem) {
         this._id = id;
-        this._bicicleta = null
+        this._bicicleta = bicicleta ?? null;
         this._numero = numero;
         this._localizacao = localizacao;
         this._anoDeFabricacao = anoDeFabricacao;
         this._modelo = modelo;
         this._statusTranca = StatusTranca.NOVA;
         this._dataInsercaoTotem = '';
-        this._totem = null;
+        this._totem = totem || null;
     }
     get id(): number{
         return this._id;

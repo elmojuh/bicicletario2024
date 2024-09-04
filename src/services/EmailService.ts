@@ -13,11 +13,11 @@ export class EmailService {
 
     async enviarEmail(dto: NovoEmailDTO): Promise<void> {
         try {
-            const response = await axios.post(`${this.baseUrlEnviarEmail}`, dto, {
-                headers: { 'Content-Type': 'application/json' }
-            });
+            // const response = await axios.post(`${this.baseUrlEnviarEmail}`, dto, {
+            //     headers: { 'Content-Type': 'application/json' }
+            // });
             console.log('URL EXTERNO: ',this.baseUrlEnviarEmail);
-            console.log('RESPONSE: ',response.data);
+            // console.log('RESPONSE: ',response.data);
             //teste de enviar email fake:
         } catch (error: Error | unknown) {
             throw new Error('422', Constantes.ERROR_ENVIAR_EMAIL);

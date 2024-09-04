@@ -4,5 +4,5 @@ export enum StatusTranca {
     NOVA = 'NOVA',
     APOSENTADA = 'APOSENTADA',
     EM_REPARO = 'EM_REPARO',
-
+    REPARO_SOLICITADO = 'REPARO_SOLICITADO'
 }
