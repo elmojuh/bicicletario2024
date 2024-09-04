@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import { BicicletaRouter } from './bicicletaRoutes';
 import { TotemRouter } from './totemRoutes';
 import { TrancaRouter } from './trancaRoutes';
@@ -26,6 +26,10 @@ export default class AppRoutes {
         const trancaRouter = new TrancaRouter().router;
         const funcionarioRouter = new FuncionarioRouter().router;
         const restaurarDadosRouter = new RestaurarDadosRouter().router;
+
+        this.router.get('/', (req: Request, res: Response) => {
+            res.send('Bicicletário, acesse as rotas em /api/{rota}');
+        });
 
         this.router.use('/bicicleta', bicicletaRouter);
         this.router.use('/totem', totemRouter);

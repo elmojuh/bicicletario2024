@@ -6,7 +6,7 @@ const app = express();
 app.use(express.json());
 app.use('/api', new AppRoutes().router);
 app.get('/', (req: Request, res: Response) => {
-    res.send('Hello, world!');
+    res.send('Bicicletario acesse a rota /api');
 });
 
 export default app;
