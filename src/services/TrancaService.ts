@@ -201,7 +201,7 @@ export class TrancaService {
 
     async alterarStatus(id: number, acao: string): Promise<Tranca> {
         const tranca = await this.getById(id);
-        switch (acao as StatusTranca){
+        switch (acao as string){
             case StatusTranca.LIVRE:
                 tranca.statusTranca = StatusTranca.LIVRE;
                 break;
@@ -212,6 +212,12 @@ export class TrancaService {
                 tranca.statusTranca = StatusTranca.EM_REPARO;
                 break;
             case StatusTranca.OCUPADA:
+                tranca.statusTranca = StatusTranca.OCUPADA;
+                break;
+            case 'DESTRANCAR':
+                tranca.statusTranca = StatusTranca.LIVRE;
+                break;
+            case 'TRANCAR':
                 tranca.statusTranca = StatusTranca.OCUPADA;
                 break;
             default:
