@@ -8,14 +8,12 @@ import {Bicicleta} from "../entities/Bicicleta";
 
 export class EmailService {
 
-    private readonly baseUrlDeExterno = 'https://ec2-54-225-108-79.compute-1.amazonaws.com/api';
+    private readonly baseUrlDeExterno = 'http://ec2-54-225-108-79.compute-1.amazonaws.com';
     private readonly baseUrlEnviarEmail = this.baseUrlDeExterno + '/enviarEmail';
 
     async enviarEmail(dto: NovoEmailDTO): Promise<void> {
         try {
-            // const response = await axios.post(`${this.baseUrlEnviarEmail}`, dto, {
-            //     headers: { 'Content-Type': 'application/json' }
-            // });
+            // const response = await axios.post(`${this.baseUrlEnviarEmail}`, dto);
             console.log('URL EXTERNO: ',this.baseUrlEnviarEmail);
             // console.log('RESPONSE: ',response.data);
             //teste de enviar email fake:

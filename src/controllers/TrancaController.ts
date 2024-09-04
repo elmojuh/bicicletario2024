@@ -112,7 +112,7 @@ export class TrancaController {
 
     async trancar(req: Request, res: Response) {
         try {
-            const id = parseInt(req.params.id);
+            const id = parseInt(req.params.idTranca);
             const idBicicleta = parseInt(req.body.bicicleta);
             await new TrancaService().trancarTranca(id, idBicicleta);
             res.status(200).json(Constantes.ACAO_BEM_SUCEDIDA);
@@ -128,7 +128,7 @@ export class TrancaController {
 
     async destrancar(req: Request, res: Response) {
         try{
-            const id = parseInt(req.params.id);
+            const id = parseInt(req.params.idTranca);
             const idBicicleta = parseInt(req.body.bicicleta);
             await new TrancaService().destrancarTranca(id, idBicicleta);
             res.status(200).json(Constantes.ACAO_BEM_SUCEDIDA);

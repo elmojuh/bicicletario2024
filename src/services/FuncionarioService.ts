@@ -9,19 +9,17 @@ export class FuncionarioService {
 
     async getById(idFuncionario: number): Promise<Funcionario> {
         try {
-            // const funcionario = await axios.get<Funcionario>(`${this.baseUrlDeAluguel}/${idFuncionario}`);
-            // console.log('URL ALUGUEL: ',this.baseUrlDeAluguel);
-            // console.log('FUNCIONARIO: ',funcionario.data);
-            // if(!funcionario.data){
-            //     throw new Error('404', Constantes.FUNCIONARIO_NAO_ENCONTRADO);
-            // }
-            // if (funcionario.data.id === idFuncionario) {
-            //     return funcionario.data;
-            // }
-            const funcionarioMock = new Funcionario(1, 'Nome', 'email@email.com', '12345678901', '123', '123', 20, '');
-            if(idFuncionario === funcionarioMock.id){
-                return funcionarioMock;
+            const funcionario = await axios.get<Funcionario>(`${this.baseUrlDeAluguel}/${idFuncionario}`);
+            if(!funcionario.data){
+                throw new Error('404', Constantes.FUNCIONARIO_NAO_ENCONTRADO);
             }
+            if (funcionario.data.id === idFuncionario) {
+                return funcionario.data;
+            }
+            // const funcionarioMock = new Funcionario(1, 'Nome', 'email@email.com', '12345678901', '123', '123', 20, '');
+            // if(idFuncionario === funcionarioMock.id){
+            //     return funcionarioMock;
+            // }
             else {
                 throw new Error('404', Constantes.FUNCIONARIO_NAO_ENCONTRADO);
             }
